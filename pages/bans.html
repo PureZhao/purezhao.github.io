@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/nav.css">
+    <title>封禁列表</title>
+    <style>
+        /* 继承通用样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            padding-top: 70px;
+        }
+
+        /* 表格定制样式 */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .ban-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        }
+
+        .ban-table th,
+        .ban-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .ban-table th {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .ban-table tr:hover {
+            background-color: #ffebee;
+        }
+
+        .reason-cell {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ip-location {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .steamid {
+            font-family: monospace;
+            color: #2196F3;
+        }
+
+        /* 响应式处理 */
+        @media screen and (max-width: 768px) {
+            .container {
+                overflow-x: auto;
+            }
+            
+            .reason-cell {
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a href="../index.html">首页</a></li>
+            <li><a href="maps.html">地图列表</a></li>
+            <li><a href="plugins.html">插件更新</a></li>
+            <li><a href="bans.html">封禁列表</a></li>
+            <li><a href="gallery.html">图片画廊</a></li>
+            <li><a href="team.html">团队成员</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <table class="ban-table">
+            <thead>
+                <tr>
+                    <th>封禁时昵称</th>
+                    <th>SteamID</th>
+                    <th>IP</th>
+                    <th>IP所在地</th>
+                    <th>原因</th>
+                </tr>
+            </thead>
+            <tbody id="banTableBody">
+                <!-- 动态内容将在这里插入 -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // 模拟封禁数据
+        const banData = [
+            ["因技术好被狗踢出游戏", "STEAM_0:1:501503794", "未知", "未知", "外挂：自动瞄准"],
+            ["孤狼", "STEAM_0:0:161446763", "未知", "未知", "恶意友伤"],
+            ["FUCK", "STEAM_1:0:224317199", "120.235.164.130", "中国 广东省", "骂人、恶意友伤"]
+        ];
+
+        // 动态生成表格
+        const tbody = document.getElementById("banTableBody");
+
+        banData.forEach(data => {
+            const row = document.createElement("tr");
+            
+            // 昵称
+            const nameCell = document.createElement("td");
+            nameCell.textContent = data[0];
+            
+            // SteamID
+            const steamCell = document.createElement("td");
+            steamCell.className = "steamid";
+            steamCell.textContent = data[1];
+            
+            // IP
+            const ipCell = document.createElement("td");
+            ipCell.textContent = data[2];
+            
+            // IP所在地
+            const locationCell = document.createElement("td");
+            locationCell.className = "ip-location";
+            locationCell.textContent = data[3];
+            
+            // 原因
+            const reasonCell = document.createElement("td");
+            reasonCell.className = "reason-cell";
+            reasonCell.textContent = data[4];
+            reasonCell.title = data[4]; // 添加悬停提示
+
+            row.append(nameCell, steamCell, ipCell, locationCell, reasonCell);
+            tbody.appendChild(row);
+        });
+    </script>
+</body>
+</html>
