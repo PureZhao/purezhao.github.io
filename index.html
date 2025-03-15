@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的技术博客</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        /* 导航栏样式 */
+        .navbar {
+            background-color: #2c3e50;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+        }
+
+        .nav-links {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #3498db;
+        }
+
+        /* 主体内容样式 */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        /* 文章卡片样式 */
+        .article-card {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .article-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .article-date {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        /* 页脚样式 */
+        footer {
+            background-color: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .social-links {
+            margin: 1rem 0;
+        }
+
+        .social-links a {
+            color: white;
+            margin: 0 0.5rem;
+            font-size: 1.5rem;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .nav-links a {
+                display: block;
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-links">
+            <a href="#home">首页</a>
+            <a href="#articles">文章</a>
+            <a href="#about">关于</a>
+            <a href="#contact">联系</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <h1>欢迎来到我的技术博客</h1>
+        <p>分享编程经验与技术思考</p>
+    </div>
+
+    <div class="container" id="articles">
+        <h2>最新文章</h2>
+        <div class="articles-list" id="articles-list">
+            <!-- 文章将通过JavaScript动态加载 -->
+        </div>
+    </div>
+
+    <footer>
+        <div class="social-links">
+            <a href="https://github.com/yourusername" target="_blank" rel="noopener noreferrer">
+                <i class="fab fa-github"></i>
+            </a>
+            <a href="mailto:your.email@example.com">
+                <i class="fas fa-envelope"></i>
+            </a>
+            <a href="https://weibo.com/yourprofile" target="_blank" rel="noopener noreferrer">
+                <i class="fab fa-weibo"></i>
+            </a>
+        </div>
+        <p>© 2023 我的技术博客. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // 文章数据
+        const articles = [
+            {
+                title: "JavaScript 最佳实践",
+                date: "2023-08-15",
+                summary: "分享 JavaScript 开发中的实用技巧和最佳实践...",
+                link: "#"
+            },
+            {
+                title: "CSS 布局完全指南",
+                date: "2023-08-10",
+                summary: "深入解析现代 CSS 布局技术...",
+                link: "#"
+            },
+            {
+                title: "Git 工作流实践",
+                date: "2023-08-05",
+                summary: "团队协作中的 Git 使用规范与技巧...",
+                link: "#"
+            }
+        ];
+
+        // 动态生成文章列表
+        function renderArticles() {
+            const container = document.getElementById('articles-list');
+            let html = '';
+            
+            articles.forEach(article => {
+                html += `
+                    <div class="article-card">
+                        <h3>${article.title}</h3>
+                        <p class="article-date">${article.date}</p>
+                        <p>${article.summary}</p>
+                        <a href="${article.link}" style="display: inline-block; margin-top: 1rem; color: #3498db;">阅读更多 →</a>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // 页面加载完成后执行
+        window.onload = function() {
+            renderArticles();
+        };
+    </script>
+</body>
+</html>
