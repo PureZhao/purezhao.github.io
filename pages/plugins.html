@@ -116,7 +116,7 @@
 
         const container = document.getElementById("articlesContainer");
         // fetch("../data/articles.json")
-        fetch(`${serverPrefix}/articles.json`)
+        fetch(`${window.serverPrefix}/articles.json`)
             .then(response => response.json())
             .then(articles => {
                 articles.forEach(article => {

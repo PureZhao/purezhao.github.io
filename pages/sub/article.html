@@ -148,7 +148,7 @@
         const articleId = parseInt(urlParams.get('id'));
         const articleName = urlParams.get('name');
         // 查找文章
-        fetch(`${serverPrefix}/articles/${articleName}.json`)
+        fetch(`${window.serverPrefix}/articles/${articleName}.json`)
             .then(response => response.json())
             .then(article => {
                 if (article) {
