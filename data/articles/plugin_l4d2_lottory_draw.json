@@ -1,0 +1,180 @@
+{
+    "id": 1,
+    "title": "[20250316] 抽奖插件更新公告",
+    "date": "2025-03-16",
+    "author": "Pure_*",
+    "content": [
+        { "type": "text", "data": "新增：\n1. 「变身Tank」回归，相比最初版本\n\t- 不会被特感控制\n\t- 石头爆炸可以炸飞僵尸\n\t- 不会再拍飞队友\n\t- 不再限制只有救援关变身" },
+        { "type": "text", "data": "移除：\n1. 移除了惩罚「键位反转」，因为该效果在倒退的时候玩家不能换子弹、不能上楼梯\n\t- 腐竹需要，删除文件l4d2_lottery_draw_extension_reverse_move.smx</>\n\n2. 移除了大奖「免疫控制！60秒！」，因为该效果是「变身tank」的前置实验效果\n\t- 腐竹需要，删除文件l4d2_lottery_draw_extension_test.smx" },
+        { "type": "text", "data": "修复：\n1.  尝试修复重载商店后，商品丢失问题，如在游戏外修改了l4d2_shop_system.json文件中的配置，管理员使用指令!reloadshop，即可重载商店\n2. 商店中管理员可以使用，如!givepoint -1 1000 的指令给全体在线玩家发放1000积分，当然也可以发负数\n3. 抽奖中管理员可以使用，如 !givedrawcount -1 10 的指令给全体在线玩家发放10次抽奖机会" },
+        { "type": "header", "level": 3, "data": "使用说明" },
+        { "type": "text", "data": "1. 下载附件\n2. 将整个sourcemod解压到addons/sourcemod目录\n3. 在游戏中，按 y 打开在聊天框\n4. 输入指令!ldw，即可打开抽奖菜单" },
+        { "type": "header", "level": 2, "data": "配置文件介绍" },
+        { "type": "header", "level": 3, "data": "配置文件路径" },
+        { "type": "text", "data": "配置文件为：data/l4d2_lottery_draw.json" },
+        { "type": "header", "level": 3, "data": "配置表键值（Key-Value）" },
+        { "type": "table",
+            "data": {
+                "headers": ["Key", "说明", "备注"],
+                "rows": [
+                    ["AwardCondition", "配置给予抽奖次数的触发条件", "目前只支持配置表中特感条件，其他条件有待开发"],
+                    ["AwardTypes", "奖池奖品类型", "支持数量和文字改动，但必须要与AwardTypes和AwardBroadcast数量一致"],
+                    ["AwardRates", "奖池各类奖品出现概率", "支持数量和数值大小改动，但必须要与AwardBroadcast和AwardRates数量一致，并且所有值之和必须为100%"],
+                    ["AwardBroadcast", "该类型的奖抽到后广播给其他玩家吗", "只能是true和false，true表示抽到对应类型的奖之后，会广播给其他玩家，但必须要与AwardTypes和AwardRates数量一致"],
+                    ["Awards", "奖池列表，也就是会从这里面抽出", "这个可以自行修改编辑，后面会有如何修改的详细说明"]
+                ]
+            }
+        },
+        { "type": "header", "level": 3, "data": "AwardCondition中可编辑项的键值说明" },
+        { "type": "table",
+            "data": {
+                "headers": ["Key", "说明", "备注"],
+                "rows": [
+                    ["isOn", "该条件的开关", "可填写true或者false，其中true为开，false为关"],
+                    ["killGoal", "击杀目标", "玩家需要击杀到killGoal数量才会给抽奖次数"],
+                    ["giveCount", "当达到击杀目标后，给多少次抽奖次数", ""],
+                    ["class", "标注使用，在游戏中没有意义", ""]
+                ]
+            }
+        },
+        { "type": "header", "level": 3, "data": "Awards中可编辑项的键值说明" },
+        { "type": "table",
+            "data": {
+                "headers": ["Key", "说明", "备注"],
+                "rows": [
+                    ["type", "奖品类型，与AwardRates和AwardTypes一一对应，这里0就是特等奖，1是一等奖，其他依次类推", "可自行扩展，但是注意要对应，改了奖品类型就要改序号"],
+                    ["descOnPanel", "面板上奖品的描述，这个是使用!ldw后，出现在屏幕左侧面板上奖品的描述", "目前只支持16个中文字及以下或32个英文字及以下的描述"],
+                    ["descOnChat", "聊天框奖品描述，这个是按下抽奖的停止后，出现在左下角聊天框中的奖品描述", "目前只支持16个中文字及以下或32个英文字及以下的描述"],
+                    ["func", "奖品被抽到后，插件调用的函数名字", "这个函数在award.sp中，如果需要新的功能，则需要编写程序"],
+                    ["args", "函数参数列表，有的函数需要参数，比如奖品他自己的重力降到最低，需要告诉函数重力值是多少，0.1就是这个参数", ""]
+                ]
+            }
+        },
+        { "type": "header", "level": 3, "data": "Awards中args参数类型说明" },
+        { "type": "table",
+            "data": {
+                "headers": ["参数类型", "说明"],
+                "rows": [
+                    ["int", "整型数，如1、2、3"],
+                    ["float", "浮点数，简单理解为小数，如1.1、2.2、3.3，需要注意的是就算是给整数也必须写成小数形式，比如1就必须写为1.0"],
+                    ["string", "字符串，内容必须在两个英文引号中，如\"weapon_rifle_ak47\""],
+                    ["bool", "布尔值，只能是true或者false，true为真，false为假"]
+                ]
+            }
+        },
+        { "type": "header", "level": 3, "data": "奖品列表" },
+        { "type": "table",
+            "data": {
+                "headers": ["奖品", "效果说明", "函数名称", "参数说明(args)"],
+                "rows": [
+                    ["无敌", "玩家进入无敌状态", "PSetPlayerGodMode", ""],
+                    ["获得某个物品/武器", "给予玩家物品/武器", "PGivePlayerItem", "1. itemName(string): 物品名称"],
+                    ["低重力", "设置玩家重力为原来的10%", "PSetPlayerGravity", "1. gravity(float): 重力系数，1.0为正常重力，此处推荐0.1<br>2. duration(float): 持续时间，0.0代表无限制"],
+                    ["超重力", "设置玩家重力为原来300%", "PSetPlayerGravity", "1. gravity(float): 重力系数，1.0为正常重力，此处推荐3.0<br>2. duration(float): 持续时间，0.0代表无限制"],
+                    ["加速", "玩家事件流速为原来的2倍", "PSetPlayerMoveSpeed", "1. speedTimes(float): 移速倍率，1.0为正常倍率，此处推荐2.0"],
+                    ["成为奶妈", "范围内给玩家加血", "PSetPlayerAsHealer", "1. amount(int):每次加血的数量<br>2. radius(float): 效果范围<br>3. interval(float): 每次加血间隔，最小0.1s<br>4. duration(float): 效果持续时间"],
+                    ["获得xxx积分", "与商店插件配合，给予玩家商店积分", "PGivePlayerPoint", "1. amount(int): 数量"],
+                    ["自动瞄准", "开火时自动瞄准特感", "PSetPlayerAutoAim", "1. duration(float): 持续时间"],
+                    ["清除所有小僵尸", "清除当前所有小僵尸", "PExecuteAllCommon", ""],
+                    ["召唤僵尸", "召唤指定僵尸", "PSummonInfected", "1. infected(int): 特感ID<br>2. count(int): 数量"],
+                    ["自杀", "直接死亡，机制杀，无敌也没用", "PSuicidePlayer", ""],
+                    ["被冰冻", "固定在原地", "PFreezePlayer", "1. time(int): 持续时间"],
+                    ["特感隐身", "持续时间内，所有特感隐身", "PExtVision", "1. type(int): 类型，固定为1\n2. duration(float): 持续时间"],
+                    ["人肉炸弹", "给予抽到的玩家一颗炸弹，一定时间后，玩家爆炸死亡，范围内其他玩家会被波及受伤", "PSuicideBomber", "1. damage(int): 给予其他玩家的爆炸伤害<br>2. explodeRadius(float): 爆炸范围<br>3. explodeDelay(float): 多久后爆炸"],
+                    ["点燃服务器", "从玩家头顶随机抛射一定数量的燃烧瓶", "PSpawnMolotovRain", "1. quantity(int): 数量"],
+                    ["Witch狂暴", "1. 游戏内已有的Witch直接进入狂暴状态<br>2. 持续时间内刷新的Witch也会马上进入狂暴状态<br>3. Witch狂暴后，随机追击一名生还者<br>4. 如果重复触发该效果，Witch会重新选择追击目标", "PKeepWitchStartle", "1. duration(float): 持续时间"],
+                    ["冰冻炸弹", "一定时间后，范围内玩家被冰冻", "PFreezeBomb", "1. freezeTime(float): 冰冻时间<br>2. explodeRadius(float): 爆炸范围<br>3. explodeDelay(float): 多久后爆炸"],
+                    ["局部地震", "玩家屏幕剧烈抖动一段时间", "PSetPlayerEarthQuake", "1. duration(float): 持续时间"],
+                    ["加满所有幸存者的血量", "没倒地的加满，倒地的起来", "PGiveAllPlayerHealth", "1. isMaxHealth(bool): 是否加满血<br>2. amount(int): 加血数量"],
+                    ["处死所有特感", "杀掉场地现存的所有特感", "PExecuteAllSpecial", ""],
+                    ["特感透视", "透视场景中的特感", "PExtVision", "1. type(int): 类型，固定为0\n2. duration(float): 持续时间"],
+                    ["抢夺血量", "夺取其他玩家和特感的血量", "PRobOtherPlayerHealth", "1. rate(float): 当前血量百分比，取值范围(0, 1)<br>2. includeSpecial(bool): 是否要算上特感"],
+                    ["虚无星神", "秒杀靠近范围内的所有活物（不包括玩家）", "PSetPlayerNihilist", "1. radius(float): 效果范围<br>2. duration(bool): 持续时间"],
+                    ["变身超人", "射速翻倍+无限子弹", "PExtWeapon", "1. type(int): 类型，固定为1<br>2. duration(float): 持续时间"],
+                    ["死从天降", "给予玩家召唤空中支援的能力", "PGivePlayerAC130", "1. times(int): 可使用次数"],
+                    ["丢掉当前手持物品", "丢掉当前手持物品", "PDropPlayerItem", ""],
+                    ["平均血量", "平均所有玩家的血量", "PAveragePlayerHealth", ""],
+                    ["共享业绩", "一定时间内，累加所有玩家的杀敌数，最后全体分发抽奖数", "PExtPerformance", "1. type(int): 类型，固定为0<br>2. duration(float): 持续时间"],
+                    ["抢夺业绩", "一定时间内，累加所有玩家的杀敌数，最后给中奖玩家分发抽奖数", "PExtPerformance", "1. type(int): 类型，固定为1<br>2. duration(float): 持续时间"],
+                    ["全局伤害增加", "一定时间内，所有伤害提升", "PSetDamageMultiper", "1. duration(float): 持续时间<br>2. rate(float): 伤害倍率<br>3. type(int): 类型，0为伤害增加，1为伤害减少"],
+                    ["全局伤害减少", "一定时间内，所有伤害降低", "PSetDamageMultiper", "1. duration(float): 持续时间<br>2. rate(float): 伤害倍率<br>3. type(int): 类型，0为伤害增加，1为伤害减少"],
+                    ["特警之围", "以玩家为中心生成9只特警僵尸", "PGenerateCommonAroundPlayer", ""],
+                    ["血条歌舞厅", "一定时间内，玩家的血量在[1, 最大血量]之间修改<br>此处最大血量如不足100，按100计算", "PSetPlayerHealthChaos", "1. duration(float): 持续时间"],
+                    ["血量交换", "交换所有玩家的血量", "PExchangePlayersHealth", "1. duration(float): 持续时间"],
+                    ["A1高闪", "玩家屏幕全白一段时间", "PFlashBang", ""],
+                    ["主武换换换", "玩家不断更换主武器", "PExtWeapon", "1. type(int): 类型，固定为3<br>2. duration(float): 持续时间"],
+                    ["千特所指", "一段时间内，特感只锁定一个人", "PSetPlayerLockedByInfected", "1. duration(float): 持续时间"],
+                    ["长枪禁令", "一段时间内，玩家主武器不能火", "PExtWeapon", "1. type(int): 类型，固定为0<br>2. duration(float): 持续时间"],
+                    ["劣质枪械", "一段时间内，玩家主武器开火可能会爆炸", "PExtWeapon", "1. type(int): 类型，固定为2<br>2. duration(float): 持续时间"],
+                    ["幽灵模式", "一段时间内，玩家不被特感锁定", "PSetPlayerIgnoredByInfected", "1. duration(float): 持续时间"],
+                    ["特感无敌", "一段时间内，特感无敌", "PExtInfected", "1. type(int): 类型，固定为1<br>2. duration(int): 持续时间"],
+                    ["特感加速", "一段时间内，特感速度提高", "PExtInfected", "1. type(int): 类型，固定为0<br>2. duration(int): 持续时间"],
+                    ["特感爆炸", "一段时间内，特感死亡时产生爆炸", "PExtInfected", "1. type(int): 类型，固定为2<br>2. duration(int): 持续时间"]
+                ]
+            }
+        },
+        { "type": "header", "level": 2, "data": "如何自己修改奖池" },
+        { "type": "header", "level": 3, "data": "增加奖品类型" },
+        { "type": "text", "data": "例如当前配置文件中，关于奖品类型的配置如下" },
+        {
+            "type": "code",
+            "data": "// 配置示例\n{\n&nbsp;&nbsp;&nbsp;&nbsp;\"AwardTypes\": [\"特等奖\", \"一等奖\", \"二等奖\"],<br>&nbsp;&nbsp;&nbsp;&nbsp;\"AwardRates\": [0.2, 0.3, 0.5],<br>&nbsp;&nbsp;&nbsp;&nbsp;\"AwardBroadcast\": [true, false, false],\n}"
+        },
+        { "type": "text", "data": "现在要增加一个 三等奖类，则配置文件应该改为如下:" },
+        {
+            "type": "code",
+            "data": "// 配置示例\n{\n&nbsp;&nbsp;&nbsp;&nbsp;\"AwardTypes\": [\"特等奖\", \"一等奖\", \"二等奖\", \"三等奖\"],<br>&nbsp;&nbsp;&nbsp;&nbsp;\"AwardRates\": [0.1, 0.2, 0.3, 0.5],<br>&nbsp;&nbsp;&nbsp;&nbsp;\"AwardBroadcast\": [true, false, false, false],\n}"
+        },
+        { "type": "text", "data": "则在 Awards 配置中 type 则使用 3 来指定该奖品为三等奖" },
+        { "type": "text", "data": "P.S. 为什么是 3？因为程序里面，这种一排一样的东西是从 0 开始数的" },
+        { "type": "text", "data": "还需要注意：AwardRates中每一项加起来必须等于 1.0" },
+        { "type": "header", "level": 2, "data": "修改奖品" },
+        { "type": "text", "data": "以奖品成为人肉炸弹为例，在配置文件中，它配置如下：" },
+        {
+            "type": "code",
+            "data": "{\"type\": 5, \"descOnPanel\": \"成为人肉炸弹\", \"descOnChat\": \"成为人肉炸弹!\" ,\"func\": \"PSuicideBomber\", \"args\": [1000, 200.0, 5.0]}"
+        },
+        { "type": "text", "data": "根据表格中，成为人肉炸弹的信息为：" },
+        { "type": "table",
+            "data": {
+                "headers": ["奖品", "效果说明", "函数名称", "参数说明(args)"],
+                "rows": [
+                    ["人肉炸弹", "给予抽到的玩家一颗炸弹，一定时间后，玩家爆炸死亡，范围内其他玩家会被波及受伤", "PSuicideBomber", "1. damage(int): 给予其他玩家的爆炸伤害<br>2. explodeRadius(float): 爆炸范围<br>3. explodeDelay(float): 多久后爆炸"]
+                ]
+            }
+        },
+        { "type": "text", "data": "比如现在我们要把爆炸伤害调整为 2000， 爆炸半径调整为 500.0，爆炸时间调整为 10.0\n则应该改为" },
+        {
+            "type": "code",
+            "data": "{\"type\": 5, \"descOnPanel\": \"成为人肉炸弹\", \"descOnChat\": \"成为人肉炸弹!\" ,\"func\": \"PSuicideBomber\", \"args\": [2000, 500.0, 10.0]}"
+        },
+        { "type": "header", "level": 3, "data": "增加奖品" },
+        { "type": "text", "data": "增加一个奖品就是在配置文件的Awards表里面增加一行，一个奖品的信息是写在一对花括号中的，如下" },
+        { "type": "code", "data": "{}" },
+        { "type": "text", "data": "参考AwardTypes确定奖品类型(type)，如增加一个三等奖，配置中应该书写" },
+        { "type": "code", "data": "{\"type\": 3}" },
+        { "type": "text", "data": "确定新奖品在抽奖菜单和聊天框中，显示的提示，也就是为新奖品取一个名字，比如在抽奖菜单中显示 点地板成Jockey，而在聊天框中显示 召唤了5个Jockey，配置中应该书写" },
+        { "type": "code", "data": "{\"type\": 3, \"descOnPanel\": \"点地板成Jockey\", \"descOnChat\": \"召唤了5个Jockey\"}" },
+        { "type": "text", "data": "确定新奖品使用的函数名字，参考可使用函数列表中的函数，比如此处召唤Jockey就需要使用PSummonInfected，在配置中继续书写" },
+        { "type": "code", "data": "{\"type\": 3, \"descOnPanel\": \"点地板成Jockey\", \"descOnChat\": \"召唤了5个Jockey\", \"func\": \"PSummonInfected\"}" },
+        { "type": "text", "data": "确定好使用的函数后，为其指定参数，比如函数PSummonInfected在可使用函数列表中信息如下" },
+        { "type": "table",
+            "data": {
+                "headers": ["函数名", "参数", "备注"],
+                "rows": [
+                    ["PSummonInfected", "1. cient(int): 客户端ID<br>2. infected(int): 感染者ID<br>3. count(int): 数量", "感染者ID如下:<br>随机特感(不包括Tank和Witch): -1<br>Smoker: 1<br>Boomer : 2<br>Hunter : 3<br>Spitter : 4<br>Jockey : 5<br>Charger : 6<br>Witch : 7<br>Tank : 8"]
+                ]
+            }
+        },
+        { "type": "text", "data": "可知函数PSummonInfected需要三个参数，从左到右的顺序为客户端ID、感染者ID、数量，由于新奖品效果是召唤5个Jockey，那这里感染者ID为4，数量为5，则在配置中按参数顺序书写" },
+        { "type": "code", "data": "{\"type\": 3, \"descOnPanel\": \"点地板成Jockey\", \"descOnChat\": \"召唤了5个Jockey\", \"func\": \"PSummonInfected\", \"args\": [4, 5]}" },
+        { "type": "text", "data": "最后将写好的配置，添加到Awards列表中，如下" },
+        { "type": "code", "data": "\"Awards\": <br>[<br>&nbsp;&nbsp;&nbsp;&nbsp;{\"type\": 0, \"descOnPanel\": \"自己进入无敌状态\", \"descOnChat\": \"他自己进入无敌状态\" ,\"func\": \"PSetPlayerGodMode\", \"args\": []},<br>&nbsp;&nbsp;&nbsp;&nbsp;{\"type\": 0, \"descOnPanel\": \"自己的重力降到最低\", \"descOnChat\": \"他自己的重力降到最低\" ,\"func\": \"PSetPlayerGravity\", \"args\": [0.1, 0.0]},<br>&nbsp;&nbsp;&nbsp;&nbsp;{\"type\": 3, \"descOnPanel\": \"点地板成Jockey\", \"descOnChat\": \"召唤了5个Jockey\", \"func\": \"PSummonInfected\", \"args\": [4, 5]}<br>]" }
+    
+    ],
+    "attachments": [
+        {"name": "更新说明.pdf", "url": "/files/update-v2.4.pdf"},
+        {"name": "配置文件示例.json", "url": "/files/config-sample.json"}
+    ]
+}
+

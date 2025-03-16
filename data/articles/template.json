@@ -1,0 +1,48 @@
+{
+    "id": 1,
+    "title": "[20250316] 抽奖插件更新公告",
+    "date": "2025-03-16",
+    "author": "Pure_*",
+    "content": [
+        {
+            "type": "text",
+            "data": "新增：\n1. 「变身Tank」回归，相比最初版本\n\t- 不会被特感控制\n\t- 石头爆炸可以炸飞僵尸\n\t- 不会再拍飞队友\n\t- 不再限制只有救援关变身"
+        },
+        {
+            "type": "text",
+            "data": "移除：\n1. 移除了惩罚「键位反转」，因为该效果在倒退的时候玩家不能换子弹、不能上楼梯\n\t- 腐竹需要，删除文件<>l4d2_lottery_draw_extension_reverse_move.smx</>\n\n2. 移除了大奖「免疫控制！60秒！」，因为该效果是「变身tank」的前置实验效果\n\t- 腐竹需要，删除文件<>l4d2_lottery_draw_extension_test.smx</>"
+        },
+        {
+            "type": "text",
+            "data": "修复：\n1.  尝试修复重载商店后，商品丢失问题，如在游戏外修改了l4d2_shop_system.json文件中的配置，管理员使用指令!reloadshop，即可重载商店\n2. 商店中管理员可以使用，如<>!givepoint -1 1000</>的指令给全体在线玩家发放1000积分，当然也可以发负数\n3. 抽奖中管理员可以使用，如<>!givedrawcount -1 10</>的指令给全体在线玩家发放10次抽奖机会"
+        },
+        {
+            "type": "image",
+            "data": {
+                "url": "images/update-screenshot.jpg",
+                "alt": "更新界面截图",
+                "caption": "图1: 新版插件界面"
+            }
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": ["功能模块", "状态", "负责人"],
+                "rows": [
+                    ["AI系统", "已完成", "张三"],
+                    ["物理引擎", "测试中", "李四"],
+                    ["UI界面", "开发中", "王五"]
+                ]
+            }
+        },
+        {
+            "type": "code",
+            "data": "// 配置示例\nPluginConfig {\n    version: \"2.4.0\",\n    debugMode: false,\n    maxPlayers: 100\n}"
+        }
+    ],
+    "attachments": [
+        {"name": "更新说明.pdf", "url": "/files/update-v2.4.pdf"},
+        {"name": "配置文件示例.json", "url": "/files/config-sample.json"}
+    ]
+}
+

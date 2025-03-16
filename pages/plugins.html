@@ -111,34 +111,36 @@
         <!-- 动态内容容器 -->
         <div id="articlesContainer"></div>
     </div>
-    <script src="../data/article.js"></script>
+    <script type="text/javascript" src="../data/global.js"></script>
     <script>
 
-        const articles = window.articlesData;
         const container = document.getElementById("articlesContainer");
-
-        articles.forEach(article => {
-            const articleEl = document.createElement("div");
-            articleEl.className = "article-card";
-            articleEl.innerHTML = `
-                <h2 class="article-title">
-                    <a href="sub/article.html?id=${article.id}" target="_blank">${article.title}</a>
-                </h2>
-                <div class="article-meta">
-                    <span>${article.date}</span> • 
-                    <span>作者：${article.author}</span>
-                </div>
-                <p class="article-content">${article.content.replace(/\n/g, '<br>')}</p>
-                <div class="article-tags">
-                    ${article.tags.map(tag => `
-                        <span class="tag" style="background: ${getTagColor(article.type)};">
-                            ${tag}
-                        </span>
-                    `).join('')}
-                </div>
-            `;
-            container.appendChild(articleEl);
+        // fetch("../data/articles.json")
+        fetch(`${serverPrefix}/articles.json`)
+            .then(response => response.json())
+            .then(articles => {
+                articles.forEach(article => {
+                    const articleEl = document.createElement("div");
+                    articleEl.className = "article-card";
+                    articleEl.innerHTML = `
+                        <h2 class="article-title">
+                            <a href="sub/article.html?id=${article.id}&name=${article.url}" target="_blank">${article.title}</a>
+                        </h2>
+                        <div class="article-meta">
+                            <span>${article.date}</span> • 
+                            <span>作者：${article.author}</span>
+                        </div>
+                        <div class="article-tags">
+                            ${article.tags.map(tag => `
+                                <span class="tag" style="background: ${getTagColor(article.type)};">
+                                    ${tag}
+                                </span>
+                            `).join('')}
+                        </div>
+                    `;
+                    container.appendChild(articleEl);
         });
+            });
 
         function getTagColor(type) {
             const colors = {
