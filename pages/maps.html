@@ -91,89 +91,33 @@
         </table>
     </div>
 
+    <script type="text/javascript" src="../data/global.js"></script>
     <script>
-        // 模拟动态数据
-        const sampleData = [
-            ["RMS Titanic (v2.0.1)", "ThisKid55", "281MB", "无", ""],
-            ["Farewell Chenming", "ŠĦĪFŦ ", "250MB", "无", ""],
-            ["Time to Die (Campaign)", "Kyle H. McCloud", "262MB", "无", ""],
-            ["Urban Flight", "The Rabbit", "191MB", "无", ""],
-            ["Dark Wood (Extended)", "Phaeton", "1000MB", "五个部分", "精"],
-            ["Blood Proof", "Yanzi", "157MB", "无", ""],
-            ["Carried Off", "Fabien", "122MB", "无", ""],
-            ["Suicide Blitz 2", "DangerousPerson", "500MB", "三个部分", "精"],
-            ["Yama", "the0rthopaedicsurgeon ", "800MB", "四个部分", "精"],
-            ["Journey to Splash Mountain", "[DCC] Dives", "1000MB", "五个部分", "精"],
-            ["Fall in Death", "CastorJudo", "363MB", "两个部分", "None"],
-            ["The Bloody Moors", "keved", "838MB", "五个部分", "None"],
-            ["One 4 Nine", "keved", "516MB", "四个部分", "精"],
-            ["Dark Parish", "averagenjoyer", "193MB", "无", ""],
-            ["UnrelentingMorning", "DespaKid", "369MB", "无", ""],
-            ["Fallen", "RF", "175MB", "无", ""],
-            ["Portal 2: The Underground", "The Mafia", "1601MB", "无", ""],
-            ["Dark Blood 2 (Coop & Versus)", "CastorJudo", "135MB", "无", ""],
-            ["Night Terror with fix", "NIPPER", "252MB", "两个部分", ""],
-            ["Infection Overdrive", "JohnnyRamoneBR", "236MB", "无", ""],
-            ["Death Aboard 2", " گaint", "527MB", "无", ""],
-            ["The Seal of Asrahmat", "Imaculata", "194MB", "无", ""],
-            ["Lord Of The Rings Campaign", "PopTheseFools", "441MB", "两个部分", "None"],
-            ["Lockdown DLC", "ALEX supaHzT4R", "385MB", "无", ""],
-            ["阴霾将至", "ty", "146MB", "无", ""],
-            ["Ruination", "Xanarcy", "108MB", "无", ""],
-            ["Plague Tale", "Kryogen", "338MB", "无", ""],
-            ["Warcelona", "Carlos Coronado [Koral Dev]", "450MB", "三个部分", "精"],
-            ["DNIEPR 2.0.1", "Ben.", "1491MB", "十三个部分", "精"],
-            ["Deathcraft II", "KabeN", "1248MB", "七个部分并附带下载一个Fix\n附带下载：Deathcraft II Fix\n作者：RF", "精"],
-            ["Dead Series", "Fabien", "243MB", "无", ""],
-            ["No Continuity", "Gutatto", "122MB", "无", ""],
-            ["Cambalache - Buenos  Aires", "Roku", "780MB", "无", ""],
-            ["I Hate Mountains 2 (Complete)", "Terminus", "554MB", "无", ""],
-            ["Red Tide", "Monsterman94", "243MB", "无", ""],
-            ["The Grave Outdoors", "PopTheseFools", "818MB", "无", ""],
-            ["Deadbeat Escape (Complete)", "Terminus", "319MB", "无", ""],
-            ["Fatal Freight: Remastered", "Tamari", "1267MB", "七个部分", "None"],
-            ["Undead Zone", "Freak", "403MB", "四个部分", "None"],
-            ["Road To Nowhere", "RF/MapEater", "261MB", "无", ""],
-            ["The tsunami city", "秋风抚麦", "43MB", "无", ""],
-            ["ContraZ", "月兔鸽/msd", "556MB", "无", ""],
-            ["遗忘之地 Land of oblivion", "月兔鸽", "304MB", "无", ""],
-            ["在水一方", "一只大白狗", "64MB", "无", ""],
-            ["音讯全无重制版V1.01", "ty", "440MB", "无", ""],
-            ["再见了,南宁/Goodbye,Nanning", "HerobrineAce", "485MB", "无", ""],
-            ["Chernobyl", "Av3ris", "3664MB", "八个部分", "精"],
-            ["广州增城 （Zengcheng）Lv7.3", "爱都有罪love", "824MB", "无", ""],
-            ["Devil Mountain", "Pips", "168MB", "无", ""],
-            ["We Don't Go To Ravenholm", "Chuffy [s^3]", "162MB", "无", ""],
-            ["Precinct 84 | 4-Map Campaign ( 2018 Edition )", "Payne☣", "184MB", "无", ""],
-            ["Outrun", "Alan", "241MB", "无", ""],
-            ["Death Row", "Saleck", "160MB", "无", ""],
-            ["ToyZ 2", "Alan", "157MB", "无", ""],
-            ["Day Break (Campaign)", "DannBo", "941MB", "无", ""],
-            ["Freezing Point (Campaign + Survival)", "Kyle H. McCloud", "306MB", "无", ""],
-            ["Left 4 Mario", "ღ", "86MB", "无", ""],
-            ["Outline（跨越边境） ", "TaigaAi", "247MB", "无", ""],
-            ["Pit Stop (Winter Remix)", "Trunten", "257MB", "无", ""]
-        ];
 
         // 动态生成表格内容
         const tbody = document.getElementById("mapTableBody");
-        
-        sampleData.forEach(data => {
-            const row = document.createElement("tr");
-            
-            data.forEach((item, index) => {
-                const cell = document.createElement("td");
-                if(index === 4) {
-                    cell.textContent = item ? "精品" : "";
-                    if(item) cell.classList.add("problem-cell");
-                } else {
-                    cell.textContent = item;
-                }
-                row.appendChild(cell);
-            });
 
-            tbody.appendChild(row);
-        });
+        fetch(`${window.serverPrefix}maps.json`)
+            .then(response => response.json())
+            .then(maps => {
+                maps.forEach(map => {
+
+                    const row = document.createElement("tr");
+
+                    map.forEach((item, index) => {
+                        const cell = document.createElement("td");
+                        if(index === 4) {
+                            cell.textContent = item ? "精品" : "";
+                            if(item) cell.classList.add("problem-cell");
+                        } else {
+                            cell.textContent = item;
+                        }
+                        row.appendChild(cell);
+                    });
+                
+                    tbody.appendChild(row);
+                });
+            });
     </script>
 </body>
 </html>

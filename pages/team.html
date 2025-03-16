@@ -182,68 +182,40 @@
         </div>
     </div>
 
+    <script type="text/javascript" src="../data/global.js"></script>
     <script>
-        // 模拟成员数据
-        const members = [
-            { name: "Pure_*", positions: ["position-admin", "position-develop"], bio: "新年快乐！", avatar: "../images/avatars/pure.png" },
-            { name: "浅忆微凉", positions: ["position-admin", "position-belt", "position-damie-executer"], bio: "哎哟喂", avatar: "../images/avatars/qianyi.jpg" },
-            { name: "七海花咲", positions: ["position-admin", "position-friend"], bio: "其他腐竹", avatar: "../images/avatars/qihai.jpg" },
-            { name: "布什·戈门", positions: ["position-member", "position-entry-fragger"], bio: "不是！？哥们！", avatar: "../images/avatars/bushigemen.jpg" },
-            { name: "飞翔的荷兰人", positions: ["position-member", "position-lecher"], bio: "家里红旗不倒，外面彩旗飘飘", avatar: "../images/avatars/helanren.jpg" },
-            { name: "飞翔的荷兰逗", positions: ["position-member"], bio: "荷兰人给我跪搓衣板！", avatar: "../images/avatars/helandou.jpg" },
-            { name: "北星河", positions: ["position-member", "position-air-wall-walker"], bio: "21岁，是大学生！", avatar: "../images/avatars/beixinghe.jpg" },
-            { name: "哒咩", positions: ["position-member", "position-weapon-special"], bio: "盖亚！！！！！", avatar: "../images/avatars/damie.jpg" },
-            { name: "脆脆面.KIKIMe", positions: ["position-member", "position-battle-doctor"], bio: "应急食品", avatar: "../images/avatars/cuicuimian.jpg" },
-            { name: "懒惰の鸽子老李shiDD", positions: ["position-member", "position-sniper"], bio: "挂机下片第一人", avatar: "../images/avatars/gezi.jpg" },
-            { name: "神水璃", positions: ["position-member", "position-mechanism-user"], bio: "打CC", avatar: "../images/avatars/shenshuili.jpg" },
-            { name: "『御鸢▪洛秋棠』", positions: ["position-member", "position-Syria-native"], bio: "见安好", avatar: "../images/avatars/xiaoluo.jpg" },
-            { name: "CC.", positions: ["position-member", "position-sniper"], bio: "正义的伙伴", avatar: "../images/avatars/cc.jpg" },
-            { name: "小U单推人", positions: ["position-member"], bio: "单推人的力量是无穷的", avatar: "../images/avatars/xiaou.gif" },
-            { name: "迷途猫", positions: ["position-member"], bio: "耍朋友导致的AFK", avatar: "../images/avatars/damiao.jpg" },
-            { name: "圆子", positions: ["position-member"], bio: "据说耍朋友导致的AFK", avatar: "../images/avatars/yuanzi.jpg" }
-            
-        ];
-        
-        const positions = {
-                "position-admin": "管理员",
-                "position-develop": "插件开发",
-                "position-belt": "团队纽带",
-                "position-member": "成员",
-                "position-friend": "朋友",
-                "position-weapon-special": "持枪特感",
-                "position-Syria-native": "IP: 叙利亚",
-                "position-entry-fragger": "突破手",
-                "position-sniper": "狙击手",
-                "position-damie-executer": "哒咩制裁者",
-                "position-air-wall-walker": "空气墙行者",
-                "position-lecher": "痴汉",
-                "position-battle-doctor": "战地医生",
-                "position-mechanism-user": "善用机制",
-                "": "None"
-            };
 
         // 动态生成成员卡片
         const grid = document.getElementById("memberGrid");
-        
-        members.forEach(member => {
-            const card = document.createElement("div");
-            card.className = "member-card";
-            card.innerHTML = `
-                <img src="${member.avatar}" 
-                     alt="${member.name}" 
-                     class="member-avatar">
-                <h3 class="member-name">${member.name}</h3>
-                <div class="position-container">
-                    ${member.positions.map(pos => `
-                        <div class="member-position ${pos}">
-                            ${positions[pos]}
+
+        fetch(`${window.serverPrefix}team.json`)
+            .then(response => response.json())
+            .then(data => {
+
+                let members = data.members;
+                let positions = data.positions;
+
+                members.forEach(member => {
+                    console.log(member);
+                    const card = document.createElement("div");
+                    card.className = "member-card";
+                    card.innerHTML = `
+                        <img src="${member.avatar}" 
+                             alt="${member.name}" 
+                             class="member-avatar">
+                        <h3 class="member-name">${member.name}</h3>
+                        <div class="position-container">
+                            ${member.positions.map(pos => `
+                                <div class="member-position ${pos}">
+                                    ${positions[pos]}
+                                </div>
+                            `).join('')}
                         </div>
-                    `).join('')}
-                </div>
-                <p class="member-bio">${member.bio}</p>
-            `;
-            grid.appendChild(card);
-        });
+                        <p class="member-bio">${member.bio}</p>
+                    `;
+                    grid.appendChild(card);
+                });
+            });
 
     </script>
 </body>

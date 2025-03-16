@@ -107,50 +107,57 @@
             </tbody>
         </table>
     </div>
-
+    <script type="text/javascript" src="../data/global.js"></script>
     <script>
         // 服务器数据
-        const serverData = [
-            ["Pure_*&浅忆服务器", "不公开", "不公开", "高难战役、娱乐", "四川成都", "Pure_*、浅忆微凉"]
-        ];
+        // const serverData = [
+        //     ["Pure_*&浅忆服务器", "不公开", "不公开", "高难战役、娱乐", "四川成都", "Pure_*、浅忆微凉"]
+        // ];
 
         // 动态生成表格
         const tbody = document.getElementById("serverTableBody");
 
-        serverData.forEach(data => {
-            const row = document.createElement("tr");
-            
-            // 服务器名称
-            const nameCell = document.createElement("td");
-            nameCell.textContent = data[0];
+        // fetch("../data/servers.json")
+        fetch(`${window.serverPrefix}servers.json`)
+        .then(response => response.json())
+        .then(servers => {
+            servers.forEach(serverInfo => {
+                const row = document.createElement("tr");
+                
+                // 服务器名称
+                const nameCell = document.createElement("td");
+                nameCell.textContent = serverInfo[0];
 
-            // 服务器地址
-            const adressCell = document.createElement("td");
-            adressCell.textContent = data[1];
-            
-            // 端口
-            const portCell = document.createElement("td");
-            // portCell.className = "steamid";
-            portCell.textContent = data[2];
-            
-            // 类型
-            const typeCell = document.createElement("td");
-            typeCell.textContent = data[3];
-            
-            // 服务器所在地
-            const locationCell = document.createElement("td");
-            locationCell.className = "ip-location";
-            locationCell.textContent = data[4];
-            
-            // 管理员
-            const adminCell = document.createElement("td");
-            adminCell.className = "admin-cell";
-            adminCell.textContent = data[5];
-            adminCell.title = data[5]; // 添加悬停提示
+                // 服务器地址
+                const adressCell = document.createElement("td");
+                adressCell.textContent = serverInfo[1];
+                
+                // 端口
+                const portCell = document.createElement("td");
+                // portCell.className = "steamid";
+                portCell.textContent = serverInfo[2];
+                
+                // 类型
+                const typeCell = document.createElement("td");
+                typeCell.textContent = serverInfo[3];
+                
+                // 服务器所在地
+                const locationCell = document.createElement("td");
+                locationCell.className = "ip-location";
+                locationCell.textContent = serverInfo[4];
+                
+                // 管理员
+                const adminCell = document.createElement("td");
+                adminCell.className = "admin-cell";
+                adminCell.textContent = serverInfo[5];
+                adminCell.title = serverInfo[5]; // 添加悬停提示
 
-            row.append(nameCell, adressCell, portCell, typeCell, locationCell, adminCell);
-            tbody.appendChild(row);
+                row.append(nameCell, adressCell, portCell, typeCell, locationCell, adminCell);
+                tbody.appendChild(row);
+            });
         });
+
+        
     </script>
 </body>
 </html>
