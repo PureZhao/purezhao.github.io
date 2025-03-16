@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/nav.css">
-    <title>封禁列表</title>
+    <title>服务器列表</title>
     <style>
         /* 继承通用样式 */
         * {
@@ -25,30 +25,30 @@
             padding: 20px;
         }
 
-        .ban-table {
+        .server-table {
             width: 100%;
             border-collapse: collapse;
             background: white;
             box-shadow: 0 1px 3px rgba(0,0,0,0.12);
         }
 
-        .ban-table th,
-        .ban-table td {
+        .server-table th,
+        .server-table td {
             padding: 12px 15px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
 
-        .ban-table th {
-            background-color: #f44336;
+        .server-table th {
+            background-color: #364cf4;
             color: white;
         }
 
-        .ban-table tr:hover {
+        .server-table tr:hover {
             background-color: #ffebee;
         }
 
-        .reason-cell {
+        .admin-cell {
             max-width: 300px;
             white-space: nowrap;
             overflow: hidden;
@@ -71,7 +71,7 @@
                 overflow-x: auto;
             }
             
-            .reason-cell {
+            .admin-cell {
                 max-width: 200px;
             }
         }
@@ -91,61 +91,64 @@
     </nav>
 
     <div class="container">
-        <table class="ban-table">
+        <table class="server-table">
             <thead>
                 <tr>
-                    <th>封禁时昵称</th>
-                    <th>SteamID</th>
-                    <th>IP</th>
-                    <th>IP所在地</th>
-                    <th>原因</th>
+                    <th>服务器名称</th>
+                    <th>服务器地址</th>
+                    <th>端口</th>
+                    <th>类型</th>
+                    <th>服务器所在地</th>
+                    <th>管理员</th>
                 </tr>
             </thead>
-            <tbody id="banTableBody">
+            <tbody id="serverTableBody">
                 <!-- 动态内容将在这里插入 -->
             </tbody>
         </table>
     </div>
 
     <script>
-        // 模拟封禁数据
-        const banData = [
-            ["因技术好被狗踢出游戏", "STEAM_0:1:501503794", "未知", "未知", "外挂：自动瞄准"],
-            ["孤狼", "STEAM_0:0:161446763", "未知", "未知", "恶意友伤"],
-            ["FUCK", "STEAM_1:0:224317199", "120.235.164.130", "中国 广东省", "骂人、恶意友伤"]
+        // 服务器数据
+        const serverData = [
+            ["Pure_*&浅忆服务器", "不公开", "不公开", "高难战役、娱乐", "四川成都", "Pure_*、浅忆微凉"]
         ];
 
         // 动态生成表格
-        const tbody = document.getElementById("banTableBody");
+        const tbody = document.getElementById("serverTableBody");
 
-        banData.forEach(data => {
+        serverData.forEach(data => {
             const row = document.createElement("tr");
             
-            // 昵称
+            // 服务器名称
             const nameCell = document.createElement("td");
             nameCell.textContent = data[0];
+
+            // 服务器地址
+            const adressCell = document.createElement("td");
+            adressCell.textContent = data[1];
             
-            // SteamID
-            const steamCell = document.createElement("td");
-            steamCell.className = "steamid";
-            steamCell.textContent = data[1];
+            // 端口
+            const portCell = document.createElement("td");
+            // portCell.className = "steamid";
+            portCell.textContent = data[2];
             
-            // IP
-            const ipCell = document.createElement("td");
-            ipCell.textContent = data[2];
+            // 类型
+            const typeCell = document.createElement("td");
+            typeCell.textContent = data[3];
             
-            // IP所在地
+            // 服务器所在地
             const locationCell = document.createElement("td");
             locationCell.className = "ip-location";
-            locationCell.textContent = data[3];
+            locationCell.textContent = data[4];
             
-            // 原因
-            const reasonCell = document.createElement("td");
-            reasonCell.className = "reason-cell";
-            reasonCell.textContent = data[4];
-            reasonCell.title = data[4]; // 添加悬停提示
+            // 管理员
+            const adminCell = document.createElement("td");
+            adminCell.className = "admin-cell";
+            adminCell.textContent = data[5];
+            adminCell.title = data[5]; // 添加悬停提示
 
-            row.append(nameCell, steamCell, ipCell, locationCell, reasonCell);
+            row.append(nameCell, adressCell, portCell, typeCell, locationCell, adminCell);
             tbody.appendChild(row);
         });
     </script>

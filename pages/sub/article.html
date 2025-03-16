@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../css/nav.css">
+    <title>文章详情</title>
+    <style>
+        /* 继承通用样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            padding-top: 70px;
+            background-color: #f8f9fa;
+        }
+
+        /* 文章内容区域 */
+        .article-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+
+        .article-header {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .article-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .article-meta {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .article-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            line-height: 1.8;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .article-tags {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            background: #4CAF50;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        /* 附件区域 */
+        .attachments {
+            margin-top: 2rem;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .attachments h3 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 0.5rem;
+        }
+
+        .attachment-list {
+            list-style: none;
+        }
+
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .attachment-item:hover {
+            background: #f5f5f5;
+        }
+
+        .attachment-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 1rem;
+        }
+
+        .attachment-download {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .article-title {
+                font-size: 1.5rem;
+            }
+            
+            .article-content {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a href="../../index.html">首页</a></li>
+            <li><a href="../servers.html">服务器列表</a></li>
+            <li><a href="../maps.html">地图列表</a></li>
+            <li><a href="../plugins.html">插件更新</a></li>
+            <li><a href="../bans.html">封禁列表</a></li>
+            <li><a href="../gallery.html">图片画廊</a></li>
+            <li><a href="../team.html">团队成员</a></li>
+        </ul>
+    </nav>
+
+    <div class="article-container">
+        <div class="article-header">
+            <h1 class="article-title" id="articleTitle"></h1>
+            <div class="article-meta">
+                <span id="articleDate"></span> • 
+                <span id="articleAuthor"></span>
+            </div>
+            <div class="article-tags" id="articleTags"></div>
+        </div>
+
+        <div class="article-content" id="articleContent"></div>
+
+        <div class="attachments" id="attachmentsSection">
+            <h3>相关附件</h3>
+            <ul class="attachment-list" id="attachmentList"></ul>
+        </div>
+    </div>
+
+    <!-- 假设存在的外部数据文件 -->
+    <script src="../../data/article.js"></script>
+
+    <script>
+        // 获取文章ID
+        const urlParams = new URLSearchParams(window.location.search);
+        const articleId = parseInt(urlParams.get('id'));
+
+        // 查找对应文章
+        const article = window.articlesData.find(a => a.id === articleId);
+
+        // 数据加载处理
+        if (article) {
+            document.getElementById('articleTitle').textContent = article.title;
+            document.getElementById('articleDate').textContent = article.date;
+            document.getElementById('articleAuthor').textContent = `作者：${article.author}`;
+            document.getElementById('articleContent').innerHTML = article.content.replace(/\n/g, '<br>');
+
+            // 处理标签
+            const tagsContainer = document.getElementById('articleTags');
+            tagsContainer.innerHTML = article.tags.map(tag => `
+                <span class="tag" style="background: ${getTagColor(article.type)};">
+                    ${tag}
+                </span>
+            `).join('');
+
+            // 处理附件
+            const attachmentList = document.getElementById('attachmentList');
+            if (article.attachments && article.attachments.length > 0) {
+                article.attachments.forEach(file => {
+                    const li = document.createElement('li');
+                    li.className = 'attachment-item';
+                    li.innerHTML = `
+                        <img src="${getFileIcon(file.url)}" class="attachment-icon">
+                        <a href="${file.url}" 
+                           class="attachment-download" 
+                           download="${file.name}">
+                            ${file.name}
+                        </a>
+                    `;
+                    attachmentList.appendChild(li);
+                });
+            } else {
+                document.getElementById('attachmentsSection').style.display = 'none';
+            }
+        } else {
+            document.querySelector('.article-container').innerHTML = `
+                <div class="error-message">
+                    <h2>文章不存在或已被删除</h2>
+                    <a href="plugins.html">返回更新列表</a>
+                </div>
+            `;
+        }
+
+        function getTagColor(type) {
+            const colors = {
+                hotfix: "#f44336",
+                feature: "#4CAF50",
+                default: "#9E9E9E"
+            };
+            return colors[type] || colors.default;
+        }
+
+        function getFileIcon(url) {
+            const ext = url.split('.').pop().toLowerCase();
+            const icons = {
+                pdf: '../../images/icons/pdf-icon.png',
+                txt: '../../images/icons/txt-icon.png',
+                zip: '../../images/icons/zip-icon.png',
+            };
+            console.log(icons[ext]);
+            return icons[ext] || '../../images/icons/file-icon.png';
+        }
+    </script>
+</body>
+</html>

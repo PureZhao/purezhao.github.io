@@ -70,6 +70,18 @@
             font-size: 0.8rem;
         }
 
+        /* 新增文章标题链接样式 */
+        .article-title a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .article-title a:hover {
+            color: #4CAF50;
+            text-decoration: underline;
+        }
+
         /* 响应式设计 */
         @media (max-width: 768px) {
             .blog-container {
@@ -86,6 +98,7 @@
     <nav class="navbar">
         <ul class="nav-links">
             <li><a href="../index.html">首页</a></li>
+            <li><a href="servers.html">服务器列表</a></li>
             <li><a href="maps.html">地图列表</a></li>
             <li><a href="plugins.html">插件更新</a></li>
             <li><a href="bans.html">封禁列表</a></li>
@@ -95,58 +108,22 @@
     </nav>
 
     <div class="blog-container">
-        <!-- 文章示例 -->
-        <div class="article-card">
-            <h2 class="article-title">僵尸重生系统更新至v2.4.1</h2>
-            <div class="article-meta">
-                <span>2023-10-15</span> • 
-                <span>作者：技术组</span>
-            </div>
-            <p class="article-content">
-                本次更新包含以下改进：
-                1. 修复僵尸复活异常问题
-                2. 新增三种特殊僵尸类型
-                3. 优化技能冷却系统
-                4. 改进角色碰撞体积计算
-            </p>
-            <div class="article-tags">
-                <span class="tag" style="background: #2196F3;">版本更新</span>
-                <span class="tag">僵尸模式</span>
-            </div>
-        </div>
-
         <!-- 动态内容容器 -->
         <div id="articlesContainer"></div>
     </div>
-
+    <script src="../data/article.js"></script>
     <script>
-        // 模拟动态加载文章
-        const articles = [
-            {
-                title: "经济系统热修复补丁",
-                date: "2023-10-14",
-                author: "开发团队",
-                content: "紧急修复以下问题：\n1. 金钱计算错误\n2. 商店物品价格异常\n3. 连胜奖励未正确发放",
-                tags: ["热修复", "经济系统"],
-                type: "hotfix"
-            },
-            {
-                title: "新武器AK-12实装公告",
-                date: "2023-10-13",
-                author: "武器组",
-                content: "新增武器特性：\n• 改进后坐力模式\n• 新式瞄准镜\n• 特殊击杀效果",
-                tags: ["武器更新", "内容新增"],
-                type: "feature"
-            }
-        ];
 
+        const articles = window.articlesData;
         const container = document.getElementById("articlesContainer");
 
         articles.forEach(article => {
             const articleEl = document.createElement("div");
             articleEl.className = "article-card";
             articleEl.innerHTML = `
-                <h2 class="article-title">${article.title}</h2>
+                <h2 class="article-title">
+                    <a href="sub/article.html?id=${article.id}" target="_blank">${article.title}</a>
+                </h2>
                 <div class="article-meta">
                     <span>${article.date}</span> • 
                     <span>作者：${article.author}</span>
