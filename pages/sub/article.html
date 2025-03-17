@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../../images/icons/web-article.png">
     <link rel="stylesheet" href="../../css/nav.css">
     <title>文章详情</title>
     <style>
@@ -23,7 +24,7 @@
 
         /* 主容器 */
         .article-container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 2rem auto;
             padding: 2rem;
             background: white;
@@ -132,10 +133,13 @@
 <body>
     <nav class="navbar">
         <ul class="nav-links">
-            <li><a href="index.html">首页</a></li>
-            <li><a href="maps.html">地图列表</a></li>
-            <li><a href="plugins.html">插件更新</a></li>
-            <li><a href="bans.html">封禁列表</a></li>
+            <li><a href="../../index.html">首页</a></li>
+            <li><a href="../servers.html">服务器列表</a></li>
+            <li><a href="../maps.html">地图列表</a></li>
+            <li><a href="../plugins.html">插件更新</a></li>
+            <li><a href="../bans.html">封禁列表</a></li>
+            <li><a href="../gallery.html">图片画廊</a></li>
+            <li><a href="../team.html">团队成员</a></li>
         </ul>
     </nav>
 
@@ -149,6 +153,7 @@
         const articleName = urlParams.get('name');
         // 查找文章
         fetch(`${window.serverPrefix}/articles/${articleName}.json`)
+        // fetch(`../../data/articles/${articleName}.json`)
             .then(response => response.json())
             .then(article => {
                 if (article) {
