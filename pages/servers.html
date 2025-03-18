@@ -97,7 +97,6 @@
                 <tr>
                     <th>服务器名称</th>
                     <th>服务器地址</th>
-                    <th>端口</th>
                     <th>类型</th>
                     <th>服务器所在地</th>
                     <th>管理员</th>
@@ -110,10 +109,6 @@
     </div>
     <script type="text/javascript" src="../js/global.js"></script>
     <script>
-        // 服务器数据
-        // const serverData = [
-        //     ["Pure_*&浅忆服务器", "不公开", "不公开", "高难战役、娱乐", "四川成都", "Pure_*、浅忆微凉"]
-        // ];
 
         // 动态生成表格
         const tbody = document.getElementById("serverTableBody");
@@ -133,27 +128,22 @@
                 const adressCell = document.createElement("td");
                 adressCell.textContent = serverInfo[1];
                 
-                // 端口
-                const portCell = document.createElement("td");
-                // portCell.className = "steamid";
-                portCell.textContent = serverInfo[2];
-                
                 // 类型
                 const typeCell = document.createElement("td");
-                typeCell.textContent = serverInfo[3];
+                typeCell.textContent = serverInfo[2];
                 
                 // 服务器所在地
                 const locationCell = document.createElement("td");
                 locationCell.className = "ip-location";
-                locationCell.textContent = serverInfo[4];
+                locationCell.textContent = serverInfo[3];
                 
                 // 管理员
                 const adminCell = document.createElement("td");
                 adminCell.className = "admin-cell";
-                adminCell.textContent = serverInfo[5];
-                adminCell.title = serverInfo[5]; // 添加悬停提示
+                adminCell.textContent = serverInfo[4];
+                adminCell.title = serverInfo[4]; // 添加悬停提示
 
-                row.append(nameCell, adressCell, portCell, typeCell, locationCell, adminCell);
+                row.append(nameCell, adressCell, typeCell, locationCell, adminCell);
                 tbody.appendChild(row);
             });
         });

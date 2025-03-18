@@ -19,12 +19,17 @@
         { "type":"header", "level": 3, "data": "使用方法" },
         {
             "type": "text",
-            "data": "\t1. 在游戏中倒地或者挂边，如果背包中有任何医疗物品，按住[下蹲键]就会出现自救的进度条\n\t2. 队友和自己都倒地了，如果队友与自己很近，则也可以按住[下蹲键]互救（没有医疗物品也可以）\n\t3. 在sourcemod/config目录下会生成配置文件，可自行调整配置"
+            "data": "\t1. 在游戏中倒地或者挂边，如果背包中有任何医疗物品，按住[下蹲键]就会出现自救的进度条\n\t2. 队友和自己都倒地了，如果队友与自己很近，则也可以按住[下蹲键]互救（没有医疗物品也可以）\n\t3. 在left4dead2/sourcemod/config目录下会生成配置文件，可自行调整配置"
+        },
+        { "type":"header", "level": 3, "data": "已知问题" },
+        {
+            "type": "text",
+            "data": "如果在服务器安装了ledge_release.smx插件，在挂边松手后，系统依旧判定玩家还在挂边。"
         }
     ],
     "attachments": [
-        {"name": "更新说明.pdf", "url": "/files/update-v2.4.pdf"},
-        {"name": "配置文件示例.json", "url": "/files/config-sample.json"}
+        {"name": "l4d2_selfhelp_remix.zip", "url": "https://gitee.com/purezhao/l4-d2-plugin-dev-lottery-draw/releases/download/v2025.03.19/l4d2_selfhelp_remix.zip"},
+        {"name": "配置文件参考.cfg", "url": "https://gitee.com/purezhao/l4-d2-plugin-dev-lottery-draw/releases/download/v2025.03.19/l4d2_selfhelp_remix.cfg"}
     ]
 }
 

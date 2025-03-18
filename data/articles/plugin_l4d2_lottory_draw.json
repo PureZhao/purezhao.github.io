@@ -7,8 +7,10 @@
         { "type": "text", "data": "新增：\n1. 「变身Tank」回归，相比最初版本\n\t- 不会被特感控制\n\t- 石头爆炸可以炸飞僵尸\n\t- 不会再拍飞队友\n\t- 不再限制只有救援关变身" },
         { "type": "text", "data": "移除：\n1. 移除了惩罚「键位反转」，因为该效果在倒退的时候玩家不能换子弹、不能上楼梯\n\t- 腐竹需要，删除文件l4d2_lottery_draw_extension_reverse_move.smx</>\n\n2. 移除了大奖「免疫控制！60秒！」，因为该效果是「变身tank」的前置实验效果\n\t- 腐竹需要，删除文件l4d2_lottery_draw_extension_test.smx" },
         { "type": "text", "data": "修复：\n1.  尝试修复重载商店后，商品丢失问题，如在游戏外修改了l4d2_shop_system.json文件中的配置，管理员使用指令!reloadshop，即可重载商店\n2. 商店中管理员可以使用，如!givepoint -1 1000 的指令给全体在线玩家发放1000积分，当然也可以发负数\n3. 抽奖中管理员可以使用，如 !givedrawcount -1 10 的指令给全体在线玩家发放10次抽奖机会" },
+        { "type": "header", "level": 3, "data": "未来计划" },
+        { "type": "text", "data": "\t1. 将商店与抽奖拆分出来，不进行强制捆绑\n\t2. 捆绑版本也还会出，毕竟插件之间联动更加有趣\n\t3. 会将其中一些功能单独作为插件发布" },
         { "type": "header", "level": 3, "data": "使用说明" },
-        { "type": "text", "data": "1. 下载附件\n2. 将整个sourcemod解压到addons/sourcemod目录\n3. 在游戏中，按 y 打开在聊天框\n4. 输入指令!ldw，即可打开抽奖菜单" },
+        { "type": "text", "data": "\t1. 下载附件\n\t2. 将整个sourcemod解压到addons/sourcemod目录\n\t3. 在游戏中，按 y 打开在聊天框\n\t4. 输入指令!ldw，即可打开抽奖菜单" },
         { "type": "header", "level": 2, "data": "配置文件介绍" },
         { "type": "header", "level": 3, "data": "配置文件路径" },
         { "type": "text", "data": "配置文件为：data/l4d2_lottery_draw.json" },
@@ -173,8 +175,7 @@
     
     ],
     "attachments": [
-        {"name": "更新说明.pdf", "url": "/files/update-v2.4.pdf"},
-        {"name": "配置文件示例.json", "url": "/files/config-sample.json"}
+        {"name": "20250315抽奖+商店.zip", "url": "https://gitee.com/purezhao/l4-d2-plugin-dev-lottery-draw/releases/download/v2025.03.19/20250315%E6%8A%BD%E5%A5%96%E5%95%86%E5%BA%97%E6%9B%B4%E6%96%B0.zip"}
     ]
 }
 
