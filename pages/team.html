@@ -183,13 +183,11 @@
         </div>
     </div>
 
-    <script type="text/javascript" src="../js/global.js"></script>
     <script>
 
         // 动态生成成员卡片
         const grid = document.getElementById("memberGrid");
 
-        // fetch(`${window.serverPrefix}team.json`)
         fetch("../data/team.json")
             .then(response => response.json())
             .then(data => {

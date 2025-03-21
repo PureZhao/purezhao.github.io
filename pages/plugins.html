@@ -112,12 +112,11 @@
         <!-- 动态内容容器 -->
         <div id="articlesContainer"></div>
     </div>
-    <script type="text/javascript" src="../js/global.js"></script>
     <script>
 
         const container = document.getElementById("articlesContainer");
+
         fetch("../data/articles.json")
-        // fetch(`${window.serverPrefix}/articles.json`)
             .then(response => response.json())
             .then(articles => {
                 articles.forEach(article => {

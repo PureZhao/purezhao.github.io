@@ -144,7 +144,7 @@
     </nav>
 
     <div class="article-container" id="articleContainer"></div>
-    <script type="text/javascript" src="../../js/global.js"></script>
+    
     <script>
 
         // 获取文章ID
@@ -152,8 +152,7 @@
         const articleId = parseInt(urlParams.get('id'));
         const articleName = urlParams.get('name');
         // 查找文章
-        fetch(`${window.serverPrefix}/articles/${articleName}.json`)
-        // fetch(`../../data/articles/${articleName}.json`)
+        fetch(`../../data/articles/${articleName}.json`)
             .then(response => response.json())
             .then(article => {
                 if (article) {

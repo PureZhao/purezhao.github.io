@@ -1,1 +1,0 @@
-window.serverPrefix = "https://raw.githubusercontent.com/PureZhao/purezhao.github.io/refs/heads/main/data/";

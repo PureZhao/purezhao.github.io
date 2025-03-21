@@ -92,13 +92,11 @@
         </table>
     </div>
 
-    <script type="text/javascript" src="../js/global.js"></script>
     <script>
 
         // 动态生成表格内容
         const tbody = document.getElementById("mapTableBody");
 
-        // fetch(`${window.serverPrefix}maps.json`)
         fetch("../data/maps.json")
             .then(response => response.json())
             .then(maps => {

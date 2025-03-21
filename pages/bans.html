@@ -109,46 +109,45 @@
     </div>
 
     <script>
-        // 模拟封禁数据
-        const banData = [
-            ["因技术好被狗踢出游戏", "STEAM_0:1:501503794", "未知", "未知", "外挂：自动瞄准"],
-            ["孤狼", "STEAM_0:0:161446763", "未知", "未知", "恶意友伤"],
-            ["FUCK", "STEAM_1:0:224317199", "120.235.164.130", "中国 广东省", "骂人、恶意友伤"]
-        ];
-
         // 动态生成表格
         const tbody = document.getElementById("banTableBody");
 
-        banData.forEach(data => {
-            const row = document.createElement("tr");
-            
-            // 昵称
-            const nameCell = document.createElement("td");
-            nameCell.textContent = data[0];
-            
-            // SteamID
-            const steamCell = document.createElement("td");
-            steamCell.className = "steamid";
-            steamCell.textContent = data[1];
-            
-            // IP
-            const ipCell = document.createElement("td");
-            ipCell.textContent = data[2];
-            
-            // IP所在地
-            const locationCell = document.createElement("td");
-            locationCell.className = "ip-location";
-            locationCell.textContent = data[3];
-            
-            // 原因
-            const reasonCell = document.createElement("td");
-            reasonCell.className = "reason-cell";
-            reasonCell.textContent = data[4];
-            reasonCell.title = data[4]; // 添加悬停提示
+        fetch("../data/bans.json")
+        .then(response => response.json())
+        .then(bans => {
+            bans.forEach(data => {
+                const row = document.createElement("tr");
+                
+                // 昵称
+                const nameCell = document.createElement("td");
+                nameCell.textContent = data[0];
+                
+                // SteamID
+                const steamCell = document.createElement("td");
+                steamCell.className = "steamid";
+                steamCell.textContent = data[1];
+                
+                // IP
+                const ipCell = document.createElement("td");
+                ipCell.textContent = data[2];
+                
+                // IP所在地
+                const locationCell = document.createElement("td");
+                locationCell.className = "ip-location";
+                locationCell.textContent = data[3];
+                
+                // 原因
+                const reasonCell = document.createElement("td");
+                reasonCell.className = "reason-cell";
+                reasonCell.textContent = data[4];
+                reasonCell.title = data[4]; // 添加悬停提示
 
-            row.append(nameCell, steamCell, ipCell, locationCell, reasonCell);
-            tbody.appendChild(row);
+                row.append(nameCell, steamCell, ipCell, locationCell, reasonCell);
+                tbody.appendChild(row);
+            });
         });
+
+        
     </script>
 </body>
 </html>
