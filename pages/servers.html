@@ -113,8 +113,8 @@
         // 动态生成表格
         const tbody = document.getElementById("serverTableBody");
 
-        // fetch("../data/servers.json")
-        fetch(`${window.serverPrefix}servers.json`)
+        fetch("../data/servers.json")
+        // fetch(`${window.serverPrefix}servers.json`)
         .then(response => response.json())
         .then(servers => {
             servers.forEach(serverInfo => {

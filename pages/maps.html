@@ -98,7 +98,8 @@
         // 动态生成表格内容
         const tbody = document.getElementById("mapTableBody");
 
-        fetch(`${window.serverPrefix}maps.json`)
+        // fetch(`${window.serverPrefix}maps.json`)
+        fetch("../data/maps.json")
             .then(response => response.json())
             .then(maps => {
                 maps.forEach(map => {
