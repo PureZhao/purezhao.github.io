@@ -128,6 +128,31 @@
             font-weight: bold;
         }
 
+        .image-caption {
+            text-align: center;
+            font-size: 0.875rem;
+            line-height: 1.4;
+            color: #666;
+            margin: 0.5rem auto;
+            padding: 0 1rem;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9比例 */
+            height: 0;
+            overflow: hidden;
+        }
+        .video-container iframe,
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
     </style>
 </head>
 <body>
@@ -250,6 +275,16 @@
                     container.innerHTML = `
                         <h${item.level}>${item.data}</h${item.level}>
                     `;
+                    break;
+
+                case 'video':
+                    container.innerHTML = `
+                        <div class="video-container">
+                            <iframe src="${item.data}" frameborder="0" allowfullscreen>
+                            </iframe>
+                        </div>
+                    `;
+                    break;
             }
 
             return container;

@@ -1,7 +1,7 @@
 {
     "members":
     [
-        { "name": "Pure_*", "positions": ["position-admin", "position-develop"], "bio": "新年快乐！", "avatar": "../images/avatars/pure.png" },
+        { "name": "Pure_*", "positions": ["position-admin", "position-develop"], "bio": "任何插件问题，请致信<br>purezhao@qq.com", "avatar": "../images/avatars/pure.png" },
         { "name": "浅忆微凉", "positions": ["position-admin", "position-belt", "position-damie-executer"], "bio": "哎哟喂", "avatar": "../images/avatars/qianyi.jpg" },
         { "name": "七海花咲", "positions": ["position-admin", "position-friend"], "bio": "小花火组-腐竹", "avatar": "../images/avatars/qihai.jpg" },
         { "name": "布什·戈门", "positions": ["position-member", "position-entry-fragger"], "bio": "不是！？哥们！", "avatar": "../images/avatars/bushigemen.jpg" },

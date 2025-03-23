@@ -16,5 +16,32 @@
         "tags": ["重写"],
         "url": "plugin_l4d2_selfhelp_remix",
         "type": "hotfix"
+    },
+    {
+        "id": 3,
+        "title": "[20250323] 浏览玩家信息插件",
+        "date": "2025-03-23",
+        "author": "Pure_*",
+        "tags": ["功能性"],
+        "url": "plugin_l4d2_list_player",
+        "type": "hotfix"
+    },
+    {
+        "id": 4,
+        "title": "[20250323] 战役模式幸存者玩Tank插件",
+        "date": "2025-03-23",
+        "author": "Pure_*",
+        "tags": ["娱乐"],
+        "url": "plugin_l4d2_play_as_tank",
+        "type": "hotfix"
+    },
+    {
+        "id": 5,
+        "title": "[20250323] 玩家无敌插件",
+        "date": "2025-03-23",
+        "author": "Pure_*",
+        "tags": ["娱乐"],
+        "url": "plugin_l4d2_god_mode",
+        "type": "hotfix"
     }
 ]

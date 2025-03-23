@@ -4,6 +4,7 @@
     "date": "2025-03-16",
     "author": "Pure_*",
     "content": [
+        { "type": "header", "level": 2, "data": "如何自己修改奖池" },
         {
             "type": "text",
             "data": "新增：\n1. 「变身Tank」回归，相比最初版本\n\t- 不会被特感控制\n\t- 石头爆炸可以炸飞僵尸\n\t- 不会再拍飞队友\n\t- 不再限制只有救援关变身"

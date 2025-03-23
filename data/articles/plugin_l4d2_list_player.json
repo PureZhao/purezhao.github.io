@@ -1,0 +1,26 @@
+{
+    "id": 3,
+    "title": "[20250323] 浏览玩家信息插件",
+    "date": "2025-03-23",
+    "author": "Pure_*",
+    "content": [
+        { "type": "text", "data": "这是一个功能性插件，用于实时查看服务器上的玩家信息。" },
+        { "type": "text", "data": "用于获取玩家的信息，包括：玩家昵称、客户端ID" },
+        { "type": "text", "data": "游戏中，有些插件使用指令来执行效果，通常指令后会填写玩家的名字或者客户端ID，但\n\t1. 有的玩家名字相当难认\n\t2. 有的玩家直接名字就空白的\n\t3. 大多腐竹并不知道如何获取玩家客户端ID" },
+        { "type": "text", "data": "此插件就是来显示这些信息的，这些信息能够帮助腐竹更加准确定位玩家" },
+        { "type": "header", "level": 2, "data": "使用方法" },
+        { "type": "text", "data": "服务器管理员使用指令!lsplayer，即可在左下角聊天框内看到相关信息，如图" },
+        {
+            "type": "image",
+            "data": {
+                "url": "../../images/articles/plugin-l4d2-list-player-1.png",
+                "alt": "查看玩家信息使用截图",
+                "caption": "图1 查看玩家信息使用截图"
+            }
+        }
+    ],
+    "attachments": [
+        {"name": "l4d2_list_player.zip", "url": "https://gitee.com/purezhao/l4-d2-plugin-dev-lottery-draw/releases/download/v2025.03.19/l4d2_list_player.zip"}
+    ]
+}
+
