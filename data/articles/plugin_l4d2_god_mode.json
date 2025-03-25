@@ -1,12 +1,12 @@
 {
     "id": 5,
-    "title": "[20250323] 玩家无敌插件",
-    "date": "2025-03-23",
+    "title": "[20250325] 玩家无敌插件",
+    "date": "2025-03-25",
     "author": "Pure_*",
     "content": [
         { "type": "text", "data": "这是一个娱乐插件，使玩家可以在战役模式中，除了机制杀，无视任何伤害" },
         { "type": "header", "level": 2, "data": "使用方法" },
-        { "type": "text", "data": "服务器管理员使用指令 !godmode [ClientID] [Time]\n\t1. ClientID 处填写玩家的客户端ID\n\t2. Time填写持续时间，单位是秒，这个只能填写小数\n\t3. 示例：!godmode 1 1.0, 给1号客户端一秒的无敌时间\n\t4. 如果要永久无敌，则将时间设定为-200.0" },
+        { "type": "text", "data": "服务器管理员使用指令 !godmode [ClientID] [Time]\n\t1. ClientID 处填写玩家的客户端ID\n\t2. Time填写持续时间，单位是秒，这个只能填写小数\n\t3. 示例：!godmode 1 1.0, 给1号客户端一秒的无敌时间\n\t4. 如果要永久无敌，则将时间设定为-200.0\n\t5. ClientID获取可以使用此处的l4d2_list_player插件"},
         { "type": "text", "data": "该插件相对于将玩家 m_takedamage 属性设定为0要更加全面，修改此属性不能规避「伤害 >= 当前剩余血量」的伤害" }
     ],
     "attachments": [

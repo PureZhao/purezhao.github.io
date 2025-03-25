@@ -64,59 +64,35 @@
                 ]
             }
         },
-        { "type": "header", "level": 3, "data": "奖品列表" },
+        { "type": "header", "level": 3, "data": "本插件预设的可使用函数" },
         { "type": "table",
             "data": {
-                "headers": ["奖品", "效果说明", "函数名称", "参数说明(args)"],
+                "headers": ["函数名", "效果说明", "参数说明(args)"],
                 "rows": [
-                    ["无敌", "玩家进入无敌状态", "PSetPlayerGodMode", ""],
-                    ["获得某个物品/武器", "给予玩家物品/武器", "PGivePlayerItem", "1. itemName(string): 物品名称"],
-                    ["低重力", "设置玩家重力为原来的10%", "PSetPlayerGravity", "1. gravity(float): 重力系数，1.0为正常重力，此处推荐0.1<br>2. duration(float): 持续时间，0.0代表无限制"],
-                    ["超重力", "设置玩家重力为原来300%", "PSetPlayerGravity", "1. gravity(float): 重力系数，1.0为正常重力，此处推荐3.0<br>2. duration(float): 持续时间，0.0代表无限制"],
-                    ["加速", "玩家事件流速为原来的2倍", "PSetPlayerMoveSpeed", "1. speedTimes(float): 移速倍率，1.0为正常倍率，此处推荐2.0"],
-                    ["成为奶妈", "范围内给玩家加血", "PSetPlayerAsHealer", "1. amount(int):每次加血的数量<br>2. radius(float): 效果范围<br>3. interval(float): 每次加血间隔，最小0.1s<br>4. duration(float): 效果持续时间"],
-                    ["获得xxx积分", "与商店插件配合，给予玩家商店积分", "PGivePlayerPoint", "1. amount(int): 数量"],
-                    ["自动瞄准", "开火时自动瞄准特感", "PSetPlayerAutoAim", "1. duration(float): 持续时间"],
-                    ["清除所有小僵尸", "清除当前所有小僵尸", "PExecuteAllCommon", ""],
-                    ["召唤僵尸", "召唤指定僵尸", "PSummonInfected", "1. infected(int): 特感ID<br>2. count(int): 数量"],
-                    ["自杀", "直接死亡，机制杀，无敌也没用", "PSuicidePlayer", ""],
-                    ["被冰冻", "固定在原地", "PFreezePlayer", "1. time(int): 持续时间"],
-                    ["特感隐身", "持续时间内，所有特感隐身", "PExtVision", "1. type(int): 类型，固定为1\n2. duration(float): 持续时间"],
-                    ["人肉炸弹", "给予抽到的玩家一颗炸弹，一定时间后，玩家爆炸死亡，范围内其他玩家会被波及受伤", "PSuicideBomber", "1. damage(int): 给予其他玩家的爆炸伤害<br>2. explodeRadius(float): 爆炸范围<br>3. explodeDelay(float): 多久后爆炸"],
-                    ["点燃服务器", "从玩家头顶随机抛射一定数量的燃烧瓶", "PSpawnMolotovRain", "1. quantity(int): 数量"],
-                    ["Witch狂暴", "1. 游戏内已有的Witch直接进入狂暴状态<br>2. 持续时间内刷新的Witch也会马上进入狂暴状态<br>3. Witch狂暴后，随机追击一名生还者<br>4. 如果重复触发该效果，Witch会重新选择追击目标", "PKeepWitchStartle", "1. duration(float): 持续时间"],
-                    ["冰冻炸弹", "一定时间后，范围内玩家被冰冻", "PFreezeBomb", "1. freezeTime(float): 冰冻时间<br>2. explodeRadius(float): 爆炸范围<br>3. explodeDelay(float): 多久后爆炸"],
-                    ["局部地震", "玩家屏幕剧烈抖动一段时间", "PSetPlayerEarthQuake", "1. duration(float): 持续时间"],
-                    ["加满所有幸存者的血量", "没倒地的加满，倒地的起来", "PGiveAllPlayerHealth", "1. isMaxHealth(bool): 是否加满血<br>2. amount(int): 加血数量"],
-                    ["处死所有特感", "杀掉场地现存的所有特感", "PExecuteAllSpecial", ""],
-                    ["特感透视", "透视场景中的特感", "PExtVision", "1. type(int): 类型，固定为0\n2. duration(float): 持续时间"],
-                    ["抢夺血量", "夺取其他玩家和特感的血量", "PRobOtherPlayerHealth", "1. rate(float): 当前血量百分比，取值范围(0, 1)<br>2. includeSpecial(bool): 是否要算上特感"],
-                    ["虚无星神", "秒杀靠近范围内的所有活物（不包括玩家）", "PSetPlayerNihilist", "1. radius(float): 效果范围<br>2. duration(bool): 持续时间"],
-                    ["变身超人", "射速翻倍+无限子弹", "PExtWeapon", "1. type(int): 类型，固定为1<br>2. duration(float): 持续时间"],
-                    ["死从天降", "给予玩家召唤空中支援的能力", "PGivePlayerAC130", "1. times(int): 可使用次数"],
-                    ["丢掉当前手持物品", "丢掉当前手持物品", "PDropPlayerItem", ""],
-                    ["平均血量", "平均所有玩家的血量", "PAveragePlayerHealth", ""],
-                    ["共享业绩", "一定时间内，累加所有玩家的杀敌数，最后全体分发抽奖数", "PExtPerformance", "1. type(int): 类型，固定为0<br>2. duration(float): 持续时间"],
-                    ["抢夺业绩", "一定时间内，累加所有玩家的杀敌数，最后给中奖玩家分发抽奖数", "PExtPerformance", "1. type(int): 类型，固定为1<br>2. duration(float): 持续时间"],
-                    ["全局伤害增加", "一定时间内，所有伤害提升", "PSetDamageMultiper", "1. duration(float): 持续时间<br>2. rate(float): 伤害倍率<br>3. type(int): 类型，0为伤害增加，1为伤害减少"],
-                    ["全局伤害减少", "一定时间内，所有伤害降低", "PSetDamageMultiper", "1. duration(float): 持续时间<br>2. rate(float): 伤害倍率<br>3. type(int): 类型，0为伤害增加，1为伤害减少"],
-                    ["特警之围", "以玩家为中心生成9只特警僵尸", "PGenerateCommonAroundPlayer", ""],
-                    ["血条歌舞厅", "一定时间内，玩家的血量在[1, 最大血量]之间修改<br>此处最大血量如不足100，按100计算", "PSetPlayerHealthChaos", "1. duration(float): 持续时间"],
-                    ["血量交换", "交换所有玩家的血量", "PExchangePlayersHealth", "1. duration(float): 持续时间"],
-                    ["A1高闪", "玩家屏幕全白一段时间", "PFlashBang", ""],
-                    ["主武换换换", "玩家不断更换主武器", "PExtWeapon", "1. type(int): 类型，固定为3<br>2. duration(float): 持续时间"],
-                    ["千特所指", "一段时间内，特感只锁定一个人", "PSetPlayerLockedByInfected", "1. duration(float): 持续时间"],
-                    ["长枪禁令", "一段时间内，玩家主武器不能火", "PExtWeapon", "1. type(int): 类型，固定为0<br>2. duration(float): 持续时间"],
-                    ["劣质枪械", "一段时间内，玩家主武器开火可能会爆炸", "PExtWeapon", "1. type(int): 类型，固定为2<br>2. duration(float): 持续时间"],
-                    ["幽灵模式", "一段时间内，玩家不被特感锁定", "PSetPlayerIgnoredByInfected", "1. duration(float): 持续时间"],
-                    ["特感无敌", "一段时间内，特感无敌", "PExtInfected", "1. type(int): 类型，固定为1<br>2. duration(int): 持续时间"],
-                    ["特感加速", "一段时间内，特感速度提高", "PExtInfected", "1. type(int): 类型，固定为0<br>2. duration(int): 持续时间"],
-                    ["特感爆炸", "一段时间内，特感死亡时产生爆炸", "PExtInfected", "1. type(int): 类型，固定为2<br>2. duration(int): 持续时间"]
+                    ["PGivePlayerItem", "获得某个物品/武器", "1. itemName(string): 物品名称"],
+                    ["PSetPlayerAsHealer", "将玩家设定为奶妈，范围持续回血", "1. amount(int):每次加血的数量<br>2. radius(float): 效果范围<br>3. interval(float): 每次加血间隔，最小0.1s<br>4. duration(float): 效果持续时间"],
+                    ["PSummonInfected", "召唤特感", "1. client(int): 客户端ID<br>2. infected(int): 感染者ID<br>3. count(int): 数量<br>感染者ID如下:<br>随机特感(不包括Tank和Witch): -1<br>Smoker: 1<br>Boomer : 2<br>Hunter : 3<br>Spitter : 4<br>Jockey : 5<br>Charger : 6<br>Witch : 7<br>Tank : 8"],
+                    ["PExecuteAllCommon", "清除当前所有小僵尸", ""],
+                    ["PSuicidePlayer", "直接死亡，机制杀，无敌也没用", ""],
+                    ["PFreezePlayer", "固定在原地", "1. time(int): 持续时间"],
+                    ["PSuicideBomber", "人肉炸弹，一定时间后爆炸", "1. client(int): 客户端ID<br>2. damage(int): 伤害值<br>3. explodeRadius(float): 爆炸半径<br>4. explodeDelay(float): 爆炸延迟"],
+                    ["PSpawnMolotovRain", "从玩家头顶随机抛射一定数量的燃烧瓶", "1. quantity(int): 数量"],
+                    ["PFreezeBomb", "一定时间后，范围内玩家被冰冻", "1. freezeTime(float): 冰冻时间<br>2. explodeRadius(float): 爆炸范围<br>3. explodeDelay(float): 多久后爆炸"],
+                    ["PSetPlayerEarthQuake", "玩家屏幕剧烈抖动一段时间", "1. duration(float): 持续时间"],
+                    ["PGiveAllPlayerHealth", "没倒地的加满，倒地的起来", "1. isMaxHealth(bool): 是否加满血<br>2. amount(int): 加血量"],
+                    ["PExecuteAllSpecial", "杀掉场地现存的所有特感", ""],
+                    ["PSetPlayerNihilist", "秒杀靠近范围内的所有活物（不包括玩家）", "1. radius(float): 效果范围<br>2. duration(bool): 持续时间"],
+                    ["PDropPlayerItem", "丢掉当前手持物品", ""],
+                    ["PAveragePlayerHealth", "平均所有玩家的血量", ""],
+                    ["PGenerateCommonAroundPlayer", "以玩家为中心生成9只特警僵尸", ""],
+                    ["PSetPlayerHealthChaos", "一定时间内，玩家的血量在[1, 最大血量]之间修改<br>此处最大血量如不足100，按100计算", "1. duration(float): 持续时间"],
+                    ["PExchangePlayersHealth", "交换所有玩家的血量", ""],
+                    ["PFlashBang", "玩家屏幕全白一段时间", ""]
                 ]
             }
         },
-        { "type": "header", "level": 2, "data": "如何自己修改奖池" },
-        { "type": "header", "level": 3, "data": "增加奖品类型" },
+        { "type": "header", "level": 3, "data": "如何自己修改奖池" },
+        { "type": "header", "level": 2, "data": "增加奖品类型" },
         { "type": "text", "data": "例如当前配置文件中，关于奖品类型的配置如下" },
         {
             "type": "code",
@@ -150,7 +126,7 @@
             "type": "code",
             "data": "{\"type\": 5, \"descOnPanel\": \"成为人肉炸弹\", \"descOnChat\": \"成为人肉炸弹!\" ,\"func\": \"PSuicideBomber\", \"args\": [2000, 500.0, 10.0]}"
         },
-        { "type": "header", "level": 3, "data": "增加奖品" },
+        { "type": "header", "level": 2, "data": "使用内置预设函数添加商品条目" },
         { "type": "text", "data": "增加一个奖品就是在配置文件的Awards表里面增加一行，一个奖品的信息是写在一对花括号中的，如下" },
         { "type": "code", "data": "{}" },
         { "type": "text", "data": "参考AwardTypes确定奖品类型(type)，如增加一个三等奖，配置中应该书写" },
@@ -171,11 +147,21 @@
         { "type": "text", "data": "可知函数PSummonInfected需要三个参数，从左到右的顺序为客户端ID、感染者ID、数量，由于新奖品效果是召唤5个Jockey，那这里感染者ID为4，数量为5，则在配置中按参数顺序书写" },
         { "type": "code", "data": "{\"type\": 3, \"descOnPanel\": \"点地板成Jockey\", \"descOnChat\": \"召唤了5个Jockey\", \"func\": \"PSummonInfected\", \"args\": [4, 5]}" },
         { "type": "text", "data": "最后将写好的配置，添加到Awards列表中，如下" },
-        { "type": "code", "data": "\"Awards\": <br>[<br>&nbsp;&nbsp;&nbsp;&nbsp;{\"type\": 0, \"descOnPanel\": \"自己进入无敌状态\", \"descOnChat\": \"他自己进入无敌状态\" ,\"func\": \"PSetPlayerGodMode\", \"args\": []},<br>&nbsp;&nbsp;&nbsp;&nbsp;{\"type\": 0, \"descOnPanel\": \"自己的重力降到最低\", \"descOnChat\": \"他自己的重力降到最低\" ,\"func\": \"PSetPlayerGravity\", \"args\": [0.1, 0.0]},<br>&nbsp;&nbsp;&nbsp;&nbsp;{\"type\": 3, \"descOnPanel\": \"点地板成Jockey\", \"descOnChat\": \"召唤了5个Jockey\", \"func\": \"PSummonInfected\", \"args\": [4, 5]}<br>]" }
-    
+        { "type": "code", "data": "\"Awards\": <br>[<br>&nbsp;&nbsp;&nbsp;&nbsp;{\"type\": 0, \"descOnPanel\": \"自己进入无敌状态\", \"descOnChat\": \"他自己进入无敌状态\" ,\"func\": \"PSetPlayerGodMode\", \"args\": []},<br>&nbsp;&nbsp;&nbsp;&nbsp;{\"type\": 0, \"descOnPanel\": \"自己的重力降到最低\", \"descOnChat\": \"他自己的重力降到最低\" ,\"func\": \"PSetPlayerGravity\", \"args\": [0.1, 0.0]},<br>&nbsp;&nbsp;&nbsp;&nbsp;{\"type\": 3, \"descOnPanel\": \"点地板成Jockey\", \"descOnChat\": \"召唤了5个Jockey\", \"func\": \"PSummonInfected\", \"args\": [4, 5]}<br>]" },
+        { "type": "header", "level": 2, "data": "使用外部其他插件添加商品条目（使用指令）" },
+        { "type": "text", "data": "比如有一个l4d2_play_as_tank的插件，使玩家可以变身为Tank，其指令为：!playastank <ClientID> <HealthPoint>，则条目可以直接先写为：" },
+        {
+            "type": "code",
+            "data": "{\"type\": 0, \"descOnPanel\": \"变身Tank\" , \"descOnChat\": \"变身Tank\", \"cmd\": \"playastank\", \"args\": []},"
+        },
+        { "type": "text", "data": "现在需要来确定参数列表args中填写的值\n\t1. 第一个参数<ClientID>是系统自动赋值，所以在args中不需要体现\n\t2. 第二个参数<HealthPoint>血量，传递进去确定变身Tank后的血量，如1000\n将确定好的参数填写进入args列表，如下" },
+        {
+            "type": "code",
+            "data": "{\"type\": 0, \"descOnPanel\": \"变身Tank\" , \"descOnChat\": \"变身Tank\", \"cmd\": \"playastank\", \"args\": [1000]},"
+        }    
     ],
     "attachments": [
-        {"name": "20250315抽奖+商店.zip", "url": "https://gitee.com/purezhao/l4-d2-plugin-dev-lottery-draw/releases/download/v2025.03.19/20250315%E6%8A%BD%E5%A5%96%E5%95%86%E5%BA%97%E6%9B%B4%E6%96%B0.zip"}
+        {"name": "l4d2_lottery_draw.zip", "url": "https://gitee.com/purezhao/l4-d2-plugin-dev-lottery-draw/releases/download/v2025.03.19/l4d2_lottery_draw.zip"}
     ]
 }
 

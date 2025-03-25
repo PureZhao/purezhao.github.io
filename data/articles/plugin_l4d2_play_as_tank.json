@@ -7,7 +7,7 @@
         { "type": "text", "data": "这是一个娱乐插件，使玩家可以在战役模式玩Tank" },
         { "type": "header", "level": 2, "data": "使用方法" },
         { "type": "text", "data": "服务器管理员使用指令 !playastank，即可使自己变身为Tank" },
-        { "type": "text", "data": "如果非管理员玩家，则需要管理员使用 !playastank [ClientID]，使玩家变身" },
+        { "type": "text", "data": "如果非管理员玩家，则需要管理员使用 !playastank <ClientID>，使玩家变身" },
         {
             "type": "image",
             "data": {
