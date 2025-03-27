@@ -1,0 +1,33 @@
+{
+    "id": 7,
+    "title": "[20250327] AC130",
+    "date": "2025-03-27",
+    "author": "Pure_*",
+    "content": [
+        { "type": "text", "data": "这是一个娱乐插件，让玩家可以在游戏中召唤空中轰炸（简约版）" },
+        { "type": "header", "level": 2, "data": "使用方法" },
+        { "type": "text", "data": "\t1. 该指令只能是服务器管理员使用\n\t2. 指令格式：!giveac130 [ClientID] [Times]\n\t3. [ClientID]为客户端ID，整数，[Times]可使用次数，整数\n\t4. 获取客户端ID可以使用<a href=\"https://purezhao.github.io/pages/sub/article.html?id=3&name=plugin_l4d2_list_player\" target=\"_blank\">l4d2_list_player</a>插件\n\t5. 开启了之后在聊天框和屏幕中央有提示，默认使用Shitf按键使用" },
+        { "type": "text", "data": "指令举例：!giveac130 1 10" },
+        {
+            "type": "image",
+            "data": {
+                "url": "../../images/articles/plugin-l4d2-ac130-1.png",
+                "alt": "开启提示",
+                "caption": "图1 开启AC130的提示"
+            }
+        },
+        {
+            "type": "image",
+            "data": {
+                "url": "../../images/articles/plugin-l4d2-ac130-2.gif",
+                "alt": "演示效果图",
+                "caption": "图2 使用效果"
+            }
+        }
+
+    ],
+    "attachments": [
+        {"name": "l4d2_ac130.zip", "url": "https://gitee.com/purezhao/l4-d2-plugin-dev-lottery-draw/releases/download/v2025.03.19/l4d2_ac130.zip"}
+    ]
+}
+

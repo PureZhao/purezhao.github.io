@@ -77,8 +77,8 @@
                 ]
             }
         },
-        { "type": "header", "level": 3, "data": "如何扩充商店" },
-        { "type": "header", "level": 2, "data": "增加商品分类" },
+        { "type": "header", "level": 2, "data": "如何扩充商店" },
+        { "type": "header", "level": 3, "data": "增加商品分类" },
         { "type": "text", "data": "当商品足够多时，下图中的商品分类就可能不够太，则需要添加" },
         {
             "type": "image",
@@ -98,7 +98,7 @@
             "type": "code",
             "data": "// 修改后配置示例\n\"医疗菜单\":\n{\n\t\"药品类型一\":\n\t[\n\t\t{\"descOnPanel\": \"肾上腺素\", \"point\": 18, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"adrenaline\"]},\n\t\t{\"descOnPanel\": \"止疼药\", \"point\": 20, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"pain_pills\"]}\n\t],\n\t\"药品类型二\":\n\t[\n\t\t{\"descOnPanel\": \"电击器\", \"point\": 15, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"defibrillator\"]},\n\t\t{\"descOnPanel\": \"医疗包\", \"point\": 40, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"first_aid_kit\"]}\n\t],\n\t\"药品类型三\":\n\t[\n\t\t{\"descOnPanel\": \"满血\", \"point\": 100, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"health\"]},\n\t\t{\"descOnPanel\": \"复活\", \"point\": 120, \"broadcast\": false, \"func\": \"PRespawnPlayer\", \"args\": []}\n\t]\n}"
         },
-        { "type": "header", "level": 2, "data": "使用内置预设函数添加商品条目" },
+        { "type": "header", "level": 3, "data": "使用内置预设函数添加商品条目" },
         { "type": "text", "data": "首先第一个去查看本页面的表格：本插件预设的可使用函数。从中找到自己想要的功能，以召唤随机特感为例" },
         { "type": "text", "data": "通过查表可知，需要使用的函数是PSummonInfected，其参数填写顺序是：客户端ID、特感ID、数量。\n\t1. 客户端ID是系统自动赋值的，在args参数列表中就无需指明\n\t2. 特感ID通过查表可知此处填写-1\n\t3. 数量是五只，则此处填写5\n最终在配置文件中，该商品条目如下：" },
         {
@@ -106,7 +106,7 @@
             "data": "{\"descOnPanel\": \"召唤五只随机特感\" , \"point\": 30, \"broadcast\": true, \"func\": \"PSummonInfected\", \"args\": [-1, 5]},"
         },
         { "type": "text", "data": "最后将上述条目放到商品分类中去即可" },
-        { "type": "header", "level": 2, "data": "使用外部其他插件添加商品条目（使用指令）" },
+        { "type": "header", "level": 3, "data": "使用外部其他插件添加商品条目（使用指令）" },
         { "type": "text", "data": "比如有一个l4d2_play_as_tank的插件，使玩家可以变身为Tank，其指令为：!playastank <ClientID> <HealthPoint>，则条目可以直接先写为：" },
         {
             "type": "code",

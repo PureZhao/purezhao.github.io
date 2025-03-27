@@ -1,0 +1,122 @@
+{
+    "id": 9,
+    "title": "[20250327] CSOL武器插件",
+    "date": "2025-03-27",
+    "author": "Pure_*",
+    "content": [
+        { "type": "text", "data": "这是实质上给武器加挂功能的插件，让武器更加有趣一点，目前只完成了一部分武器的加挂，后续有时间继续开发" },
+        { "type": "header", "level": 2, "data": "使用方法" },
+        { "type": "text", "data": "\t1. 该指令只能是服务器管理员使用\n\t2. 指令格式：!csolweapon [ClientID] [WeaponName]\n\t3. [ClientID]为客户端ID，整数，[WeaponName]武器名称，字符串\n\t4. 获取客户端ID可以使用<a href=\"https://purezhao.github.io/pages/sub/article.html?id=3&name=plugin_l4d2_list_player\" target=\"_blank\">l4d2_list_player</a>插件" },
+        { "type": "header", "level": 3, "data": "支持的武器以及效果" },
+        { "type": "table",
+            "data": {
+                "headers": ["武器", "命令示例", "效果", "状态"],
+                "rows": [
+                    ["小手枪-黑洞", "!csolweapon 1 \"pistol\"", "1. 射击一定数量的子弹可以给1发黑洞\n2. 黑洞能够吸引一定范围内的特感", "已完成"],
+                    ["铁喷-天龙", "!csolweapon 1 \"shotgun_chrome\"", "1. 射击一定数量的子弹可以给1发龙息弹\n2. 龙息弹发射后生成一个力场\n3. 力场内给予特感向上的力和伤害", "已完成"],
+                    ["燃烧瓶-冰魄", "!csolweapon 1 \"molotov\"", "1. 投掷的燃烧瓶不再生成火焰，而是冰冻范围内的特感", "已完成"],
+                    ["胆汁罐-治疗场", "!csolweapon 1 \"vomitjar\"", "1. 投掷的胆汁罐不再吸引小僵尸，而是生成一个领域\n2. 每隔一定时间回复领域内玩家的血量", "已完成"]
+                ]
+            }
+        },
+        { "type": "header", "level": 2, "data": "配置文件介绍" },
+        { "type": "header", "level": 3, "data": "配置文件路径" },
+        { "type": "text", "data": "配置文件为：data/l4d2_csol_weapon.json" },
+        { "type": "header", "level": 2, "data": "分武器配置文件说明" },
+        { "type": "text", "data": "由于每个武器的效果不同，所以它们的配置文件中的项目也不同，在此将每个武器分开说明" },
+        { "type": "header", "level": 3, "data": "小手枪-黑洞" },
+        {
+            "type": "code",
+            "data": "\"pistol\":\n{\n\t\"slot\": 1,\n\t\"count\": 40,\n\t\"distance\": 500.0,\n\t\"range\": 1000.0,\n\t\"force\": 1000.0,\n\t\"duration\": 8.0,\n\t\"maxReserve\": 1,\n\t\"func\": \"ExtWeaponPistol\",\n\t\"tip\": \"[副武器]小手枪-黑洞%s\",\n\t\"desc\": \"小手枪|参考CSOL的黑洞手枪\"\n},"
+        },
+        { "type": "table",
+            "data": {
+                "headers": ["Key", "含义", "数值作用"],
+                "rows": [
+                    ["slot", "该武器所在背包格子，不要更改", "只能是1"],
+                    ["count", "射击多少发子弹给黑洞", "只要不是负数就行，整数"],
+                    ["distance", "发射黑洞，黑洞的飞行距离", "小数"],
+                    ["range", "黑洞的吸引半径", "小数"],
+                    ["force", "黑洞的吸引力，力越大效果越强", "小数"],
+                    ["duration", "黑洞存在时间", "小数，单位秒"],
+                    ["maxReserve", "黑洞的最大持有数量", "整数"],
+                    ["func", "调用的函数名称", "只能是ExtWeaponPistol"],
+                    ["tip", "游戏中提示用模板，%s不可以删除", "字符串，字数不超过16字"],
+                    ["desc", "仅仅起到描述配置作用，游戏中无用处", "字符串"]
+                ]
+            }
+        },
+        { "type": "text", "data": "可能有的腐竹配置时拿不准距离，参考: 玩家的碰撞盒直径约为50.0" },
+        { "type": "header", "level": 3, "data": "铁喷-天龙" },
+        {
+            "type": "code",
+            "data": "\"shotgun_chrome\":\n{\n\t\"slot\": 0,\n\t\"count\": 8,\n\t\"range\": 100.0,\n\t\"height\": 300.0,\n\t\"force\": 300.0,\n\t\"damage\": 50.0,\n\t\"duration\": 4.0,\n\t\"maxReserve\": 3,\n\t\"tip\": \"[主武器]铁喷-天龙%s\",\n\t\"func\": \"ExtWeaponShotgunChrome\",\n\t\"desc\": \"铁喷|参考CSOL的天龙M3\"\n}"
+        },
+        { "type": "table",
+            "data": {
+                "headers": ["Key", "含义", "数值作用"],
+                "rows": [
+                    ["slot", "该武器所在背包格子，不要更改", "只能是0"],
+                    ["count", "射击多少发子弹给龙息弹", "只要不是负数就行，整数"],
+                    ["distance", "发射黑洞，黑洞的飞行距离", "小数"],
+                    ["range", "力场半径", "小数，不能是负数"],
+                    ["height", "力场高度", "小数，不能是负数"],
+                    ["force", "力场力的大小，力越大效果越强", "小数"],
+                    ["damage", "力场中特感受到的伤害，伤害间隔为0.25秒", "小数"],
+                    ["duration", "力场存在时间", "小数，单位秒"],
+                    ["maxReserve", "力场的最大持有数量", "整数"],
+                    ["func", "调用的函数名称", "只能是ExtWeaponShotgunChrome"],
+                    ["tip", "游戏中提示用模板，%s不可以删除", "字符串，字数不超过16字"],
+                    ["desc", "仅仅起到描述配置作用，游戏中无用处", "字符串"]
+                ]
+            }
+        },
+        { "type": "text", "data": "可能有的腐竹配置时拿不准距离，参考: 玩家的碰撞盒直径约为50.0" },
+        { "type": "header", "level": 3, "data": "燃烧瓶-冰魄" },
+        {
+            "type": "code",
+            "data": "\"molotov\":\n{\n\t\"slot\": 2,\n\t\"range\": 500.0,\n\t\"duration\": 10.0,\n\t\"count\": -1,\n\t\"tip\": \"[投掷武器]燃烧瓶-冰魄%s\",\n\t\"func\": \"ExtWeaponMolotov\",\n\t\"desc\": \"火瓶|范围冰冻\"\n}"
+        },
+        { "type": "table",
+            "data": {
+                "headers": ["Key", "含义", "数值作用"],
+                "rows": [
+                    ["slot", "该武器所在背包格子，不要更改", "只能是2"],
+                    ["range", "冰冻效果半径", "小数，不能是负数"],
+                    ["duration", "冰冻多久", "小数，单位秒"],
+                    ["count", "扔出多少触发效果", "只能是-1"],
+                    ["func", "调用的函数名称", "只能是ExtWeaponMolotov"],
+                    ["tip", "游戏中提示用模板，%s不可以删除", "字符串，字数不超过16字"],
+                    ["desc", "仅仅起到描述配置作用，游戏中无用处", "字符串"]
+                ]
+            }
+        },
+        { "type": "text", "data": "可能有的腐竹配置时拿不准距离，参考: 玩家的碰撞盒直径约为50.0" },
+        { "type": "header", "level": 3, "data": "胆汁罐-治疗场" },
+        {
+            "type": "code",
+            "data": "\"vomitjar\":\n{\n\t\"slot\": 2,\n\t\"range\": 200.0,\n\t\"amount\": 5,\n\t\"duration\": 10.0,\n\t\"count\": -1,\n\t\"tip\": \"[投掷武器]胆汁瓶-治疗场%s\",\n\t\"func\": \"ExtWeaponVomitjar\",\n\t\"desc\": \"胆汁|范围治疗\"\n}"
+        },
+
+        { "type": "table",
+            "data": {
+                "headers": ["Key", "含义", "数值作用"],
+                "rows": [
+                    ["slot", "该武器所在背包格子，不要更改", "只能是2"],
+                    ["range", "冰冻效果半径", "小数，不能是负数"],
+                    ["amount", "每次治疗回复的血量，间隔为1秒", "整数"],
+                    ["duration", "治疗场存在多久", "小数，单位秒"],
+                    ["count", "扔出多少触发效果", "只能是-1"],
+                    ["func", "调用的函数名称", "只能是ExtWeaponVomitjar"],
+                    ["tip", "游戏中提示用模板，%s不可以删除", "字符串，字数不超过16字"],
+                    ["desc", "仅仅起到描述配置作用，游戏中无用处", "字符串"]
+                ]
+            }
+        },
+        { "type": "text", "data": "可能有的腐竹配置时拿不准距离，参考: 玩家的碰撞盒直径约为50.0" }
+    ],
+    "attachments": [
+        {"name": "l4d2_csol_weapon.zip", "url": "https://gitee.com/purezhao/l4-d2-plugin-dev-lottery-draw/releases/download/v2025.03.19/l4d2_csol_weapon.zip"}
+    ]
+}
+

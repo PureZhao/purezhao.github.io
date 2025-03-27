@@ -1,15 +1,10 @@
 {
     "id": 1,
-    "title": "[20250316] 抽奖插件更新公告",
-    "date": "2025-03-16",
+    "title": "[20250326] 抽奖插件",
+    "date": "2025-03-26",
     "author": "Pure_*",
     "content": [
-        { "type": "text", "data": "新增：\n1. 「变身Tank」回归，相比最初版本\n\t- 不会被特感控制\n\t- 石头爆炸可以炸飞僵尸\n\t- 不会再拍飞队友\n\t- 不再限制只有救援关变身" },
-        { "type": "text", "data": "移除：\n1. 移除了惩罚「键位反转」，因为该效果在倒退的时候玩家不能换子弹、不能上楼梯\n\t- 腐竹需要，删除文件l4d2_lottery_draw_extension_reverse_move.smx</>\n\n2. 移除了大奖「免疫控制！60秒！」，因为该效果是「变身tank」的前置实验效果\n\t- 腐竹需要，删除文件l4d2_lottery_draw_extension_test.smx" },
-        { "type": "text", "data": "修复：\n1.  尝试修复重载商店后，商品丢失问题，如在游戏外修改了l4d2_shop_system.json文件中的配置，管理员使用指令!reloadshop，即可重载商店\n2. 商店中管理员可以使用，如!givepoint -1 1000 的指令给全体在线玩家发放1000积分，当然也可以发负数\n3. 抽奖中管理员可以使用，如 !givedrawcount -1 10 的指令给全体在线玩家发放10次抽奖机会" },
-        { "type": "header", "level": 3, "data": "未来计划" },
-        { "type": "text", "data": "\t1. 将商店与抽奖拆分出来，不进行强制捆绑\n\t2. 捆绑版本也还会出，毕竟插件之间联动更加有趣\n\t3. 会将其中一些功能单独作为插件发布" },
-        { "type": "header", "level": 3, "data": "使用说明" },
+        { "type": "header", "level": 2, "data": "使用说明" },
         { "type": "text", "data": "\t1. 下载附件\n\t2. 将整个sourcemod解压到addons/sourcemod目录\n\t3. 在游戏中，按 y 打开在聊天框\n\t4. 输入指令!ldw，即可打开抽奖菜单" },
         { "type": "header", "level": 2, "data": "配置文件介绍" },
         { "type": "header", "level": 3, "data": "配置文件路径" },
@@ -91,22 +86,22 @@
                 ]
             }
         },
-        { "type": "header", "level": 3, "data": "如何自己修改奖池" },
-        { "type": "header", "level": 2, "data": "增加奖品类型" },
+        { "type": "header", "level": 2, "data": "如何自己修改奖池" },
+        { "type": "header", "level": 3, "data": "增加奖品类型" },
         { "type": "text", "data": "例如当前配置文件中，关于奖品类型的配置如下" },
         {
             "type": "code",
-            "data": "// 配置示例\n{\n&nbsp;&nbsp;&nbsp;&nbsp;\"AwardTypes\": [\"特等奖\", \"一等奖\", \"二等奖\"],<br>&nbsp;&nbsp;&nbsp;&nbsp;\"AwardRates\": [0.2, 0.3, 0.5],<br>&nbsp;&nbsp;&nbsp;&nbsp;\"AwardBroadcast\": [true, false, false],\n}"
+            "data": "// 配置示例\n{\n\t\"AwardTypes\": [\"特等奖\", \"一等奖\", \"二等奖\"],\n\t\"AwardRates\": [0.2, 0.3, 0.5],\n\t\"AwardBroadcast\": [true, false, false],\n}"
         },
         { "type": "text", "data": "现在要增加一个 三等奖类，则配置文件应该改为如下:" },
         {
             "type": "code",
-            "data": "// 配置示例\n{\n&nbsp;&nbsp;&nbsp;&nbsp;\"AwardTypes\": [\"特等奖\", \"一等奖\", \"二等奖\", \"三等奖\"],<br>&nbsp;&nbsp;&nbsp;&nbsp;\"AwardRates\": [0.1, 0.2, 0.3, 0.5],<br>&nbsp;&nbsp;&nbsp;&nbsp;\"AwardBroadcast\": [true, false, false, false],\n}"
+            "data": "// 配置示例\n{\n\t\"AwardTypes\": [\"特等奖\", \"一等奖\", \"二等奖\", \"三等奖\"],\n\t\"AwardRates\": [0.1, 0.2, 0.3, 0.5],\n\t\"AwardBroadcast\": [true, false, false, false],\n}"
         },
         { "type": "text", "data": "则在 Awards 配置中 type 则使用 3 来指定该奖品为三等奖" },
         { "type": "text", "data": "P.S. 为什么是 3？因为程序里面，这种一排一样的东西是从 0 开始数的" },
         { "type": "text", "data": "还需要注意：AwardRates中每一项加起来必须等于 1.0" },
-        { "type": "header", "level": 2, "data": "修改奖品" },
+        { "type": "header", "level": 3, "data": "修改奖品" },
         { "type": "text", "data": "以奖品成为人肉炸弹为例，在配置文件中，它配置如下：" },
         {
             "type": "code",
@@ -126,7 +121,7 @@
             "type": "code",
             "data": "{\"type\": 5, \"descOnPanel\": \"成为人肉炸弹\", \"descOnChat\": \"成为人肉炸弹!\" ,\"func\": \"PSuicideBomber\", \"args\": [2000, 500.0, 10.0]}"
         },
-        { "type": "header", "level": 2, "data": "使用内置预设函数添加商品条目" },
+        { "type": "header", "level": 3, "data": "使用内置预设函数添加商品条目" },
         { "type": "text", "data": "增加一个奖品就是在配置文件的Awards表里面增加一行，一个奖品的信息是写在一对花括号中的，如下" },
         { "type": "code", "data": "{}" },
         { "type": "text", "data": "参考AwardTypes确定奖品类型(type)，如增加一个三等奖，配置中应该书写" },
@@ -148,7 +143,7 @@
         { "type": "code", "data": "{\"type\": 3, \"descOnPanel\": \"点地板成Jockey\", \"descOnChat\": \"召唤了5个Jockey\", \"func\": \"PSummonInfected\", \"args\": [4, 5]}" },
         { "type": "text", "data": "最后将写好的配置，添加到Awards列表中，如下" },
         { "type": "code", "data": "\"Awards\": <br>[<br>&nbsp;&nbsp;&nbsp;&nbsp;{\"type\": 0, \"descOnPanel\": \"自己进入无敌状态\", \"descOnChat\": \"他自己进入无敌状态\" ,\"func\": \"PSetPlayerGodMode\", \"args\": []},<br>&nbsp;&nbsp;&nbsp;&nbsp;{\"type\": 0, \"descOnPanel\": \"自己的重力降到最低\", \"descOnChat\": \"他自己的重力降到最低\" ,\"func\": \"PSetPlayerGravity\", \"args\": [0.1, 0.0]},<br>&nbsp;&nbsp;&nbsp;&nbsp;{\"type\": 3, \"descOnPanel\": \"点地板成Jockey\", \"descOnChat\": \"召唤了5个Jockey\", \"func\": \"PSummonInfected\", \"args\": [4, 5]}<br>]" },
-        { "type": "header", "level": 2, "data": "使用外部其他插件添加商品条目（使用指令）" },
+        { "type": "header", "level": 3, "data": "使用外部其他插件添加商品条目（使用指令）" },
         { "type": "text", "data": "比如有一个l4d2_play_as_tank的插件，使玩家可以变身为Tank，其指令为：!playastank <ClientID> <HealthPoint>，则条目可以直接先写为：" },
         {
             "type": "code",

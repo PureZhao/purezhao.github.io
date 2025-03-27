@@ -1,8 +1,8 @@
 [
     {
         "id": 1,
-        "title": "[20250325] 抽奖插件",
-        "date": "2025-03-16",
+        "title": "[20250326] 抽奖插件",
+        "date": "2025-03-26",
         "author": "Pure_*",
         "tags": ["新功能", "修复"],
         "url": "plugin_l4d2_lottory_draw",
@@ -37,8 +37,8 @@
     },
     {
         "id": 4,
-        "title": "[20250323] 战役模式幸存者玩Tank插件",
-        "date": "2025-03-23",
+        "title": "[20250326] 战役模式幸存者玩Tank插件",
+        "date": "2025-03-26",
         "author": "Pure_*",
         "tags": ["娱乐"],
         "url": "plugin_l4d2_play_as_tank",
@@ -51,6 +51,33 @@
         "author": "Pure_*",
         "tags": ["娱乐"],
         "url": "plugin_l4d2_god_mode",
+        "type": "hotfix"
+    },
+    {
+        "id": 7,
+        "title": "[20250327] AC130插件",
+        "date": "2025-03-27",
+        "author": "Pure_*",
+        "tags": ["娱乐"],
+        "url": "plugin_l4d2_ac130",
+        "type": "hotfix"
+    },
+    {
+        "id": 8,
+        "title": "[20250327] 自动瞄准插件",
+        "date": "2025-03-27",
+        "author": "Pure_*",
+        "tags": ["娱乐"],
+        "url": "plugin_l4d2_auto_aim",
+        "type": "hotfix"
+    },
+    {
+        "id": 9,
+        "title": "[20250327] CSOL武器插件",
+        "date": "2025-03-27",
+        "author": "Pure_*",
+        "tags": ["娱乐"],
+        "url": "plugin_l4d2_csol_weapon",
         "type": "hotfix"
     }
 ]

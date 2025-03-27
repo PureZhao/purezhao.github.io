@@ -254,7 +254,7 @@
                     container.className = 'content-table';
                     const headers = item.data.headers.join('</th><th>');
                     const rows = item.data.rows.map(row => 
-                        `<tr><td>${row.join('</td><td>')}</td></tr>`
+                        `<tr><td>${row.join('</td><td>').replace(/\n/g, '<br>')}</td></tr>`
                     ).join('');
                     container.innerHTML = `
                         <table>

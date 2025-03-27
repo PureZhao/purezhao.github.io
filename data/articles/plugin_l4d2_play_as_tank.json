@@ -1,13 +1,13 @@
 {
     "id": 3,
-    "title": "[20250323] 战役模式幸存者玩Tank插件",
-    "date": "2025-03-23",
+    "title": "[20250326] 战役模式幸存者玩Tank插件",
+    "date": "2025-03-26",
     "author": "Pure_*",
     "content": [
         { "type": "text", "data": "这是一个娱乐插件，使玩家可以在战役模式玩Tank" },
         { "type": "header", "level": 2, "data": "使用方法" },
-        { "type": "text", "data": "服务器管理员使用指令 !playastank，即可使自己变身为Tank" },
-        { "type": "text", "data": "如果非管理员玩家，则需要管理员使用 !playastank <ClientID>，使玩家变身" },
+        { "type": "text", "data": "\t1. 该指令只能是服务器管理员使用\n\t2. 指令格式：!playastank [ClientID] [HealthPoint]\n\t3. [ClientID]为客户端ID，整数，[HealthPoint];为Tank的血量，整数\n\t4. 获取客户端ID可以使用<a href=\"https://purezhao.github.io/pages/sub/article.html?id=3&name=plugin_l4d2_list_player\" target=\"_blank\">l4d2_list_player</a>插件" },
+        { "type": "text", "data": "指令举例：!playastank 1 20000" },
         {
             "type": "image",
             "data": {
