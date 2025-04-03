@@ -31,6 +31,14 @@
                 "alt": "演示效果图",
                 "caption": "图3 使用效果2"
             }
+        },
+        {
+            "type": "image",
+            "data": {
+                "url": "../../images/articles/plugin-l4d2-auto-aim-4.gif",
+                "alt": "演示效果图",
+                "caption": "图4 大陀螺模式"
+            }
         }
     ],
     "attachments": [
