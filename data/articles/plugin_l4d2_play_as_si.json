@@ -1,0 +1,43 @@
+{
+    "id": 3,
+    "title": "[20250418] 战役模式幸存者玩特感插件",
+    "date": "2025-04-18",
+    "author": "Pure_*",
+    "content": [
+        { "type": "text", "data": "这是一个娱乐插件，使玩家可以在战役模式玩特感" },
+        { "type": "header", "level": 2, "data": "使用方法" },
+        { "type": "text", "data": "\t1. 该指令只能是服务器管理员使用\n\t2. 指令格式：!playassi [客户端ID] [特感类型ID]\n\t3. [客户端ID]是一个整数，[特感类型ID]也是一个整数\n\t4. 获取客户端ID可以使用<a href=\"https://purezhao.github.io/pages/sub/article.html?id=3&name=plugin_l4d2_list_player\" target=\"_blank\">l4d2_list_player</a>插件" },
+        { "type": "text", "data": "特感类型ID对照表如下" },
+        { "type": "text", "data": "Smoker: 1<br>Boomer : 2<br>Hunter : 3<br>Spitter : 4（可以玩的）<br>Jockey : 5<br>Charger : 6（可以玩的）<br>Tank : 8（可以玩的）" },
+        {
+            "type": "image",
+            "data": {
+                "url": "../../images/articles/plugin-l4d2-play-as-si-1.gif",
+                "alt": "战役模式幸存者玩特感-变身",
+                "caption": "图1 战役模式幸存者玩特感-变身"
+            }
+        },
+        {
+            "type": "image",
+            "data": {
+                "url": "../../images/articles/plugin-l4d2-play-as-si-2.gif",
+                "alt": "战役模式幸存者玩特感-打特感",
+                "caption": "图2 战役模式幸存者玩特感-打特感"
+            }
+        },
+        {
+            "type": "image",
+            "data": {
+                "url": "../../images/articles/plugin-l4d2-play-as-si-3.gif",
+                "alt": "战役模式幸存者玩特感-使用技能",
+                "caption": "图1 战役模式幸存者玩特感-使用技能"
+            }
+        },
+        { "type": "header", "level": 2, "data": "演示视频" },
+        { "type": "video", "data": "https://www.bilibili.com/video/BV1EQdkYeELL/" }
+    ],
+    "attachments": [
+        {"name": "l4d2_play_as_si.zip", "url": "https://gitee.com/purezhao/l4-d2-plugin-dev-lottery-draw/releases/download/v2025.03.19/l4d2_play_as_si.zip"}
+    ]
+}
+
