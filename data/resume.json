@@ -1,0 +1,108 @@
+{
+    "content": [
+        { "type": "header", "level": 3, "data": "最新更新日期: 2025.05.29" },
+        { 
+            "type": "link",
+            "data": {
+                "url": "https://gitee.com/purezhao",
+                "text": "个人Gitee主页"
+            }
+        },
+        { 
+            "type": "link",
+            "data": {
+                "url": "https://github.com/purezhao",
+                "text": "个人GitHub主页"
+            }
+        },
+        { "type": "header", "level": 3, "data": "求职: 初级游戏客户端(成都)" },
+        { "type": "header", "level": 3, "data": "邮箱: purezhao@qq.com" },
+        { "type": "header", "level": 2, "data": "教育背景" },
+        {
+            "type": "table",
+            "data": {
+                "headers": ["学校", "层次", "时间", "专业", "表现"],
+                "rows": [
+                    ["宜宾学院", "学士本科", "2016-2020", "数字媒体技术", "2次国家奖学金"],
+                    ["成都理工大学", "硕士研究生", "2020-2023", "计算机技术", "1次一等学业奖学金"]
+                ]
+            }
+        },
+        { "type": "header", "level": 2, "data": "技能" },
+        { "type": "header", "level": 3, "data": "游戏相关" },
+        { "type": "list", "data": ["熟练使用Unity引擎进行游戏功能开发", "熟悉C#/Python/Lua语言", "熟练使用UGUI进行开发", "熟悉AssetBundle打包、发布、更新的经验，有从0到1的自制相关打包策略、打包流程的编写", "熟练使用xlua框架开发游戏相关功能，有从0到1的自制基于xlua游戏开发框架编写", "熟悉DOTween、Odin Inspector、LitJson、LipSync等常用插件的使用", "熟练进行UnityEditor相关工具开发", " 理解并掌握场景的数据结构及算法，有LeetCode刷题与参加周赛经历", "理解对象池相关原理，有自制对象池编写经验", "熟悉PICO、HTC VIVE头盔进行虚拟现实(VR)开发，有一定开发经验", "了解HybirdCLR+YooAsset热更新流程", "了解网络传输，有使用LuaProtobuf + PhotonRPC进行网络游戏开发的经历"] },
+        { "type": "header", "level": 3, "data": "其他" },
+        { "type": "list", "data": ["熟练使用QT(C++/Python)/WinForm(C#)开发小软件", " 能够使用OpenCV(C++/Python)实现相关需求", "熟练使用Git/TortoiesSVN版本管理工具", "熟练使用SourcePawn（类似C/C++语言）开发游戏插件", "了解使用EasyAR开发增强现实(AR)"]},
+        { "type": "header", "level": 2, "data": "工作经历" },
+        { "type": "text", "data": "<b>字节跳动(北京)|Pico Studio 一方工作室|游戏研发|2022.03—2022.09</b>" },
+        { "type": "list", "data": ["重构整个关卡编辑器（关卡策划工具）：Unity编辑器面板显示，配置文件生成/读取、设置线性关卡的游戏、对象以及其路点事件", "NPC对象行为开发，状态机维护、路点事件处理：根据关卡配置，使游戏对象根据路点配置做出相应表现", "触发器（刷怪器）：场景中的碰撞盒，用于被触发后生成配置的其他游戏对象", "使用C#或者Lua，进行事件监听，触发事件，销毁事件", "计时器Timer的开发，延迟函数执行", "游戏中可交互物品处理（VR手柄交互）并产出文档", "使用PhotonRPC+LuaProtobuf框架进行游戏中的数据同步，完成一个PVP游戏模式的开发"]},
+        { "type": "text", "data": "<b>广州诗悦网络科技有限公司| 游戏客户端 | 2023.03—2023.05</b>" },
+        { "type": "list", "data": ["使用tolua框架开发游戏功能", "使用UGUI开发相应界面显示功能，与服务端对接使服务器数据正确显示在UI界面上"]},
+        { "type": "text", "data": "<b>非游戏行业开发|虚拟现实| 2023.08—至今</b>" },
+        { "type": "list", "data": ["使用VRIF框架，整合到xlua框架中，完成对项目的开发"]},
+        { "type": "header", "level": 2, "data": "自制项目" },
+        { "type": "header", "level": 3, "data": "游戏开发框架" },
+        { 
+            "type": "link",
+            "data": {
+                "url": "https://gitee.com/purezhao/simple-unity-game-develop-framework",
+                "text": "Simple Unity Game Develop Framework"
+            }
+        },
+        { "type": "list", "data": ["AssetBundle打包策略、打包流程、更新流程，并配套相关的UnityEditor工具", "AssetsManager类，配合上述AssetBundle打包流程，用于读取资源、实例化对象、管理AssetBundle，如自动卸载长时间不使用的AssetBundle包。", "GameObjectPool类，使频繁使用的游戏对象并不销毁而是暂存和复用", "Timer类，使用系统Update与LateUpdate开发的计时器，在不使用线程、协程的情况下，用于延迟函数执行或者只让函数执行一定时间，现有功能包括，延迟N帧、延迟N秒、每N秒重复执行、加入Update/LateUpdate执行以及销毁（中断）未执行的任务；自动销毁已经执行完毕的任务", " Lua脚本中的预制变量显示到Unity的Inspector面板上，使Lua脚本可以绑定在游戏预制体上并设定初始值，只支持设置数值以及当前预制体下的游戏对象和组件。", "加入LuaProtobuf，配合PhotonRPC准备升级为网络游戏框架"]},
+        {
+            "type": "link",
+            "data": {
+                "url": "https://blog.csdn.net/weixin_40885067/article/details/128175297?spm=1001.2014.3001.5501",
+                "text": "AssetsManager类介绍博客"
+            }
+        },
+        { 
+            "type": "link",
+            "data": {
+                "url": "https://blog.csdn.net/weixin_40885067/article/details/126796231?spm=1001.2014.3001.5501",
+                "text": "Lua模拟Unity Inspector面板介绍博客"
+            }
+        },
+        { "type": "header", "level": 3, "data": "基础数学库" },
+        { 
+            "type": "link",
+            "data": {
+                "url": "https://github.com/PureZhao/BaseMathLib",
+                "text": "Base Math Lib"
+            }
+        },
+        { "type": "list", "data": ["包含矩阵各种运算、如转置、求秩、求逆矩阵、行列式计算、矩阵加法、乘法。", "包含向量各种运算", "包含一个整型数类，用于运算数值超过C++预制int类型最大值的整数运算，支持如加法、减法、乘法、除法、模运算", "该库用于支持某款遥感图像相关软件的算法的开发"]},
+        {
+            "type": "link",
+            "data": {
+                "url": "https://blog.csdn.net/weixin_40885067/article/details/112465813?spm=1001.2014.3001.5501",
+                "text": "库中矩阵运算部分介绍博客"
+            }
+        },
+        { "type": "header", "level": 3, "data": "求生之路2插件开发" },
+        { 
+            "type": "link",
+            "data": {
+                "url": "https://gitee.com/purezhao/l4-d2-plugin-dev-lottery-draw",
+                "text": "L4D2-Plugins-Dev"
+            }
+        },
+        { "type": "list", "data": ["用于运行在Linux服务器上的求生之路2应用扩展，服务器在阿里云上", "已经发布的两个插件合计已有4000+浏览量", "已经重制数个插件"]},
+        { 
+            "type": "link",
+            "data": {
+                "url": "https://forums.alliedmods.net/showthread.php?t=350892",
+                "text": "幸存者玩特感插件"
+            }
+        },
+        { 
+            "type": "link",
+            "data": {
+                "url": "https://forums.alliedmods.net/showthread.php?t=350884",
+                "text": "幸存者自瞄插件"
+            }
+        }
+    ]
+}
+
