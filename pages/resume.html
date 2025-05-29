@@ -179,15 +179,6 @@
                 if (article) {
                     const container = document.getElementById('articleContainer');
 
-                    // 渲染标题
-                    container.innerHTML = `
-                        <h1>${article.title}</h1>
-                        <div class="article-meta">
-                            <span>${article.date}</span> • 
-                            <span>作者：${article.author}</span>
-                        </div>
-                    `;
-
                     // 渲染内容
                     article.content.forEach(item => {
                         container.appendChild(renderContentItem(item));
