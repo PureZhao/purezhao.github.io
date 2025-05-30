@@ -17,18 +17,7 @@
         },
         { "type": "header", "level": 3, "data": "求职: 初级游戏客户端(成都)" },
         { "type": "header", "level": 3, "data": "邮箱: purezhao@qq.com" },
-        { "type": "header", "level": 3, "data": "可入职时间：2025.07 (具体看领导卡我多久)" },
-        { "type": "header", "level": 3, "data": "求职原因" },
-        { "type": "text", "data": "1. 本身在应届生时已入职广州诗悦(薪资非常不错)，但由于家庭原因回到四川并不在游戏行业工作\n2. 现在想通了，希望趁年轻继续奋斗一下（其实高校里面薪资尚可）\n3. 但由于有两年在非游戏行业的工作经历，没有任何优势，故希望从初级做起或者实习做起\n4. 本身是热爱游戏行业的并擅长在某些游戏，曾在豆客CS平台的KZ服多个地图上，平台排名为前20\n5. 展示一下自己设计的一辆痛车" },
-        {
-            "type": "image",
-            "data": {
-                "url": "../images/blogs/Resume-PaintCar.jpg",
-
-                "alt": "痛车",
-                "caption": ""
-            }
-        },
+        { "type": "header", "level": 3, "data": "可入职时间：2025.07 (具体看离职流程速度)" },
         { "type": "header", "level": 2, "data": "教育背景" },
         {
             "type": "table",
