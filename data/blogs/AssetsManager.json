@@ -1,0 +1,114 @@
+{
+    "id": 1,
+    "title": "[Unity] 自定义AssetsManager进行资源加载与管理",
+    "date": "2025-05-30",
+    "author": "Pure_*",
+    "content": [
+        { "type": "header", "level": 2, "data": "问题的产生" },
+        {
+            "type": "text",
+            "data": "\t1. 游戏通过AssetBundle读取资源，如预制体、图片等\n\t2. AssetBundle有很多，并且Bundle之间可能存在依赖，如Bundle A中的预制体使用了Bundle B中的资源\n\t3. 同步加载可能造成进程卡死，如资源过大，解压速度慢等"
+        },
+        { "type": "header", "level": 2, "data": "思路" },
+        {
+            "type": "text",
+            "data": "\t1. 使用协程进行异步加载\n\t2. 加载资源前，先检查Bundle是否被加载，如果没有被加载则先加载Bundle\n\t3. 加载Bundle前，先检查是否依赖其他Bundle，如果有有依赖与其他则先加载其他Bundle\n\t4. Bundle加载完毕，再加载资源即可"
+        },
+        { "type": "header", "level": 2, "data": "本文实现" },
+        { "type": "header", "level": 3, "data": "准备工作" },
+        {
+            "type": "text",
+            "data": "1. 首先准备一个记录资源映射的json文件，如下图，key值为资源的路径，value值为资源所在的Bundle名称"
+        },
+        {
+            "type": "image",
+            "data": {
+                "url": "../../images/blogs/Blog-AssetsManager-AssetMapping.png",
+                "alt": "更新界面截图",
+                "caption": "图1 资源与AB的映射表示例"
+            }
+        },
+        {
+            "type": "text",
+            "data": "2. 建立一个ResConst.cs类，将Bundle中的资源路径填写进去，需要注意的是，此处的路径需要与json文件的key值一致，如下图。"
+        },
+        {
+            "type": "image",
+            "data": {
+                "url": "../../images/blogs/Blog-AssetsManager-ResConst.png",
+                "alt": "更新界面截图",
+                "caption": "图2 ResConst示例"
+            }
+        },
+        { "type": "header", "level": 3, "data": "实现" },
+        {
+            "type": "text",
+            "data": "1. 新建一个AssetsManager.cs作为资源管理器（不一定要叫这个名啊），需要注意的是因为需要使用协程，因此AssetsManager是需要继承自MonoBehavior的，主要有三个字段"
+        },
+        {
+            "type": "code",
+            "data": "public class AssetsManager : MonoBehaviour\n{\n\t// 资源路径 -> Bundle名称\n\tprivate Dictionary<string, string> path2bundle = new Dictionary<string, string>();\n\t// Bundle名称 -> AssetBundle\n\tprivate Dictionary<string, AssetBundle> bundles = new Dictionary<string, AssetBundle>();\n\t// 主Bundle的manifest文件\n\tprivate AssetBundleManifest mainManifest;\n}"
+        },
+        {
+            "type": "text",
+            "data": "2. 首先读取主Bundle和它的.manifest，也就是下图这两个文件（在Awake中执行）"
+        },
+        {
+            "type": "image",
+            "data": {
+                "url": "../../images/blogs/Blog-AssetsManager-BundleFile.png",
+                "alt": "更新界面截图",
+                "caption": "图3 导出的AssetBundle示例"
+            }
+        },
+        {
+            "type": "text",
+            "data": "\t· 主Bundle的名称就为导出Bundle时，导出文件夹的名称（此处就叫Bundle）\n\t· 主Bundle的.manifest文件记录了所有Bundle以及其依赖，如下图，红色箭头所指Bundle的名称以及紫色方框中就为其依赖的Bundle\n\t· 将主Bundle的manifest文件读取出来，需要注意的是主Bundle的manifest就叫AssetBundleManifest"
+        },
+        {
+            "type": "code",
+            "data": "// 初始化主Bundle 方便后续拿依赖\n// 主AB包一定存在，而且与导出时的文件夹名相同\nDirectoryInfo directory = new DirectoryInfo(GlobalConfig.AssetBundleDir);\nstring mainPath = Path.Combine(GlobalConfig.AssetBundleDir, directory.Name);\nAssetBundle main = AssetBundle.LoadFromFile(mainPath);\n// 获取主AB包的配置文件\nmainManifest = main.LoadAsset<AssetBundleManifest>(\"AssetBundleManifest\");"
+        },
+        {
+            "type": "text",
+            "data": "3. 利用LitJson读取出来并存储到字典中，此处我将资源映射文件AssetMapping.json打到名称为main的Bundle中。（在Awake中执行）"
+        },
+        {
+            "type": "code",
+            "data": "// 把资源路径与bundle映射先加载出来\nstring mappingFile = Path.Combine(GlobalConfig.AssetBundleDir, \"main\");\nAssetBundle bundle = AssetBundle.LoadFromFile(mappingFile);\n// 加入到Bundle字典中\nbundles.Add(\"main\", bundle);\nTextAsset mappingText = bundle.LoadAsset<TextAsset>(\"AssetMapping.json\");\nJsonReader reader = new JsonReader(mappingText.ToString());\nJsonData data = JsonMapper.ToObject(reader);\nforeach (string key in data.Keys)\n{\n\tpath2bundle.Add(key, data[key].ToString());\n}\nreader.Close();"
+        },
+        {
+            "type": "text",
+            "data": "4. 实现加载Bundle。\n\t - 先检查依赖\n\t - 如果没有依赖了，则代表所有包都已经加载完毕，就返回 \n\t - 否则开启协程加载所有包"
+        },
+        {
+            "type": "code",
+            "data": "private void LoadAssetBundle(string bundleName, Action<AssetBundle> onLoaded)\n{\n\t// 检查出不存在的依赖\n\tList<string> deps = CheckNoneExistedDependencies(bundleName);\n\t// 如果没有不存在的直接返回\n\tif (deps.Count == 0)\n\t{\n\t\tonLoaded?.Invoke(bundles[bundleName]);\n\t}\n\telse\n\t{\n\t// 异步加载\n\tList<object> parameters = new List<object>()\n\t{\n\t\tdeps,\n\t\tbundleName,\n\t\tonLoaded,\n\t};\n\tStartCoroutine(nameof(LoadAssetBundlesAsync), parameters);\n\t}\n}"
+        },
+        {
+            "type": "text",
+            "data": "5. 协程LoadAssetBundlesAsync的实现，这一步的关键在于if条件为ture的分支中防止重复加载的yield return语句和false分支中占位的bundles.Add(deps[i], null)语句，主要是基于以下考量\n\t - 游戏资源加载是非常频繁的，当同一时间（帧）多个协程加载同一个还未加载的Bundle，如果不控制重复加载，就会报The AssetBundle XXX can't be loaded because another AssetBundle with the same files is already loaded\n\t先占位，表明已经有协程在加载这个Bundle了，其他协程到这里只需要等待即可"
+        },
+        {
+            "type": "code",
+            "data": "IEnumerator LoadAssetBundlesAsync(List<object> obj)\n{\n\tList<string> deps = (List<string>)obj[0];\n\tstring targetBundleName = (string)obj[1];\n\tAction<AssetBundle> onLoaded = (Action<AssetBundle>)obj[2];\n\tfor (int i = 0; i < deps.Count; i++)\n\t{\n\t\tif (bundles.ContainsKey(deps[i]))\n\t\t{\n\t\t\t// 防止重复加载\n\t\t\tyield return new WaitUntil(() => bundles[deps[i]] != null);\n\t\t}\n\t\telse\n\t\t{\n\t\t\tstring bundlePath = Path.Combine(GlobalConfig.AssetBundleDir, deps[i]);\n\t\t\t// 占位\n\t\t\tbundles.Add(deps[i], null);\n\t\t\tAssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(bundlePath);\n\t\t\tyield return request;\n\t\t\tbundles[deps[i]] = request.assetBundle;\n\t\t}   \n\t}\n\tonLoaded?.Invoke(bundles[targetBundleName]);\n}"
+        },
+        {
+            "type": "text",
+            "data": "6. 检查依赖CheckNoneExistedDependencies的实现，函数LoadAssetBundle、协程LoadAssetBundlesAsync和这个函数都是相扣的\n\t - 使用主Bundle的manifest，调用GetAllDependencies就能拿到该bundle的所有依赖\n\t - 因为存在占位情况，如果此时需要的bundle没有加载出来则需要加入到不存在列表中 \n\t - 最后检查自己存在与否"
+        },
+        {
+            "type": "code",
+            "data": "private List<string> CheckNoneExistedDependencies(string bundleName)\n{\n\tList<string> noneExisted = new List<string>();\n\tstring[] dependencies = mainManifest.GetAllDependencies(bundleName);\n\tforeach (string dep in dependencies)\n\t{\n\t\tif (!bundles.ContainsKey(dep) || bundles[dep] == null)\n\t\t{\n\t\t\tnoneExisted.Add(dep);\n\t\t}\n\t}\n\t// 也要检查自己存不存在\n\tif (!bundles.ContainsKey(bundleName) || bundles[bundleName] == null)\n\t{\n\t\tnoneExisted.Add(bundleName);\n\t}\n\treturn noneExisted;\n}"
+        },
+        {
+            "type": "text",
+            "data": "7. 加载资源。当完成上面Bundle的加载，就可以使用ResConst.cs中设定好的路径加载资源了"
+        },
+        {
+            "type": "code",
+            "data": "public void LoadAsset(string assetPath, Action<UnityEngine.Object> onLoaded = null)\n{\n\tif (string.IsNullOrEmpty(assetPath) || string.IsNullOrWhiteSpace(assetPath))\n\t{\n\t\tthrow new ArgumentException(\"Bad Argument: It was NULL , Empty or WhiteSpace\");\n\t}\n\tif (path2bundle.TryGetValue(assetPath, out string bundleName))\n\t{\n\t\tLoadAssetBundle(bundleName, (bundle) =>\n\t\t{\n\t\t\tFileInfo file = new FileInfo(assetPath);\n\t\t\tList<object> parameters = new List<object>()\n\t\t\t{\n\t\t\t\tfile.Name,\n\t\t\t\tbundle,\n\t\t\t\tonLoaded,\n\t\t\t};\n\t\t\tStartCoroutine(nameof(LoadAssetAsync), parameters);\n\t\t});\n\t}\n\telse\n\t{\n\t\tthrow new DirectoryNotFoundException(\"Bad Key: \" + assetPath + \" is not a key of bundle dictionary\");\n\t}\n}\n\n// 调用之前保证Bundle都有\nIEnumerator LoadAssetAsync(List<object> list)\n{\n\tstring assetName = (string)list[0];\n\tAssetBundle bundle = (AssetBundle)list[1];\n\tAction<UnityEngine.Object> onLoaded = (Action<UnityEngine.Object>)list[2];\n\tAssetBundleRequest request = bundle.LoadAssetAsync<UnityEngine.Object>(assetName);\n\tyield return request;\n\tonLoaded?.Invoke(request.asset);\n}"
+        }
+    ]
+}
+

@@ -1,0 +1,124 @@
+{
+    "id": 1,
+    "title": "[Unity + XLua]如何在LuaBehaviour组件上序列化Lua中声明的变量",
+    "date": "2025-05-30",
+    "author": "Pure_*",
+    "content": [
+        { "type": "header", "level": 2, "data": "Unity的序列化以及存储" },
+        {
+            "type": "text",
+            "data": "1. 当将继承自MonoBehaviour的C#脚本作为组件，Unity会自动将可序列化的属性显示在Inspector面板上，供开发者进行便携的设置，如下图"
+        },
+        {
+            "type": "image",
+            "data": {
+                "url": "../../images/blogs/Blog-LuaBehaviour-CSSerilizer.png",
+                "alt": "更新界面截图",
+                "caption": ""
+            }
+        },
+        {
+            "type": "image",
+            "data": {
+                "url": "../../images/blogs/Blog-LuaBehaviour-Inspector.png",
+                "alt": "更新界面截图",
+                "caption": ""
+            }
+        },
+        {
+            "type": "text",
+            "data": "2. 而当脚本组件在预制体(Prefab)上，则会将组件上的信息存储在预制体中，使用文本处理软件打开预制体就可以看到，如下图（上面的变量T）"
+        },
+        {
+            "type": "image",
+            "data": {
+                "url": "../../images/blogs/Blog-LuaBehaviour-CSSerilizerJson.png",
+                "alt": "更新界面截图",
+                "caption": ""
+            }
+        },
+        { "type": "header", "level": 2, "data": "XLua的引入以及问题的产生" },
+        {
+            "type": "text",
+            "data": "引入XLua后，我们可以通过在预制体上挂载LuaBehaviour组件，再将Lua脚本绑定到LuaBehaviour组件上，使得可以针对某一个游戏对象使用Lua控制，这一块可以参考XLua官方repo的教程。但是也有需要像Unity组件那样进行序列化设置初始值的时候，那么接下来就介绍方法。"
+        },
+        { "type": "header", "level": 3, "data": "思路" },
+        {
+            "type": "text",
+            "data": "1. 使用XLua框架的LuaTable、LuaFunction和smilehao提供框架中的BaseClass实现\n2. BaseClass用于继承一些函数，不至于每个脚本都写一些相同的逻辑\n3. LuaTable用于获取Lua脚本的函数、变量、变量类型等参数\n4. 通过LuaTable表中我们设置的变量名称以及变量类型，继承自UnityEngine.Object的类型如GameObject、Transform等就使用UnityEngine.Object进行序列化，使用EditorGUILayout.ObjectField进行绘制\n5. 而一些值类型如int，float、Vector3使用字符串进行序列化，但是使用的Unity提供的JsonUtility进行序列化，保证稳定性"
+        },
+        { "type": "header", "level": 3, "data": "脚本" },
+        { "type": "header", "level": 4, "data": "LuaBehaivour.lua" },
+        {
+            "type": "text",
+            "data": "1. 新建LuaBehaviour.lua，使用BaseClass写一个LuaBehaivour类，而其他类继承自这个类后通过规定的函数（此处为__Define）进行变量与类的定义"
+        },
+        {
+            "type": "code",
+            "data": "local Class = require(\"Core.Class\")\nlocal LuaBehaviour = Class(\"LuaBehaviour\")\n\nlocal function CallDefine(classType, defineSelf)\n\tif classType.super then\n\t\tCallDefine(classType.super, defineSelf)\n\tend\n\t--- 派生类中定义变量与变量类型的函数\n\tif classType.__Define then\n\t\tclassType.__Define(defineSelf)\n\tend\nend\n\nlocal defineSelf = {}\nlocal defineStore = {}\n-- 保证C#端的LuaTable中变量顺序\nsetmetatable(defineSelf, {__newindex = function(_ , n, t)\n\ttable.insert(defineStore, {name = n, type= t})\nend})\n\nlocal function _ClearLocalDefineList()\n\tfor i = 1, #defineStore do\n\t\tdefineStore[i] = nil\n\tend\nend\n\nfunction LuaBehaviour:Define()\n\t--这个 define 可能会多次被调用。 只执行一次即可\n\tif rawget(self, \"_DefineList\") ~= nil then return end\n\t_ClearLocalDefineList()\n\tself._DefineList = {}\n\n\tCallDefine(self, defineSelf)\n\tfor key, value in ipairs(defineStore) do\n\t\ttable.insert(self._DefineList, { name = value.name, type = value.value})\n\tend\nend\n\nreturn LuaBehaviour"
+        },
+        {
+            "type": "text",
+            "data": "2. 在C#脚本中调用上述的Define函数，就会生产一个_DefineList，这个_DefineList中就存储了需要序列化的变量名称和变量类型，并且是按照自己写的顺序排序的"
+        },
+        { "type": "header", "level": 4, "data": "派生类的__Define函数" },
+        {
+            "type": "code",
+            "data": "local CSType = require(\"Core.CSType\")\nlocal Class = require(\"Core.Class\")\nlocal LuaBehaviour = require(\"Core.LuaBehaviour\")\n\nlocal TestTable, super = Class(\"TestTable\", LuaBehaviour)\n\nfunction TestTable:__Define()\n\tself.transform = CSType.Transform\n\tself.int = CSType.Int32\n\tself.v = CSType.Vector3\nend\n\nreturn TestTable"
+        },
+        { "type": "header", "level": 4, "data": "CSType.lua举例" },
+        {
+            "type": "code",
+            "data": "local CSE = CS.UnityEngine\nlocal CSO = CS.System\n\n---@class CSType\nlocal CSType = {}\nsetmetatable(CSType, {\n\t__index = function (t, k)\n\t\tif k == nil then\n\t\t\tprint(\"<color=red>Error Type</color>\", t, k)\n\t\tend\n\t\tt[k] = typeof(k)\n\t\treturn rawget(t, k)\n\tend\n})\n\nCSType.Transform = CSType[CSE.Transform]\nCSType.Int32 = CSType[CSO.Int32]\nCSType.Vector3 = CSType[CSE.Vector3]\n\nreturn CSType"
+        },
+        { "type": "header", "level": 4, "data": "LuaBehaviour.cs中相关" },
+        {
+            "type": "text",
+            "data": "1. 以UnityEngine.Object的序列化为例，声明可序列化的类ObjectWrap\n2. name 为变量名称\n3. typeName 为该变量的类型\n4. assembly 为该类型所在的库，因为需要使用反射进行序列化"
+        },
+        {
+            "type": "code",
+            "data": "[LuaCallCSharp]\npublic class LuaBehaviour : MonoBehaviour\n{\n\t[Serializable]\n\tpublic class ObjectWrap\n\t{\n\t\tpublic string name;\n\t\tpublic UnityEngine.Object obj;\n\t\tpublic string typeName;\n\t\tpublic string assembly;\n\t}\n\n\tpublic DefaultAsset luaScript;\n\n\tpublic string requirePath;\n\n\t[SerializeField]\n\tpublic List<ObjectWrap> objects;\n}"
+        },
+        { "type": "header", "level": 4, "data": "LuaBehaviourInspector.cs中相关" },
+        {
+            "type": "code",
+            "data": "[CustomEditor(typeof(GameCore.LuaBehaviour), true)]\npublic class LuaBehaviourInspector : Editor\n{\n\n\tprivate GameCore.LuaBehaviour behaviour;\n\n\tvoid OnEnable()\n\t{\n\t\tbehaviour = target as GameCore.LuaBehaviour;\n\t}\n\n\tvoid LoadLua()\n\t{\n\t\tif(behaviour.objects != null)\n\t\t{\n\t\t    behaviour.objects.Clear();\n\t\t}\n\t\t// 当然这里还可以遍历前面已经序列化后的变量，不将所有的变量初始化，保留上次序列化后的参数\n\t\t// 这里因为篇幅就没写\n\t\tbehaviour.objects = new List<GameCore.LuaBehaviour.ObjectWrap>();\n\n\t\tif (behaviour.luaScript != null)\n\t\t{\n\t\t\tstring path = AssetDatabase.GetAssetPath(behaviour.luaScript).Replace('\\', '/');\n\t\t\tstring luaDir = \"Assets/Scripts/Lua/\";\n\t\t\tstring requirePath = path.Substring(luaDir.Length).Remove(\".lua\").Replace('/', '.');\n\t\t\tstring cmd = string.Format(\"local t = require('{0}'); return t;\", requirePath);\n\t\t\tobject[] r = ProjectLuaEnv.Instance.DoString(cmd);\n\n\t\t\tLuaTable table = (LuaTable)r[0];\n\t\t\tLuaFunction action = table.Get<LuaFunction>(\"Define\");\n\t\t\taction?.Call(table);   // C# 还是按照Lua的方式访问函数\n\t\t\tLuaTable defineList = table.Get<LuaTable>(\"_DefineList\");\n\n\t\t\tfor(int i = 1; i <= defineList.Length; i++)\n\t\t\t{\n\t\t\t\tLuaTable t = defineList.Get<object, LuaTable>(i);\n\t\t\t\tstring name = t.Get<string>(\"name\");\n\t\t\t\tType type = t.Get<Type>(\"type\");\n\t\t\t\tif (type.IsSubclassOf(typeof(UnityEngine.Object)))\n\t\t\t\t{\n\t\t\t\t\tbehaviour.objects.Add(new GameCore.LuaBehaviour.ObjectWrap()\n\t\t\t\t\t{\n\t\t\t\t\t\tname = name,\n\t\t\t\t\t\ttypeName = type.FullName,\n\t\t\t\t\t\tassembly = Assembly.GetAssembly(type).GetName().Name,\n\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t\telse\n\t\t\t\t{\n\t\t\t\t\t// 这里写值类型的 直接参考blueberryzzz里面的方法，此部分不做赘述\n\t\t\t\t}\n            \n\t\t\t}\n\t\t\ttable.Dispose();\n\t\t\tdefineList.Dispose();\n\t\t\taction.Dispose();\n\t\t\tProjectLuaEnv.Instance.Dispose();\n\t\t}\n\t\tbehaviour.Rebuild();\n\t}\n\n\tpublic override void OnInspectorGUI()\n\t{\n\t\t//base.OnInspectorGUI();\n\t\tserializedObject.Update();\n\t\t//绘制Lua路径\n\t\tif(GUILayout.Button(\"Load Lua\"))\n\t\t{\n\t\t\tLoadLua();\n\t\t}\n\t\tif (GUILayout.Button(\"Save\"))\n\t\t{\n\t\t\tbehaviour.Rebuild();\n\t\t}\n\t\tbehaviour.luaScript = EditorGUILayout.ObjectField(\"Lua Script\", behaviour.luaScript, typeof(DefaultAsset)) as DefaultAsset;\n\t\tEditorGUILayout.LabelField(\"Require Path\", behaviour.requirePath);\n\t\tif(behaviour.objects != null)\n\t\t{\n\t\t\tfor(int i = 0; i < behaviour.objects.Count; i++)\n\t\t\t{\n\t\t\t\tGameCore.LuaBehaviour.ObjectWrap wrap = behaviour.objects[i];\n\t\t\t\twrap.obj = EditorGUILayout.ObjectField(wrap.name, wrap.obj, Assembly.Load(\"UnityEngine\").GetType(wrap.typeName));\n\t\t\t}\n\t\t}\n\t\tserializedObject.ApplyModifiedProperties();\n\t}\n}"
+        },
+        { "type": "header", "level": 3, "data": "效果" },
+        {
+            "type": "image",
+            "data": {
+                "url": "../../images/blogs/Blog-LuaBehaviour-Add.png",
+                "alt": "更新界面截图",
+                "caption": "1 添加组件"
+            }
+        },
+        {
+            "type": "image",
+            "data": {
+                "url": "../../images/blogs/Blog-LuaBehaviour-BindLua.png",
+                "alt": "更新界面截图",
+                "caption": "2 绑定Lua脚本"
+            }
+        },
+        {
+            "type": "image",
+            "data": {
+                "url": "../../images/blogs/Blog-LuaBehaviour-LoadLua.png",
+                "alt": "更新界面截图",
+                "caption": "3 Load Lua"
+            }
+        },
+        {
+            "type": "image",
+            "data": {
+                "url": "../../images/blogs/Blog-LuaBehaviour-SaveCheck.png",
+                "alt": "更新界面截图",
+                "caption": "4 保存预制体并使用文本处理软件打开"
+            }
+        }
+
+    ]
+}
+

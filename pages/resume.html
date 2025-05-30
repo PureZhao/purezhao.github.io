@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="../../images/icons/web-article.png">
     <link rel="stylesheet" href="../../css/nav.css">
-    <title>文章详情</title>
+    <title>个人简历</title>
     <style>
         /* 基础样式 */
         * {
@@ -158,13 +158,6 @@
 <body>
     <nav class="navbar">
         <ul class="nav-links">
-            <li><a href="../../index.html">首页</a></li>
-            <li><a href="../servers.html">服务器列表</a></li>
-            <li><a href="../maps.html">地图列表</a></li>
-            <li><a href="../plugins.html">插件更新</a></li>
-            <li><a href="../bans.html">封禁列表</a></li>
-            <li><a href="../gallery.html">图片画廊</a></li>
-            <li><a href="../team.html">团队成员</a></li>
             <li><a href="resume.html">个人简历</a></li>
         </ul>
     </nav>
@@ -232,7 +225,7 @@
                 case 'image':
                     container.className = 'content-image';
                     container.innerHTML = `
-                        <img src="${item.data.url}" alt="${item.data.alt}">
+                        <img height="480" width="360" src="${item.data.url}" alt="${item.data.alt}">
                         <div class="image-caption">${item.data.caption}</div>
                     `;
                     break;
@@ -259,7 +252,7 @@
                 case 'link':
                     container.className = 'content-link';
                     container.innerHTML = `
-                        <a href="${item.data.url}" target="_blank">${item.data.text}</a>
+                        <a href="sub/blog.html?name=${item.data.url}" target="_blank">${item.data.text}</a>
                     `;
                     break;
                 case 'code':
@@ -277,7 +270,7 @@
 
                 case 'video':
                     container.innerHTML = `
-                        <div class="video-container">
+                        <div height="480" width="360" class="video-container">
                             <iframe src="${item.data}" frameborder="0" allowfullscreen>
                             </iframe>
                         </div>
