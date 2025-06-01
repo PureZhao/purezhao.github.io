@@ -153,6 +153,12 @@
             height: 100%;
         }
 
+        .responsive-video {
+            width: 100%;
+            max-width: 480px; /* 可选：限制最大宽度 */
+            height: auto;
+        }
+
     </style>
 </head>
 <body>
@@ -251,9 +257,20 @@
                     break;
                 case 'link':
                     container.className = 'content-link';
-                    container.innerHTML = `
-                        <a href="sub/blog.html?name=${item.data.url}" target="_blank">${item.data.text}</a>
-                    `;
+                    
+                    if(item.data.url.includes('http'))
+                    {
+                        container.innerHTML = `
+                            <a href="${item.data.url}" target="_blank">${item.data.text}</a>
+                        `;
+                    }
+                    else
+                    {
+                        container.innerHTML = `
+                            <a href="sub/blog.html?name=${item.data.url}" target="_blank">${item.data.text}</a>
+                        `;
+                    }
+                    
                     break;
                 case 'code':
                     container.className = 'content-code';
@@ -270,10 +287,10 @@
 
                 case 'video':
                     container.innerHTML = `
-                        <div height="480" width="360" class="video-container">
-                            <iframe src="${item.data}" frameborder="0" allowfullscreen>
-                            </iframe>
-                        </div>
+                        <video class="responsive-video" controls>
+                            <source src="${item.data}" type="video/mp4">
+                            您的浏览器不支持HTML5视频。
+                        </video>
                     `;
                     break;
             }

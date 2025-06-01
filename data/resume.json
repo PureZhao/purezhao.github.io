@@ -1,6 +1,6 @@
 {
     "content": [
-        { "type": "header", "level": 3, "data": "最新更新日期: 2025.05.31" },
+        { "type": "header", "level": 3, "data": "最新更新日期: 2025.06.01" },
         { 
             "type": "link",
             "data": {
@@ -15,30 +15,30 @@
                 "text": "个人GitHub主页"
             }
         },
-        { "type": "header", "level": 3, "data": "求职: 初级游戏客户端(成都)" },
+        { "type": "header", "level": 3, "data": "求职: Unity游戏客户端(成都)" },
         { "type": "header", "level": 3, "data": "邮箱: purezhao@qq.com" },
-        { "type": "header", "level": 3, "data": "可入职时间：2025.07 (具体看离职流程速度)" },
+        { "type": "header", "level": 3, "data": "可入职时间：2025.07 (离职流程已发起，具体看离职流程速度)" },
         { "type": "header", "level": 2, "data": "教育背景" },
         {
             "type": "table",
             "data": {
                 "headers": ["学校", "层次", "时间", "专业", "表现"],
                 "rows": [
-                    ["宜宾学院", "学士本科", "2016-2020", "数字媒体技术", "2次国家奖学金"],
-                    ["成都理工大学", "硕士研究生", "2020-2023", "计算机技术", "1次一等学业奖学金"]
+                    ["成都理工大学", "硕士研究生", "2020-2023", "计算机技术", "一等学业奖学金"],
+                    ["宜宾学院", "学士本科", "2016-2020", "数字媒体技术", "2次国家奖学金"]
                 ]
             }
         },
         { "type": "header", "level": 2, "data": "技能" },
         { "type": "header", "level": 3, "data": "通用技能" },
-        { "type": "list", "data": ["掌握基础的数据结构，如链表、堆、栈、树、并查集、队列、优先队列", "掌握一些简单算法，如排序（冒泡、插入、快排）、二分查找（一维、二维）、搜索、递归、01背包等", "能够做一定需求分析，会绘制UML数据流图、类图、时序图等", "理解ECS思想、MVC开发模型", "了解单例、订阅者等设计模式", "数学能力还算OK(现阶段能证明的就只有考研数学138)"] },
+        { "type": "list", "data": ["熟悉常用数据结构和算法，LeetCode解题563题，总提交899次，通过率65%，多次参加周赛平均能解3/4的题目", "能够做需求分析，会绘制UML数据流图、类图、时序图等", "理解ECS思想、MVC开发模型", "了解单例、订阅者、工厂等设计模式", "数学能力还算OK(现阶段能证明的就只有考研数学138)"] },
         { "type": "header", "level": 3, "data": "语言相关" },
-        { "type": "list", "data": ["熟悉C#语言，掌握基础语法、异步同步编程，能够使用C#编写类库、编译并载入到其他项目中使用", "熟悉C/C++语言，掌握基础语法、充分理解类的继承、多态，以及静态绑定和动态绑定", "熟悉Lua语言，掌握基础语法、表、元表以及其面向对象实现原理", "了解SourcePawn/ValveScript语言，能够使用其开发相关游戏插件/Mod"] },
+        { "type": "list", "data": ["熟悉C#语言，掌握基础语法、异步同步编程、模板、线程，能够使用C#编写类库、编译并载入到其他项目中使用", "熟悉C/C++语言，掌握基础语法、充分理解类的继承、多态，以及静态绑定和动态绑定；理解模板编程，有模板编程的经历", "熟悉Lua语言，掌握基础语法、表、元表以及其面向对象实现原理", "了解SourcePawn/ValveScript语言，能够使用其开发相关游戏插件/Mod"] },
         { "type": "header", "level": 3, "data": "Unity相关" },
-        { "type": "list", "data": ["熟练使用Unity引擎进行游戏功能开发", "熟练使用UGUI进行开发，会一些优化UI DrawCall次数的技巧", "熟悉AssetBundle打包、发布、更新的经验，有从0到1的自制相关打包策略、打包流程的编写", "熟练使用xlua框架开发游戏相关功能，有从0到1的自制基于xlua游戏开发框架编写", "熟悉DOTween、Odin Inspector、LitJson、AVPro、PuppetMaster、Animancer、LipSync等常用插件的使用", "熟练进行UnityEditor相关工具开发", " 理解并掌握场景的数据结构及算法，有LeetCode刷题与参加周赛经历", "理解对象池相关原理，有自制对象池编写经验", "熟悉PICO、HTC VIVE头盔进行虚拟现实(VR)开发，有一定开发经验", "了解HybirdCLR+YooAsset热更新流程", "了解网络通信，有使用LuaProtobuf + PhotonRPC进行网络游戏开发的经历"] },
+        { "type": "list", "data": ["熟练使用Unity引擎进行游戏功能开发，根据策划提出的GamePlay与工具需求，完成相应玩法开发", "熟练使用UGUI进行开发，会一些优化UI DrawCall次数的技巧", "熟悉AssetBundle打包、发布、更新的经验，有从0到1的自制相关打包策略、打包流程的编写", "熟练使用xlua框架开发游戏相关功能，有从0到1的自制基于xlua游戏开发框架编写", "熟悉DOTween、Odin Inspector、LitJson、AVPro、PuppetMaster、Animancer、Deformer、LipSync等常用插件的使用", "熟练进行UnityEditor相关工具开发", " 理解并掌握常见的数据结构及算法，有LeetCode刷题与参加周赛经历", "理解对象池相关原理，有自制对象池编写经验", "熟悉PICO、HTC VIVE头盔进行虚拟现实(VR)开发，有一定开发经验", "了解HybirdCLR+YooAsset热更新流程", "了解网络通信，有使用LuaProtobuf + PhotonRPC进行网络游戏开发的经历"] },
         { "type": "header", "level": 3, "data": "其他" },
         { "type": "list", "data": ["熟练使用QT(C++/Python)/WinForm(C#)开发小软件", " 能够使用OpenCV(C++/Python)实现相关需求", "熟练使用Git/TortoiesSVN版本管理工具", "了解使用EasyAR开发增强现实(AR)"]},
-        {"type": "text", "data": "LipSync（唇同步）展示"},
+        { "type": "text", "data": "LipSync（唇同步）展示"},
         { "type": "video", "data": "../../data/videos/LipSync-Charlotte.mp4"},
         { "type": "header", "level": 2, "data": "工作经历" },
         { "type": "text", "data": "<b>字节跳动(北京)|Pico Studio 一方工作室|游戏研发（实习）|2022.03—2022.09</b>" },
@@ -46,10 +46,10 @@
         { "type": "text", "data": "<b>西南财经大学天府学院|专职教师| 2023.08—至今</b>" },
         { "type": "header", "level": 2, "data": "工作项目" },
         { "type": "header", "level": 3, "data": "VR射击游戏（字节跳动）-上线项目" },
-        { "type": "text", "data": "1. 重构整个关卡编辑器（关卡策划工具）\n\t- 原关卡编辑器需要程序替策划添加配置参数才能让策划使用\n\t- 重构后策划在飞书文档中配表即可，使用批处理脚本配合Python脚本，将配表导出为.lua配置文件内\n\t- 导出的.lua配置文件可以直接显示到Unity Inspector界面上供策划使用"},
+        { "type": "text", "data": "1. 重构整个关卡编辑器（关卡策划工具）\n\t- 原关卡编辑器需要程序替策划添加配置参数才能让策划使用\n\t- 重构后策划在飞书文档中配表即可，使用批处理脚本配合Python脚本，将配表导出为.lua配置文件\n\t- 导出的.lua配置文件可以直接显示到Unity Inspector界面上供策划使用"},
         { "type": "text", "data": "2. 路点系统开发和维护（关卡策划工具）\n\t- 游戏中玩家或NPC需要移动到某个节点触发事件\n\t- 利用DOTween插件配合状态机控制游戏对象在场景内的移动和时间触发"},
         { "type": "text", "data": "3. 事件监听系统开发和维护\n\t- 使用订阅者设计模式\n\t- 将函数与自定义事件关联起来\n\t- 可向系统中发送相关时间从而触发相应函数"},
-        { "type": "text", "data": "4. 计时器Timer的开发和维护"},
+        { "type": "text", "data": "4. 计时器Timer的开发和维护\n\t- 使用系统Update与LateUpdate开发的计时器\n\t- 在不使用线程、协程的情况下，用于延迟函数执行或者只让函数执行一定时间，现有功能包括，延迟N帧、延迟N秒、每N秒重复执行、加入Update/LateUpdate执行以及销毁（中断）未执行的任务\n\t- 自动销毁已经执行完毕的任务"},
         { "type": "text", "data": "5. 可交互物品处理\n\t- 武器的抓取、投掷、拼装、拆卸等\n\t- 特殊武器-加特林开发，实现了按下开火键后，枪管旋转预热 -> 开火；松开开火键后停火 -> 枪管缓慢停下；单手持枪开火震落\n\t- 特殊武器-火箭筒开发，实现了开火后炮弹飞出，炮弹尾翼展开，炮弹撞击爆炸，爆炸冲击力，炮弹装填\n\t- 特殊武器-迫击炮开发，实现了迫击炮摆放、装填、瞄准、发射、爆炸以及炮弹飞行提示线\n\t- 特殊武器-榴弹炮开发，实现了榴弹发射、重新装填"},
         { "type": "text", "data": "6. 剧情模式下狙击枪风偏提示以及子弹时间开发\n\t- 部分剧情关卡中，玩家狙击枪瞄准会有风速影响，通过三角函数算出子弹飞行轨迹，在映射到瞄准镜上\n\t- 在玩家的瞄准镜上进行提示，如把某个刻度变为红色，提示玩家将NPC放在与红色刻度即可击杀\n\t- 通过爆头射杀NPC会进入子弹时间，可参考《狙击精英》"},
         { "type": "text", "data": "7. 使用PhotonRPC+LuaProtobuf框架进行游戏中的数据同步，完成吃鸡模式的开发\n\t- 玩家建房、准备\n\t- 玩家上飞机、跳伞\n\t- 毒圈初始化、收缩、伤害计算\n\t- 玩家死亡幽灵状态观战而不影响其他玩家游戏\n\t- 玩家复活逻辑"},
@@ -57,7 +57,6 @@
             "type": "image",
             "data": {
                 "url": "../images/blogs/Resume-Release1.jpg",
-
                 "alt": "发布会1",
                 "caption": ""
             }
@@ -66,7 +65,6 @@
             "type": "image",
             "data": {
                 "url": "../images/blogs/Resume-Release2.jpg",
-
                 "alt": "发布会2",
                 "caption": ""
             }
@@ -75,7 +73,6 @@
             "type": "image",
             "data": {
                 "url": "../images/blogs/Resume-Release3.jpg",
-
                 "alt": "发布会3",
                 "caption": "项目在新品发布会上展示的直播截图"
             }
@@ -83,11 +80,13 @@
         { "type": "header", "level": 3, "data": "卡牌回合制-最后的原始人（广州诗悦）" },
         { "type": "text", "data": "1. 使用tolua框架开发游戏功能\n2. 使用UGUI开发相应界面显示功能，与服务端对接协议，使服务器数据正确显示在UI界面上（排行榜）"},
         { "type": "header", "level": 3, "data": "AR、VR-（西南财经大学天府学院）" },
-        { "type": "text", "data": "1. 使用VRIF交互框架，在HTC VIVE平台开发康养康复训练教程、虚拟老年活动室项目开发\n\t- 康养项目中使用PuppetMaster将其中的人物模型转换为布娃娃，使玩家可以抓取模型关节\n\t- 游戏中发布练习任务，检测玩家抓取模型对应关节做相应动作并判断是否合适\n\t- 老年活动室主要是玩家与机器人乒乓球对打"},
-        { "type": "text", "data": "2. 使用EasyAR SDK开发非遗展览项目并出展"},
-        { "type": "text", "data": "3. 以上都使用了下面的游戏开发框架，完成打包与更新"},
+        { "type": "text", "data": "1. 在HTC VIVE平台开发康养康复训练教程、虚拟老年活动室项目开发\n\t-接入的SteamVR SDK，使用VRIF交互框架开发\n\t- 康养项目中使用PuppetMaster将其中的人物模型转换为布娃娃，使玩家可以抓取模型关节\n\t- 游戏中发布练习任务，检测玩家抓取模型对应关节做相应动作并判断是否合适\n\t- 老年活动室主要是玩家与机器人乒乓球对打"},
+        { "type": "text", "data": "2. 使用EasyAR SDK开发非遗展览项目并完成展\n\t- 该项目主要是将非物质文化遗产中的实物建模\n\t- 通过摄像头识别照片，播放模型相应动画，弹出UI为参观群众提供交互\n\t- 通过Deformer插件，让模型动态变形"},
+        { "type": "text", "data": "3. 以上都使用了自研游戏开发框架，完成发布与更新"},
+        { "type": "text", "data": "项目初期Demo"},
+        { "type": "video", "data": "../../data/videos/VR-Demo.mp4"},
         { "type": "header", "level": 2, "data": "自制项目" },
-        { "type": "header", "level": 3, "data": "游戏开发框架" },
+        { "type": "header", "level": 3, "data": "自研游戏开发框架" },
         {
             "type": "link",
             "data": {
@@ -95,7 +94,7 @@
                 "text": "Simple Unity Game Develop Framework"
             }
         },
-        { "type": "list", "data": ["AssetBundle打包策略、打包流程、更新流程，并配套相关的UnityEditor工具", "AssetsManager类，配合上述AssetBundle打包流程，用于读取资源、实例化对象、管理AssetBundle，如自动卸载长时间不使用的AssetBundle包。", "GameObjectPool类，使频繁使用的游戏对象并不销毁而是暂存和复用", "Timer类，使用系统Update与LateUpdate开发的计时器，在不使用线程、协程的情况下，用于延迟函数执行或者只让函数执行一定时间，现有功能包括，延迟N帧、延迟N秒、每N秒重复执行、加入Update/LateUpdate执行以及销毁（中断）未执行的任务；自动销毁已经执行完毕的任务", " Lua脚本中的预制变量显示到Unity的Inspector面板上，使Lua脚本可以绑定在游戏预制体上并设定初始值，只支持设置数值以及当前预制体下的游戏对象和组件。", "加入LuaProtobuf，配合PhotonRPC准备升级为网络游戏框架"]},
+        { "type": "text", "data": "1. 框架各核心模块相互独立，代码可读性强，便于维护和拆装\n2. 框架易上手，开箱即用，创建好项目仓库后将框架内的文件加入即可开发\n3. 游戏逻辑使用Lua脚本开发，迎合市场主流技术，并丰富了C#端调用Lua脚本的方式\n4. 扩展Unity已有类的功能，提示开发效率\n5. AssetBundle导出自动化、流水线化，只需要按照顺序点击菜单栏的导出按钮即可，并提供了自定义策略设置\n6. 网络通信使用LuaProtobuf，与Lua深度绑定，配合PhotonRPC开发网络游戏"},
         {
             "type": "link",
             "data": {
@@ -119,12 +118,12 @@
                 "text": "Base Math Lib"
             }
         },
-        { "type": "list", "data": ["包含矩阵各种运算、如转置、求秩、求逆矩阵、行列式计算、矩阵加法、乘法。", "包含向量各种运算", "包含一个整型数类，用于运算数值超过C++预制int类型最大值的整数运算，支持如加法、减法、乘法、除法、模运算", "该库用于支持某款遥感图像相关软件的算法的开发"]},
+        { "type": "list", "data": ["包含矩阵各种运算、如转置、求秩、求逆矩阵、行列式计算、矩阵加法、乘法", "包含向量各种运算", "包含一个整型数类，用于运算数值超过C++预制int类型最大值的整数运算，支持如加法、减法、乘法、除法、模运算", "该库用于支持某款遥感图像相关软件的算法的开发"]},
         {
             "type": "link",
             "data": {
                 "url": "https://blog.csdn.net/weixin_40885067/article/details/112465813?spm=1001.2014.3001.5501",
-                "text": "库中矩阵运算部分介绍博客（CSDN）请等待转换"
+                "text": "库中矩阵运算部分介绍博客（CSDN）"
             }
         },
         { "type": "header", "level": 3, "data": "求生之路2插件开发" },
