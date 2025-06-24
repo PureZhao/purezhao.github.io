@@ -1,7 +1,7 @@
 {
     "id": 1,
-    "title": "[20250316] 抽奖插件更新公告",
-    "date": "2025-03-16",
+    "title": "[Unity] 自定义AssetsManager进行资源加载与管理",
+    "date": "2025-05-30",
     "author": "Pure_*",
     "content": [
         { "type": "header", "level": 2, "data": "如何自己修改奖池" },
