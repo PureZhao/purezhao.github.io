@@ -26,10 +26,6 @@
             "type": "text",
             "data": "如果在服务器安装了ledge_release.smx插件，在挂边松手后，系统依旧判定玩家还在挂边。"
         }
-    ],
-    "attachments": [
-        {"name": "l4d2_selfhelp_remix.zip", "url": "https://gitee.com/purezhao/l4-d2-plugin-dev-lottery-draw/releases/download/v2025.03.19/l4d2_selfhelp_remix.zip"},
-        {"name": "配置文件参考.cfg", "url": "https://gitee.com/purezhao/l4-d2-plugin-dev-lottery-draw/releases/download/v2025.03.19/l4d2_selfhelp_remix.cfg"}
     ]
 }
 

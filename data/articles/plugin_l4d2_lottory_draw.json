@@ -1,11 +1,11 @@
 {
     "id": 1,
-    "title": "[20250326] 抽奖插件",
-    "date": "2025-03-26",
+    "title": "抽奖插件",
+    "date": "2025-08-09",
     "author": "Pure_*",
     "content": [
         { "type": "header", "level": 2, "data": "使用说明" },
-        { "type": "text", "data": "\t1. 下载附件\n\t2. 将整个sourcemod解压到addons/sourcemod目录\n\t3. 在游戏中，按 y 打开在聊天框\n\t4. 输入指令!ldw，即可打开抽奖菜单" },
+        { "type": "text", "data": "\t1. 在游戏中，按 y 打开在聊天框\n\t2. 输入指令!ldw，即可打开抽奖菜单" },
         { "type": "header", "level": 2, "data": "配置文件介绍" },
         { "type": "header", "level": 3, "data": "配置文件路径" },
         { "type": "text", "data": "配置文件为：data/l4d2_lottery_draw.json" },
@@ -15,10 +15,7 @@
                 "headers": ["Key", "说明", "备注"],
                 "rows": [
                     ["AwardCondition", "配置给予抽奖次数的触发条件", "目前只支持配置表中特感条件，其他条件有待开发"],
-                    ["AwardTypes", "奖池奖品类型", "支持数量和文字改动，但必须要与AwardTypes和AwardBroadcast数量一致"],
-                    ["AwardRates", "奖池各类奖品出现概率", "支持数量和数值大小改动，但必须要与AwardBroadcast和AwardRates数量一致，并且所有值之和必须为100%"],
-                    ["AwardBroadcast", "该类型的奖抽到后广播给其他玩家吗", "只能是true和false，true表示抽到对应类型的奖之后，会广播给其他玩家，但必须要与AwardTypes和AwardRates数量一致"],
-                    ["Awards", "奖池列表，也就是会从这里面抽出", "这个可以自行修改编辑，后面会有如何修改的详细说明"]
+                    ["AwardCategory", "奖池奖品目录", "这个可以自行修改编辑，后面会有如何修改的详细说明"]
                 ]
             }
         },
@@ -34,20 +31,25 @@
                 ]
             }
         },
-        { "type": "header", "level": 3, "data": "Awards中可编辑项的键值说明" },
+        { "type": "header", "level": 3, "data": "AwardCategory中可编辑项的键值说明" },
         { "type": "table",
             "data": {
                 "headers": ["Key", "说明", "备注"],
                 "rows": [
-                    ["type", "奖品类型，与AwardRates和AwardTypes一一对应，这里0就是特等奖，1是一等奖，其他依次类推", "可自行扩展，但是注意要对应，改了奖品类型就要改序号"],
-                    ["descOnPanel", "面板上奖品的描述，这个是使用!ldw后，出现在屏幕左侧面板上奖品的描述", "目前只支持16个中文字及以下或32个英文字及以下的描述"],
-                    ["descOnChat", "聊天框奖品描述，这个是按下抽奖的停止后，出现在左下角聊天框中的奖品描述", "目前只支持16个中文字及以下或32个英文字及以下的描述"],
+                    ["type", "奖品类型", "可自行扩展，但是注意不要超过16个字"],
+                    ["rate", "奖品概率", "小数，与其他奖项加起来最好到1.0，注意：最高只支持到千分位，也就是概率最低0.001"],
+                    ["broadcast", "奖品广播", "该类奖品中了之后，要不要通知给其他玩家"],
+                    ["awards", "奖池列表", "这个类别的奖品，就像商店条目一样"],
+                    ["desc", "奖品描述，这个是按下抽奖的停止后，出现在左下角聊天框中的奖品描述", "目前只支持16个中文字及以下或32个英文字及以下的描述"],
                     ["func", "奖品被抽到后，插件调用的函数名字", "这个函数在award.sp中，如果需要新的功能，则需要编写程序"],
+                    ["plugin", "插件名称", "可选参数，如果该条目使用的是其他插件的函数，此处填写目标插件的文件名称"],
+                    ["cmd", "指令名称", "可选参数，如果该条目使用的是指令来完成效果触发，此处填写目标指令"],
+                    ["flag", "标识", "可选参数，配合cmd参数使用，如果cmd的指令第一个参数不是玩家ID，声明这个参数并赋值为true"],
                     ["args", "函数参数列表，有的函数需要参数，比如奖品他自己的重力降到最低，需要告诉函数重力值是多少，0.1就是这个参数", ""]
                 ]
             }
         },
-        { "type": "header", "level": 3, "data": "Awards中args参数类型说明" },
+        { "type": "header", "level": 3, "data": "awards中args参数类型说明" },
         { "type": "table",
             "data": {
                 "headers": ["参数类型", "说明"],
@@ -88,24 +90,11 @@
         },
         { "type": "header", "level": 2, "data": "如何自己修改奖池" },
         { "type": "header", "level": 3, "data": "增加奖品类型" },
-        { "type": "text", "data": "例如当前配置文件中，关于奖品类型的配置如下" },
-        {
-            "type": "code",
-            "data": "// 配置示例\n{\n\t\"AwardTypes\": [\"特等奖\", \"一等奖\", \"二等奖\"],\n\t\"AwardRates\": [0.2, 0.3, 0.5],\n\t\"AwardBroadcast\": [true, false, false],\n}"
-        },
-        { "type": "text", "data": "现在要增加一个 三等奖类，则配置文件应该改为如下:" },
-        {
-            "type": "code",
-            "data": "// 配置示例\n{\n\t\"AwardTypes\": [\"特等奖\", \"一等奖\", \"二等奖\", \"三等奖\"],\n\t\"AwardRates\": [0.1, 0.2, 0.3, 0.5],\n\t\"AwardBroadcast\": [true, false, false, false],\n}"
-        },
-        { "type": "text", "data": "则在 Awards 配置中 type 则使用 3 来指定该奖品为三等奖" },
-        { "type": "text", "data": "P.S. 为什么是 3？因为程序里面，这种一排一样的东西是从 0 开始数的" },
-        { "type": "text", "data": "还需要注意：AwardRates中每一项加起来必须等于 1.0" },
         { "type": "header", "level": 3, "data": "修改奖品" },
         { "type": "text", "data": "以奖品成为人肉炸弹为例，在配置文件中，它配置如下：" },
         {
             "type": "code",
-            "data": "{\"type\": 5, \"descOnPanel\": \"成为人肉炸弹\", \"descOnChat\": \"成为人肉炸弹!\" ,\"func\": \"PSuicideBomber\", \"args\": [1000, 200.0, 5.0]}"
+            "data": "{\"desc\": \"成为人肉炸弹\" ,\"func\": \"PSuicideBomber\", \"args\": [1000, 200.0, 5.0]}"
         },
         { "type": "text", "data": "根据表格中，成为人肉炸弹的信息为：" },
         { "type": "table",
@@ -119,17 +108,15 @@
         { "type": "text", "data": "比如现在我们要把爆炸伤害调整为 2000， 爆炸半径调整为 500.0，爆炸时间调整为 10.0\n则应该改为" },
         {
             "type": "code",
-            "data": "{\"type\": 5, \"descOnPanel\": \"成为人肉炸弹\", \"descOnChat\": \"成为人肉炸弹!\" ,\"func\": \"PSuicideBomber\", \"args\": [2000, 500.0, 10.0]}"
+            "data": "{\"desc\": \"成为人肉炸弹\", \"func\": \"PSuicideBomber\", \"args\": [2000, 500.0, 10.0]}"
         },
         { "type": "header", "level": 3, "data": "使用内置预设函数添加商品条目" },
-        { "type": "text", "data": "增加一个奖品就是在配置文件的Awards表里面增加一行，一个奖品的信息是写在一对花括号中的，如下" },
+        { "type": "text", "data": "增加一个奖品就是在配置文件的awards表里面增加一行，一个奖品的信息是写在一对花括号中的，如下" },
         { "type": "code", "data": "{}" },
-        { "type": "text", "data": "参考AwardTypes确定奖品类型(type)，如增加一个三等奖，配置中应该书写" },
-        { "type": "code", "data": "{\"type\": 3}" },
-        { "type": "text", "data": "确定新奖品在抽奖菜单和聊天框中，显示的提示，也就是为新奖品取一个名字，比如在抽奖菜单中显示 点地板成Jockey，而在聊天框中显示 召唤了5个Jockey，配置中应该书写" },
-        { "type": "code", "data": "{\"type\": 3, \"descOnPanel\": \"点地板成Jockey\", \"descOnChat\": \"召唤了5个Jockey\"}" },
+        { "type": "text", "data": "为新奖品取一个名字，比如 点地板成Jockey" },
+        { "type": "code", "data": "{\"desc\": \"点地板成Jockey\"}" },
         { "type": "text", "data": "确定新奖品使用的函数名字，参考可使用函数列表中的函数，比如此处召唤Jockey就需要使用PSummonInfected，在配置中继续书写" },
-        { "type": "code", "data": "{\"type\": 3, \"descOnPanel\": \"点地板成Jockey\", \"descOnChat\": \"召唤了5个Jockey\", \"func\": \"PSummonInfected\"}" },
+        { "type": "code", "data": "{\"desc\": \"点地板成Jockey\", \"func\": \"PSummonInfected\"}" },
         { "type": "text", "data": "确定好使用的函数后，为其指定参数，比如函数PSummonInfected在可使用函数列表中信息如下" },
         { "type": "table",
             "data": {
@@ -140,23 +127,15 @@
             }
         },
         { "type": "text", "data": "可知函数PSummonInfected需要三个参数，从左到右的顺序为客户端ID、感染者ID、数量，由于新奖品效果是召唤5个Jockey，那这里感染者ID为4，数量为5，则在配置中按参数顺序书写" },
-        { "type": "code", "data": "{\"type\": 3, \"descOnPanel\": \"点地板成Jockey\", \"descOnChat\": \"召唤了5个Jockey\", \"func\": \"PSummonInfected\", \"args\": [4, 5]}" },
+        { "type": "code", "data": "{\"desc\": \"点地板成Jockey\"， \"func\": \"PSummonInfected\", \"args\": [4, 5]}" },
         { "type": "text", "data": "最后将写好的配置，添加到Awards列表中，如下" },
-        { "type": "code", "data": "\"Awards\": <br>[<br>&nbsp;&nbsp;&nbsp;&nbsp;{\"type\": 0, \"descOnPanel\": \"自己进入无敌状态\", \"descOnChat\": \"他自己进入无敌状态\" ,\"func\": \"PSetPlayerGodMode\", \"args\": []},<br>&nbsp;&nbsp;&nbsp;&nbsp;{\"type\": 0, \"descOnPanel\": \"自己的重力降到最低\", \"descOnChat\": \"他自己的重力降到最低\" ,\"func\": \"PSetPlayerGravity\", \"args\": [0.1, 0.0]},<br>&nbsp;&nbsp;&nbsp;&nbsp;{\"type\": 3, \"descOnPanel\": \"点地板成Jockey\", \"descOnChat\": \"召唤了5个Jockey\", \"func\": \"PSummonInfected\", \"args\": [4, 5]}<br>]" },
+        { "type": "code", "data": "\"Awards\": <br>[<br>&nbsp;&nbsp;&nbsp;&nbsp;{\"desc\": \"自己进入无敌状态\", \"func\": \"PSetPlayerGodMode\", \"args\": []},<br>&nbsp;&nbsp;&nbsp;&nbsp;{\"desc\": \"自己的重力降到最低\",\"func\": \"PSetPlayerGravity\", \"args\": [0.1, 0.0]},<br>&nbsp;&nbsp;&nbsp;&nbsp;{\"desc\": \"点地板成Jockey\", \"func\": \"PSummonInfected\", \"args\": [4, 5]}<br>]" },
         { "type": "header", "level": 3, "data": "使用外部其他插件添加商品条目（使用指令）" },
-        { "type": "text", "data": "比如有一个l4d2_play_as_tank的插件，使玩家可以变身为Tank，其指令为：!playastank <ClientID> <HealthPoint>，则条目可以直接先写为：" },
+        { "type": "text", "data": "比如有一个l4d2_play_as_si的插件，使玩家可以变身为Tank，其指令为：!playassi <ClientID> <HealthPoint>，则条目可以直接先写为：" },
         {
             "type": "code",
-            "data": "{\"type\": 0, \"descOnPanel\": \"变身Tank\" , \"descOnChat\": \"变身Tank\", \"cmd\": \"playastank\", \"args\": []},"
-        },
-        { "type": "text", "data": "现在需要来确定参数列表args中填写的值\n\t1. 第一个参数<ClientID>是系统自动赋值，所以在args中不需要体现\n\t2. 第二个参数<HealthPoint>血量，传递进去确定变身Tank后的血量，如1000\n将确定好的参数填写进入args列表，如下" },
-        {
-            "type": "code",
-            "data": "{\"type\": 0, \"descOnPanel\": \"变身Tank\" , \"descOnChat\": \"变身Tank\", \"cmd\": \"playastank\", \"args\": [1000]},"
-        }    
-    ],
-    "attachments": [
-        {"name": "l4d2_lottery_draw.zip", "url": "https://gitee.com/purezhao/l4-d2-plugin-dev-lottery-draw/releases/download/v2025.03.19/l4d2_lottery_draw.zip"}
+            "data": "{\"desc\": \"变身Tank\", \"cmd\": \"playassi\", \"args\": [8]},"
+        }
     ]
 }
 

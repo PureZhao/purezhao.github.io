@@ -35,9 +35,6 @@
         },
         { "type": "header", "level": 2, "data": "演示视频" },
         { "type": "video", "data": "https://www.bilibili.com/video/BV1EQdkYeELL/" }
-    ],
-    "attachments": [
-        {"name": "l4d2_play_as_si.zip", "url": "https://gitee.com/purezhao/l4-d2-plugin-dev-lottery-draw/releases/download/v2025.03.19/l4d2_play_as_si.zip"}
     ]
 }
 
