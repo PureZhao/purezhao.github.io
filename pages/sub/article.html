@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,7 +30,7 @@
             padding: 2rem;
             background: white;
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         /* 内容元素样式 */
@@ -47,7 +48,7 @@
             max-width: 100%;
             height: auto;
             border-radius: 6px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .content-table {
@@ -61,7 +62,8 @@
             background: white;
         }
 
-        th, td {
+        th,
+        td {
             padding: 12px;
             border: 1px solid #ddd;
         }
@@ -90,7 +92,7 @@
             background: white;
             border-radius: 12px;
             padding: 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .attachments h3 {
@@ -140,10 +142,12 @@
 
         .video-container {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9比例 */
+            padding-bottom: 56.25%;
+            /* 16:9比例 */
             height: 0;
             overflow: hidden;
         }
+
         .video-container iframe,
         .video-container video {
             position: absolute;
@@ -153,8 +157,89 @@
             height: 100%;
         }
 
+        /* 多图水平布局 */
+        /* 多图水平布局 - 优化版 */
+        .content-images-horizontal {
+            margin: 1.5rem auto;
+            max-width: 100%;
+            display: flex;
+            justify-content: center;
+            /* 整体容器居中 */
+        }
+
+        .images-container {
+            display: inline-flex;
+            /* 改为行内flex，避免父容器过度拉伸 */
+            justify-content: center;
+            /* 水平居中 */
+            align-items: center;
+            /* 垂直居中 */
+            overflow-x: auto;
+            gap: 15px;
+            padding: 5px 0;
+            max-width: 100%;
+            /* 防止溢出父容器 */
+        }
+
+        .image-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* 图片和标题居中 */
+            min-width: max-content;
+            /* 防止图片被压缩 */
+            flex-shrink: 0;
+            /* 防止图片缩小 */
+        }
+
+        .image-wrapper img {
+            display: block;
+            max-width: 100%;
+            /* 防止图片溢出容器 */
+            height: auto;
+            /* 保持宽高比 */
+            object-fit: contain;
+            /* 确保图片完整显示 */
+        }
+
+        .image-caption {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+            text-align: center;
+            width: 100%;
+            /* 标题宽度与图片一致 */
+            word-break: break-word;
+            /* 防止长单词溢出 */
+            max-width: 100%;
+            /* 防止标题溢出 */
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .images-container {
+                gap: 10px;
+            }
+
+            .image-wrapper {
+                max-width: 85%;
+                /* 适当增加宽度 */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .images-container {
+                gap: 8px;
+            }
+
+            .image-wrapper {
+                max-width: 95%;
+                /* 小屏幕下更紧凑 */
+            }
+        }
     </style>
 </head>
+
 <body>
     <nav class="navbar">
         <ul class="nav-links">
@@ -164,14 +249,12 @@
             <li><a href="../plugins.html">插件更新</a></li>
             <li><a href="../bans.html">封禁列表</a></li>
             <li><a href="../gallery.html">图片画廊</a></li>
-            <li><a href="../team.html">团队成员</a></li>
         </ul>
     </nav>
 
     <div class="article-container" id="articleContainer"></div>
-    
-    <script>
 
+    <script>
         // 获取文章ID
         const urlParams = new URLSearchParams(window.location.search);
         const articleId = parseInt(urlParams.get('id'));
@@ -179,7 +262,7 @@
         // 查找文章
         fetch(`../../data/articles/${articleName}.json`)
             .then(response => response.json())
-            .then(article => {
+            .then(async article => {
                 if (article) {
                     const container = document.getElementById('articleContainer');
 
@@ -192,32 +275,34 @@
                         </div>
                     `;
 
+
+                    // 渲染附件
+                    // if (article.attachments?.length > 0) {
+                    //     const attachmentsDiv = document.createElement('div');
+                    //     attachmentsDiv.className = 'attachments';
+                    //     attachmentsDiv.innerHTML = `
+                    //         <h3>下载</h3>
+                    //         <ul class="attachment-list">
+                    //             ${article.attachments.map(file => `
+                    //                 <li class="attachment-item">
+                    //                     <img src="${getFileIcon(file.url)}" class="attachment-icon">
+                    //                     <a href="${file.url}" 
+                    //                        class="attachment-download" 
+                    //                        download="${file.name}">
+                    //                         ${file.name}
+                    //                     </a>
+                    //                 </li>
+                    //             `).join('')}
+                    //         </ul>
+                    //     `;
+                    //     container.appendChild(attachmentsDiv);
+                    // }
+                    // 渲染附件（使用修改后的函数）
+                    await renderAttachments(article);
                     // 渲染内容
                     article.content.forEach(item => {
                         container.appendChild(renderContentItem(item));
                     });
-
-                    // 渲染附件
-                    if (article.attachments?.length > 0) {
-                        const attachmentsDiv = document.createElement('div');
-                        attachmentsDiv.className = 'attachments';
-                        attachmentsDiv.innerHTML = `
-                            <h3>相关附件</h3>
-                            <ul class="attachment-list">
-                                ${article.attachments.map(file => `
-                                    <li class="attachment-item">
-                                        <img src="${getFileIcon(file.url)}" class="attachment-icon">
-                                        <a href="${file.url}" 
-                                           class="attachment-download" 
-                                           download="${file.name}">
-                                            ${file.name}
-                                        </a>
-                                    </li>
-                                `).join('')}
-                            </ul>
-                        `;
-                        container.appendChild(attachmentsDiv);
-                    }
 
                 } else {
                     document.getElementById('articleContainer').innerHTML = `
@@ -227,33 +312,144 @@
                         </div>
                     `;
                 }
-                
-                });
-        
+
+            });
+
         // const article = window.articlesData[0]
         // .find(a => a.id === articleId);
+        // 新增函数：检查文件是否存在
+        async function checkFileExists(url) {
+            try {
+                const response = await fetch(url, { method: 'HEAD' });
+                return response.ok;
+            } catch (error) {
+                console.error('Error checking file:', error);
+                return false;
+            }
+        }
 
+        // 修改后的渲染附件函数
+        async function renderAttachments(article) {
+            if (article.attachments?.length > 0) {
+                const attachmentsDiv = document.createElement('div');
+                attachmentsDiv.className = 'attachments';
+                attachmentsDiv.innerHTML = `
+            <h3>下载</h3>
+            <ul class="attachment-list">
+                ${await Promise.all(article.attachments.map(async (file) => {
+                    const exists = await checkFileExists(file.url);
+                    if (exists) {
+                        return `
+                            <li class="attachment-item">
+                                <img src="${getFileIcon(file.url)}" class="attachment-icon">
+                                <a href="${file.url}" class="attachment-download" download="${file.name}">
+                                    ${file.name}
+                                </a>
+                            </li>
+                        `;
+                    } else {
+                        return `
+                            <li class="attachment-item">
+                                <img src="${getFileIcon(file.url)}" class="attachment-icon">
+                                <span style="color: gray; text-decoration: line-through;">
+                                    ${file.name}
+                                </span>
+                            </li>
+                        `;
+                    }
+                }))}
+            </ul>
+        `;
+
+                // 为不存在的文件添加点击事件
+                const container = document.getElementById('articleContainer');
+                container.appendChild(attachmentsDiv);
+
+                // 由于我们使用了innerHTML，需要手动为动态添加的元素绑定事件
+                // 这里使用事件委托来处理点击事件
+                container.addEventListener('click', async (event) => {
+                    const spanElement = event.target.closest('span[style*="text-decoration: line-through"]');
+                    if (spanElement) {
+                        const fileName = spanElement.textContent.trim();
+                        // 由于我们无法直接从span中获取url，这里简化处理，实际中需要存储或通过其他方式获取url
+                        // 假设我们可以通过某种方式获取到对应的url（这里仅为示例）
+                        // 实际实现中，你可能需要在渲染时存储url信息，例如使用data-*属性
+                        alert('文件不存在');
+                    }
+                });
+            }
+        }
         function renderContentItem(item) {
             const container = document.createElement('div');
-            
-            switch(item.type) {
+
+            switch (item.type) {
                 case 'text':
                     container.className = 'content-text';
                     container.innerHTML = item.data.replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
                     break;
 
+                // 新增 list 类型的处理逻辑
+                case 'list':
+                    const listContainer = document.createElement("div");
+                    item.data.forEach(listItem => {
+                        const listItemElement = document.createElement('div');
+                        listItemElement.innerHTML = listItem.replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');;
+                        listContainer.appendChild(listItemElement);
+                    });
+                    container.appendChild(listContainer);
+                    break;
+
                 case 'image':
-                    container.className = 'content-image';
-                    container.innerHTML = `
-                        <img src="${item.data.url}" alt="${item.data.alt}">
-                        <div class="image-caption">${item.data.caption}</div>
-                    `;
+                    if (Array.isArray(item.data)) {
+                        // 多图处理逻辑
+                        container.className = 'content-images-horizontal';
+                        const imagesContainer = document.createElement('div');
+                        imagesContainer.className = 'images-container';
+
+                        item.data.forEach(imgData => {
+                            const imgWrapper = document.createElement('div');
+                            imgWrapper.className = 'image-wrapper';
+
+                            const imgElement = document.createElement('img');
+                            imgElement.src = imgData.url;
+                            imgElement.alt = imgData.alt || '';
+                            imgElement.style.width = imgData.width || 'auto';
+                            imgElement.style.height = imgData.height || 'auto';
+                            imgElement.style.flexShrink = '0';
+
+                            const imgCaption = document.createElement('div');
+                            imgCaption.className = 'image-caption';
+                            imgCaption.textContent = imgData.caption || '';
+
+                            imgWrapper.appendChild(imgElement);
+                            if (imgData.caption) imgWrapper.appendChild(imgCaption);
+                            imagesContainer.appendChild(imgWrapper);
+                        });
+
+                        container.appendChild(imagesContainer);
+                    } else {
+                        // 单图处理逻辑
+                        container.className = 'content-image';
+                        const imgElement = document.createElement('img');
+                        imgElement.src = item.data.url;
+                        imgElement.alt = item.data.alt || '';
+                        imgElement.style.width = item.data.width || 'auto';
+                        imgElement.style.height = item.data.height || 'auto';
+
+                        container.appendChild(imgElement);
+                        if (item.data.caption) {
+                            const imgCaption = document.createElement('div');
+                            imgCaption.className = 'image-caption';
+                            imgCaption.textContent = item.data.caption;
+                            container.appendChild(imgCaption);
+                        }
+                    }
                     break;
 
                 case 'table':
                     container.className = 'content-table';
                     const headers = item.data.headers.join('</th><th>');
-                    const rows = item.data.rows.map(row => 
+                    const rows = item.data.rows.map(row =>
                         `<tr><td>${row.join('</td><td>').replace(/\n/g, '<br>')}</td></tr>`
                     ).join('');
                     container.innerHTML = `
@@ -270,7 +466,7 @@
                         <pre><code>${item.data}</code></pre>
                     `;
                     break;
-                
+
                 case 'header':
                     container.innerHTML = `
                         <h${item.level}>${item.data}</h${item.level}>
@@ -290,7 +486,7 @@
             return container;
         }
 
-        
+
 
         function getFileIcon(url) {
             const ext = url.split('.').pop().toLowerCase();
@@ -304,4 +500,5 @@
         }
     </script>
 </body>
+
 </html>

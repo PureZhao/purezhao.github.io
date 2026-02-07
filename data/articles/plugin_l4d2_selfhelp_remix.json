@@ -1,8 +1,11 @@
 {
     "id": 4,
-    "title": "[20250317] 自救插件",
+    "title": "自救插件",
     "date": "2025-03-17",
     "author": "Pure_*",
+    "attachments":[
+        {"url": "/archieves/l4d2_selfhelp_redux.zip", "name":"倒地自救与互救-插件压缩包"}
+    ],
     "content": [
         {
             "type": "text",

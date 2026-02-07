@@ -1,8 +1,11 @@
 {
     "id": 5,
-    "title": "[20250325] 玩家无敌插件",
+    "title": "玩家无敌插件",
     "date": "2025-03-25",
     "author": "Pure_*",
+    "attachments":[
+        {"url": "/archieves/l4d2_god_mode.zip", "name":"无敌-插件压缩包"}
+    ],
     "content": [
         { "type": "text", "data": "这是一个娱乐插件，使玩家可以在战役模式中，除了机制杀，无视任何伤害" },
         { "type": "header", "level": 2, "data": "使用方法" },

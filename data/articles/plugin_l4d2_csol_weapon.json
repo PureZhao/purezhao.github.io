@@ -3,6 +3,9 @@
     "title": "CSOL武器插件",
     "date": "2025-08-09",
     "author": "Pure_*",
+    "attachments":[
+        {"url": "/archieves/l4d2_csol_weapon.zip", "name":"CSOL武器-插件压缩包"}
+    ],
     "content": [
         { "type": "header", "level": 3, "data": "参数类型说明（重要）" },
         { "type": "table",

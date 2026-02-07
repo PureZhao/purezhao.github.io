@@ -1,0 +1,83 @@
+[
+    {
+        "id": 1,
+        "title": "抽奖插件",
+        "date": "2025-03-26",
+        "author": "Pure_*",
+        "tags": ["新功能", "修复"],
+        "url": "plugin_l4d2_lottory_draw",
+        "type": "hotfix"
+    },
+    {
+        "id": 6,
+        "title": "商店插件",
+        "date": "2025-03-25",
+        "author": "Pure_*",
+        "tags": ["新功能", "修复"],
+        "url": "plugin_l4d2_shop_system",
+        "type": "hotfix"
+    },
+    {
+        "id": 2,
+        "title": "自救插件",
+        "date": "2025-03-17",
+        "author": "Pure_*",
+        "tags": ["重写"],
+        "url": "plugin_l4d2_selfhelp_remix",
+        "type": "hotfix"
+    },
+    {
+        "id": 3,
+        "title": "浏览玩家信息插件",
+        "date": "2025-03-23",
+        "author": "Pure_*",
+        "tags": ["功能性"],
+        "url": "plugin_l4d2_list_player",
+        "type": "hotfix"
+    },
+    {
+        "id": 4,
+        "title": "战役模式幸存者玩特感插件",
+        "date": "2025-04-18",
+        "author": "Pure_*",
+        "tags": ["娱乐"],
+        "url": "plugin_l4d2_play_as_si",
+        "type": "hotfix"
+    },
+    {
+        "id": 5,
+        "title": "玩家无敌插件",
+        "date": "2025-03-23",
+        "author": "Pure_*",
+        "tags": ["娱乐"],
+        "url": "plugin_l4d2_god_mode",
+        "type": "hotfix"
+    },
+    {
+        "id": 7,
+        "title": "AC130插件",
+        "date": "2025-03-27",
+        "author": "Pure_*",
+        "tags": ["娱乐"],
+        "url": "plugin_l4d2_ac130",
+        "type": "hotfix"
+    },
+    {
+        "id": 8,
+        "title": "自动瞄准插件",
+        "date": "2025-03-27",
+        "author": "Pure_*",
+        "tags": ["娱乐"],
+        "url": "plugin_l4d2_auto_aim",
+        "type": "hotfix"
+    },
+    {
+        "id": 9,
+        "title": "CSOL武器插件",
+        "date": "2025-03-27",
+        "author": "Pure_*",
+        "tags": ["娱乐"],
+        "url": "plugin_l4d2_csol_weapon",
+        "type": "hotfix"
+    }
+]

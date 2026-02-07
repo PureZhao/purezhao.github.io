@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,23 +17,29 @@
 
         body {
             font-family: 'Microsoft YaHei', sans-serif;
-            padding-top: 70px; /* 导航栏高度补偿 */
+            padding-top: 70px;
+            /* 导航栏高度补偿 */
             background-color: #f5f5f5;
         }
 
         /* 博客内容样式 */
         .blog-container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 2rem 1rem;
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
         }
 
         .article-card {
             background: white;
             border-radius: 8px;
             padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
         }
 
@@ -83,18 +90,43 @@
             text-decoration: underline;
         }
 
+        /* 搜索框样式 */
+        .search-container {
+            margin-bottom: 2rem;
+            grid-column: 1 / -1;
+            /* 跨三列 */
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
         /* 响应式设计 */
         @media (max-width: 768px) {
             .blog-container {
                 padding: 1rem;
             }
-            
+
+            .articles-grid {
+                grid-template-columns: 1fr;
+            }
+
             .article-card {
                 padding: 1.5rem;
+            }
+
+            .search-container {
+                grid-column: 1;
             }
         }
     </style>
 </head>
+
 <body>
     <nav class="navbar">
         <ul class="nav-links">
@@ -104,42 +136,73 @@
             <li><a href="plugins.html">插件更新</a></li>
             <li><a href="bans.html">封禁列表</a></li>
             <li><a href="gallery.html">图片画廊</a></li>
-            <li><a href="team.html">团队成员</a></li>
+            <li><a>插件答疑QQ群：暂无</a></li>
         </ul>
     </nav>
 
     <div class="blog-container">
+        <!-- 搜索框 -->
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="搜索插件...">
+        </div>
+
         <!-- 动态内容容器 -->
-        <div id="articlesContainer"></div>
+        <div class="articles-grid" id="articlesContainer"></div>
     </div>
     <script>
-
         const container = document.getElementById("articlesContainer");
+        const searchInput = document.getElementById("searchInput");
+        let articlesData = []; // 用于存储从JSON获取的文章数据
 
-        fetch("../data/articles.json")
+        // 初始化文章列表
+        function initArticles(articles) {
+            articlesData = articles; // 存储文章数据
+            renderArticles(articles);
+        }
+
+        // 渲染文章列表
+        function renderArticles(articlesToRender) {
+            container.innerHTML = ''; // 清空容器
+            articlesToRender.forEach(article => {
+                const articleEl = document.createElement("div");
+                articleEl.className = "article-card";
+                articleEl.innerHTML = ` 
+            <h2 class="article-title"> 
+                <a href="sub/article.html?id=${article.id}&name=${article.url}" target="_blank">${article.title}</a> 
+            </h2> 
+            <div class="article-meta"> 
+                <span>${article.date}</span> • 
+                <span>作者：${article.author}</span> 
+            </div> 
+            <div class="article-tags"> 
+                ${article.tags.map(tag => ` 
+                    <span class="tag" style="background: ${getTagColor(article.type)};"> 
+                        ${tag} 
+                    </span> 
+                `).join('')} 
+            </div> 
+        `;
+                container.appendChild(articleEl);
+            });
+        }
+
+        // 搜索功能
+        function searchArticles() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const filteredArticles = articlesData.filter(article =>
+                article.title.toLowerCase().includes(searchTerm) ||
+                article.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+            );
+            renderArticles(filteredArticles);
+        }
+
+        // 监听搜索框输入事件
+        searchInput.addEventListener("input", searchArticles);
+
+        fetch("../data/plugins.json")
             .then(response => response.json())
             .then(articles => {
-                articles.forEach(article => {
-                    const articleEl = document.createElement("div");
-                    articleEl.className = "article-card";
-                    articleEl.innerHTML = `
-                        <h2 class="article-title">
-                            <a href="sub/article.html?id=${article.id}&name=${article.url}" target="_blank">${article.title}</a>
-                        </h2>
-                        <div class="article-meta">
-                            <span>${article.date}</span> • 
-                            <span>作者：${article.author}</span>
-                        </div>
-                        <div class="article-tags">
-                            ${article.tags.map(tag => `
-                                <span class="tag" style="background: ${getTagColor(article.type)};">
-                                    ${tag}
-                                </span>
-                            `).join('')}
-                        </div>
-                    `;
-                    container.appendChild(articleEl);
-        });
+                initArticles(articles); // 初始化文章列表
             });
 
         function getTagColor(type) {
@@ -149,7 +212,8 @@
                 default: "#9E9E9E"
             };
             return colors[type] || colors.default;
-        }
+        } 
     </script>
 </body>
+
 </html>

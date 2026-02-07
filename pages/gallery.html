@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,7 +40,7 @@
             border-radius: 12px;
             overflow: hidden;
             transition: transform 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             cursor: pointer;
         }
 
@@ -49,7 +50,8 @@
 
         .image-wrapper {
             position: relative;
-            padding-top: 56.25%; /* 16:9 比例 */
+            padding-top: 56.25%;
+            /* 16:9 比例 */
             overflow: hidden;
         }
 
@@ -92,7 +94,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0, 0, 0, 0.9);
             z-index: 2000;
             justify-content: center;
             align-items: center;
@@ -113,7 +115,7 @@
             max-width: 100%;
             max-height: 80vh;
             border-radius: 8px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
         }
 
         .close-btn {
@@ -146,7 +148,7 @@
 
         .download-btn:hover {
             background: #45a049;
-            box-shadow: 0 4px 15px rgba(76,175,80,0.4);
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
         }
 
         .image-info {
@@ -160,8 +162,13 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         /* 响应式设计 */
@@ -169,15 +176,15 @@
             .image-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .image-caption {
                 padding: 1rem;
             }
-            
+
             .modal-image {
                 max-height: 60vh;
             }
-            
+
             .download-btn {
                 bottom: 10px;
                 padding: 8px 16px;
@@ -185,6 +192,7 @@
         }
     </style>
 </head>
+
 <body>
     <nav class="navbar">
         <ul class="nav-links">
@@ -194,7 +202,7 @@
             <li><a href="plugins.html">插件更新</a></li>
             <li><a href="bans.html">封禁列表</a></li>
             <li><a href="gallery.html">图片画廊</a></li>
-            <li><a href="team.html">团队成员</a></li>
+            <li><a>插件答疑QQ群：暂无</a></li>
         </ul>
     </nav>
 
@@ -216,46 +224,17 @@
     </div>
 
     <script>
-        // 图片数据
-        const galleryData = [
-            {
-                title: "经典战役瞬间",
-                description: "2023年度最精彩对局回放",
-                url: "https://picsum.photos/600/400?random=1"
-            },
-            {
-                title: "新地图预览",
-                description: "即将上线的新战场概念图",
-                url: "https://picsum.photos/600/400?random=2"
-            },
-            {
-                title: "玩家聚会合影",
-                description: "年度线下玩家见面会记录",
-                url: "https://picsum.photos/600/400?random=3"
-            },
-            {
-                title: "武器皮肤展示",
-                description: "最新推出的限定武器皮肤",
-                url: "https://picsum.photos/600/400?random=4"
-            },
-            {
-                title: "赛事宣传海报",
-                description: "冬季锦标赛官方宣传图",
-                url: "https://picsum.photos/600/400?random=5"
-            },
-            {
-                title: "开发幕后花絮",
-                description: "插件开发团队工作日常",
-                url: "https://picsum.photos/600/400?random=6"
-            }
-        ];
+
+        const grid = document.getElementById("imageGrid");
 
         // 生成图片卡片
-        const grid = document.getElementById("imageGrid");
-        galleryData.forEach(item => {
-            const card = document.createElement("div");
-            card.className = "gallery-card";
-            card.innerHTML = `
+        fetch("../data/gallery.json")
+            .then(response => response.json())
+            .then(items => {
+                items.forEach(item => {
+                    const card = document.createElement("div");
+                    card.className = "gallery-card";
+                    card.innerHTML = `
                 <div class="image-wrapper">
                     <img src="${item.url}" 
                          alt="${item.title}" 
@@ -270,27 +249,29 @@
                     <p class="caption-description">${item.description}</p>
                 </div>
             `;
-            
-            // 添加点击事件
-            card.querySelector('.gallery-image').addEventListener('click', function() {
-                const modal = document.getElementById('imageModal');
-                const modalImage = document.getElementById('modalImage');
-                const modalTitle = document.getElementById('modalTitle');
-                const modalDescription = document.getElementById('modalDescription');
-                const downloadBtn = document.getElementById('downloadBtn');
 
-                modalImage.src = this.dataset.fullsize;
-                modalTitle.textContent = this.dataset.title;
-                modalDescription.textContent = this.dataset.description;
-                downloadBtn.href = this.dataset.fullsize;
-                downloadBtn.download = this.dataset.title.replace(/ /g, '_');
-                
-                modal.classList.add('active');
-                document.body.style.overflow = 'hidden';
+                    // 添加点击事件
+                    card.querySelector('.gallery-image').addEventListener('click', function () {
+                        const modal = document.getElementById('imageModal');
+                        const modalImage = document.getElementById('modalImage');
+                        const modalTitle = document.getElementById('modalTitle');
+                        const modalDescription = document.getElementById('modalDescription');
+                        const downloadBtn = document.getElementById('downloadBtn');
+
+                        modalImage.src = this.dataset.fullsize;
+                        modalTitle.textContent = this.dataset.title;
+                        modalDescription.textContent = this.dataset.description;
+                        downloadBtn.href = this.dataset.fullsize;
+                        downloadBtn.download = this.dataset.title.replace(/ /g, '_');
+
+                        modal.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                    });
+
+                    grid.appendChild(card);
+                });
             });
-            
-            grid.appendChild(card);
-        });
+
 
         // 关闭模态框逻辑
         document.querySelector('.close-btn').addEventListener('click', () => {
@@ -300,7 +281,7 @@
 
         // 点击背景关闭
         document.getElementById('imageModal').addEventListener('click', (e) => {
-            if(e.target === document.getElementById('imageModal')) {
+            if (e.target === document.getElementById('imageModal')) {
                 document.getElementById('imageModal').classList.remove('active');
                 document.body.style.overflow = 'auto';
             }
@@ -308,11 +289,12 @@
 
         // ESC键关闭
         document.addEventListener('keydown', (e) => {
-            if(e.key === 'Escape') {
+            if (e.key === 'Escape') {
                 document.getElementById('imageModal').classList.remove('active');
                 document.body.style.overflow = 'auto';
             }
         });
     </script>
 </body>
+
 </html>

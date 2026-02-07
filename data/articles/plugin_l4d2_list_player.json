@@ -1,8 +1,11 @@
 {
     "id": 3,
-    "title": "[20250323] 浏览玩家信息插件",
+    "title": "浏览玩家信息插件",
     "date": "2025-03-23",
     "author": "Pure_*",
+    "attachments":[
+        {"url": "/archieves/l4d2_list_player.zip", "name":"浏览玩家信息-插件压缩包"}
+    ],
     "content": [
         { "type": "text", "data": "这是一个功能性插件，用于实时查看服务器上的玩家信息。" },
         { "type": "text", "data": "用于获取玩家的信息，包括：玩家昵称、客户端ID" },

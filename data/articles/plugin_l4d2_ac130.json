@@ -1,8 +1,11 @@
 {
     "id": 7,
-    "title": "[20250327] AC130",
+    "title": "AC130",
     "date": "2025-03-27",
     "author": "Pure_*",
+    "attachments":[
+        {"url": "/archieves/l4d2_ac130.zip", "name":"AC130-插件压缩包（重写ING）"}
+    ],
     "content": [
         { "type": "text", "data": "这是一个娱乐插件，让玩家可以在游戏中召唤空中轰炸（简约版）" },
         { "type": "header", "level": 2, "data": "使用方法" },

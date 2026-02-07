@@ -1,13 +1,21 @@
 {
-    "id": 8,
-    "title": "[20250327] 自动瞄准插件",
+    "title": "自动瞄准插件",
     "date": "2025-03-27",
     "author": "Pure_*",
     "content": [
-        { "type": "text", "data": "这是一个娱乐插件，使玩家可以开火时自动瞄准特感" },
         { "type": "header", "level": 2, "data": "使用方法" },
-        { "type": "text", "data": "\t1. 该指令只能是服务器管理员使用\n\t2. 指令格式：!autoaim [ClientID] [Time]\n\t3. [ClientID]为客户端ID，整数，[Time]持续时间，单位秒，整数\n\t4. 获取客户端ID可以使用<a href=\"https://purezhao.github.io/pages/sub/article.html?id=3&name=plugin_l4d2_list_player\" target=\"_blank\">l4d2_list_player</a>插件" },
+        {
+            "type": "list",
+            "data": [
+                "\t1. 该指令只能是服务器管理员使用，在聊天框使用",
+                "\t2. 指令格式：!autoaim [ClientID] [Time]",
+                "\t3. [ClientID]为客户端ID，整数，[Time]持续时间，单位秒，整数",
+                "\t4. 获取客户端ID可以使用<a href=\"https://purezhao.github.io/pages/sub/article.html?id=3&name=plugin_l4d2_list_player\" target=\"_blank\">查看玩家信息插件</a>"
+            
+            ]
+        },
         { "type": "text", "data": "指令举例：!autoaim 1 30" },
+        { "type": "text", "data": "配置文件在安装后，重启服务器即可自动生成在: <font color=green>left4dead2/cfg/sourcemod/l4d2_auto_aim.cfg</font>" },
         {
             "type": "image",
             "data": {
@@ -18,19 +26,18 @@
         },
         {
             "type": "image",
-            "data": {
-                "url": "../../images/articles/plugin-l4d2-auto-aim-2.gif",
-                "alt": "演示效果图",
-                "caption": "图2 使用效果1"
-            }
-        },
-        {
-            "type": "image",
-            "data": {
-                "url": "../../images/articles/plugin-l4d2-auto-aim-3.gif",
-                "alt": "演示效果图",
-                "caption": "图3 使用效果2"
-            }
+            "data": [
+                {
+                    "url": "../../images/articles/plugin-l4d2-auto-aim-2.gif",
+                    "alt": "演示效果图",
+                    "caption": "图2 使用效果1"
+                },
+                {
+                    "url": "../../images/articles/plugin-l4d2-auto-aim-3.gif",
+                    "alt": "演示效果图",
+                    "caption": "图3 使用效果2"
+                }
+            ]                
         },
         {
             "type": "image",
@@ -40,6 +47,9 @@
                 "caption": "图4 大陀螺模式"
             }
         }
+    ],
+    "attachments":[
+        {"url": "/archieves/l4d2_auto_aim.zip", "name":"自动瞄准-插件压缩包"}
     ]
 }
 
