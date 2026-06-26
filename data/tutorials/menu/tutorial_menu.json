@@ -1,0 +1,452 @@
+{
+    "title": "菜单 UI",
+    "date": "2026-06-26",
+    "author": "Pure_*",
+    "content": [
+        { "type": "header", "level": 2, "data": "前言" },
+        {
+            "type": "text",
+            "data": [
+                "这篇教程将带你学习 Sourcemod 的<b>菜单 UI</b>用法。求生之路2插件中，很多功能需要通过玩家点选来触发，例如商店购买、功能选择、管理员操作等。",
+                "与聊天框指令相比，菜单更直观：玩家按数字键选择选项，无需记忆指令格式。",
+                "本项目的 <b>l4d2_shop_system</b>（商店插件）就是典型的多级菜单应用：分类 → 商品 → 确认购买，本教程会以其思路讲解菜单的创建与交互。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "菜单的基本概念" },
+        {
+            "type": "text",
+            "data": [
+                "1. Sourcemod 提供两种常用的游戏内 UI："
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "类型",
+                    "创建方式",
+                    "适用场景"
+                ],
+                "rows": [
+                    ["Menu（菜单）", "CreateMenu", "可点击选择的列表，如商店、功能面板"],
+                    ["Panel（面板）", "new Panel()", "只读文本展示，如排行榜、状态信息"]
+                ]
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "2. 菜单的工作流程分为四步："
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "步骤",
+                    "函数",
+                    "说明"
+                ],
+                "rows": [
+                    ["1. 创建", "CreateMenu(回调函数)", "创建菜单并绑定选择处理函数"],
+                    ["2. 填充", "menu.SetTitle / menu.AddItem", "设置标题和选项"],
+                    ["3. 显示", "menu.Display(client, 时间)", "向指定玩家弹出菜单"],
+                    ["4. 处理", "回调函数中的 MenuAction_Select", "玩家按键后执行对应逻辑"]
+                ]
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 菜单功能已包含在 <b>&lt;sourcemod&gt;</b> 中，无需额外 #include。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第一步：创建并显示简单菜单" },
+        {
+            "type": "text",
+            "data": [
+                "1. 使用 <b>CreateMenu</b> 创建菜单，并传入一个回调函数名。回调函数会在玩家选择选项时被系统自动调用。",
+                "2. 以下示例：玩家输入 !menu 后弹出包含三个选项的菜单"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "public void OnPluginStart()",
+                "{",
+                "    RegConsoleCmd(\"sm_menu\", Command_Menu, \"打开测试菜单\");",
+                "}",
+                "",
+                "public Action Command_Menu(int client, int args)",
+                "{",
+                "    if (client == 0)",
+                "        return Plugin_Handled;",
+                "",
+                "    DrawMainMenu(client);",
+                "    return Plugin_Handled;",
+                "}",
+                "",
+                "void DrawMainMenu(int client)",
+                "{",
+                "    Menu menu = CreateMenu(MainMenuHandler);",
+                "    menu.SetTitle(\"测试菜单\");",
+                "    menu.AddItem(\"hello\", \"打招呼\");",
+                "    menu.AddItem(\"heal\", \"回复 50 血量\");",
+                "    menu.AddItem(\"info\", \"查看当前血量\");",
+                "    menu.Display(client, MENU_TIME_FOREVER);",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 常用 API 说明"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "函数",
+                    "含义"
+                ],
+                "rows": [
+                    ["menu.SetTitle(\"标题\")", "设置菜单顶部标题，支持格式化参数，如 SetTitle(\"积分: %d\", points)"],
+                    ["menu.AddItem(info, display)", "添加一个选项。info 为内部标识（字符串），display 为玩家看到的文字"],
+                    ["menu.Display(client, time)", "向玩家显示菜单。time 为 MENU_TIME_FOREVER 表示不自动关闭"],
+                    ["menu.AddItem(info, display, ITEMDRAW_DISABLED)", "添加灰色不可选的选项"]
+                ]
+            }
+        },
+        { "type": "header", "level": 2, "data": "第二步：处理玩家选择" },
+        {
+            "type": "text",
+            "data": [
+                "1. 菜单回调函数在玩家与菜单交互时被调用，标准形式如下"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "public int MainMenuHandler(Menu menu, MenuAction action, int client, int param)",
+                "{",
+                "    switch (action)",
+                "    {",
+                "        case MenuAction_Select:",
+                "        {",
+                "            // 玩家选择了某个选项",
+                "        }",
+                "        case MenuAction_End:",
+                "        {",
+                "            delete menu;",
+                "        }",
+                "    }",
+                "    return 0;",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "2. 回调函数的参数含义"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "参数",
+                    "含义"
+                ],
+                "rows": [
+                    ["menu", "当前菜单对象"],
+                    ["action", "触发的动作类型，如 MenuAction_Select、MenuAction_Cancel"],
+                    ["client", "操作菜单的玩家客户端 ID"],
+                    ["param", "与 action 相关的附加参数，选择时为选项索引"]
+                ]
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 常用的 MenuAction 类型"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "动作",
+                    "触发时机"
+                ],
+                "rows": [
+                    ["MenuAction_Select", "玩家按数字键选择了某个选项"],
+                    ["MenuAction_Cancel", "玩家按 0 退出，或按返回键"],
+                    ["MenuAction_End", "菜单关闭时触发，应在此 delete menu 释放内存"]
+                ]
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "4. 在 MenuAction_Select 中，通过 <b>menu.GetItem</b> 读取玩家选中的选项。第一个参数 param 是选项索引，info 缓冲区接收内部标识字符串"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "case MenuAction_Select:",
+                "{",
+                "    char info[32];",
+                "    menu.GetItem(param, info, sizeof(info));",
+                "",
+                "    if (StrEqual(info, \"hello\"))",
+                "    {",
+                "        PrintToChat(client, \"[菜单] 你好，%N！\", client);",
+                "    }",
+                "    else if (StrEqual(info, \"heal\"))",
+                "    {",
+                "        if (!IsPlayerAlive(client))",
+                "        {",
+                "            PrintToChat(client, \"[菜单] 你已死亡，无法回复血量\");",
+                "            return 0;",
+                "        }",
+                "        int health = GetClientHealth(client);",
+                "        SetEntProp(client, Prop_Send, \"m_iHealth\", health + 50);",
+                "        PrintToChat(client, \"[菜单] 已回复 50 血量\");",
+                "    }",
+                "    else if (StrEqual(info, \"info\"))",
+                "    {",
+                "        PrintToChat(client, \"[菜单] 当前血量: %d\", GetClientHealth(client));",
+                "    }",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "5. <b>info 字符串</b>是菜单项的内部标识，AddItem 时第一个参数传入，GetItem 时读回。可以用简单单词（如 hello），也可以用复合字符串（如 weapon/rifle）在多级菜单中携带更多信息。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第三步：禁用选项" },
+        {
+            "type": "text",
+            "data": [
+                "1. 某些选项在特定条件下不应被选择（如积分不足、玩家已死亡），可通过 <b>ITEMDRAW_DISABLED</b> 将其显示为灰色不可选。",
+                "2. 也可以在创建菜单时根据条件动态决定是否添加该选项"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "if (!IsPlayerAlive(client))",
+                "    menu.AddItem(\"info\", \"查看信息（需存活）\", ITEMDRAW_DISABLED);",
+                "else",
+                "    menu.AddItem(\"info\", \"查看当前血量\");"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "样式常量",
+                    "效果"
+                ],
+                "rows": [
+                    ["ITEMDRAW_DEFAULT", "正常可选（默认值）"],
+                    ["ITEMDRAW_DISABLED", "灰色显示，玩家无法选择"],
+                    ["ITEMDRAW_RAWLINE", "分隔线，不可选"]
+                ]
+            }
+        },
+        { "type": "header", "level": 2, "data": "第四步：多级菜单与返回按钮" },
+        {
+            "type": "text",
+            "data": [
+                "1. 实际插件中菜单往往有多层，例如 l4d2_shop_system 的<b>分类 → 商品 → 确认</b>三级结构。",
+                "2. 实现思路：每一层菜单有独立的 Draw 函数和 Handler 回调；选中某选项后打开下一层菜单。",
+                "3. 子菜单需要<b>返回按钮</b>，让玩家按 0 回到上一层。设置方式如下"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "menu.ExitBackButton = true;"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "4. 玩家按返回键时触发 <b>MenuAction_Cancel</b>，param 为 <b>MenuCancel_ExitBack</b> 表示按了返回，<b>MenuCancel_Exit</b> 表示直接关闭菜单",
+                "5. 以下示例：商店二级菜单，选择分类后进入商品列表，按 0 返回分类页"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "void DrawShopCategoryMenu(int client)",
+                "{",
+                "    Menu menu = CreateMenu(ShopCategoryHandler);",
+                "    menu.SetTitle(\"商店 - 选择分类\");",
+                "    menu.AddItem(\"weapon\", \"武器\");",
+                "    menu.AddItem(\"item\", \"道具\");",
+                "    menu.AddItem(\"buff\", \"增益\");",
+                "    menu.Display(client, MENU_TIME_FOREVER);",
+                "}",
+                "",
+                "public int ShopCategoryHandler(Menu menu, MenuAction action, int client, int param)",
+                "{",
+                "    switch (action)",
+                "    {",
+                "        case MenuAction_Select:",
+                "        {",
+                "            char category[32];",
+                "            menu.GetItem(param, category, sizeof(category));",
+                "            DrawShopItemMenu(client, category);",
+                "        }",
+                "        case MenuAction_End:",
+                "        {",
+                "            delete menu;",
+                "        }",
+                "    }",
+                "    return 0;",
+                "}",
+                "",
+                "void DrawShopItemMenu(int client, const char[] category)",
+                "{",
+                "    Menu menu = CreateMenu(ShopItemHandler);",
+                "    menu.SetTitle(\"商店 - 选择商品\");",
+                "",
+                "    if (StrEqual(category, \"weapon\"))",
+                "    {",
+                "        menu.AddItem(\"weapon/rifle\", \"步枪 (100 积分)\");",
+                "        menu.AddItem(\"weapon/shotgun\", \"霰弹枪 (80 积分)\");",
+                "    }",
+                "    // ... 其他分类 ...",
+                "",
+                "    menu.ExitBackButton = true;",
+                "    menu.Display(client, MENU_TIME_FOREVER);",
+                "}",
+                "",
+                "public int ShopItemHandler(Menu menu, MenuAction action, int client, int param)",
+                "{",
+                "    switch (action)",
+                "    {",
+                "        case MenuAction_Select:",
+                "        {",
+                "            char info[64];",
+                "            menu.GetItem(param, info, sizeof(info));",
+                "            PrintToChat(client, \"[商店] 你选择了: %s\", info);",
+                "        }",
+                "        case MenuAction_Cancel:",
+                "        {",
+                "            if (param == MenuCancel_ExitBack)",
+                "                DrawShopCategoryMenu(client);",
+                "        }",
+                "        case MenuAction_End:",
+                "        {",
+                "            delete menu;",
+                "        }",
+                "    }",
+                "    return 0;",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "6. l4d2_shop_system 中使用了 ArrayList 记录菜单路径（trace），实现任意深度的返回。初级阶段用 <b>MenuCancel_ExitBack + 重新打开上一层</b> 的方式即可满足大多数需求。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第五步：Panel 只读面板" },
+        {
+            "type": "text",
+            "data": [
+                "1. 若只需向玩家<b>展示信息</b>而无需选择，可使用 <b>Panel</b>。例如显示在线玩家列表、插件帮助说明。",
+                "2. Panel 不支持选项点击（除非配合 DrawItem 做简单交互），适合纯文本展示。",
+                "3. l4d2_shop_system 中的 DrawBrowseClientPoint 即使用 Panel 展示所有幸存者的积分"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "void DrawPlayerListPanel(int client)",
+                "{",
+                "    Panel panel = new Panel();",
+                "    panel.SetTitle(\"在线幸存者\");",
+                "",
+                "    for (int i = 1; i <= MaxClients; i++)",
+                "    {",
+                "        if (!IsClientInGame(i) || GetClientTeam(i) != 2)",
+                "            continue;",
+                "",
+                "        char line[64];",
+                "        Format(line, sizeof(line), \"%N (%d)\", i, i);",
+                "        panel.DrawText(line);",
+                "    }",
+                "",
+                "    panel.Send(client, PanelHandler, MENU_TIME_FOREVER);",
+                "}",
+                "",
+                "public int PanelHandler(Menu menu, MenuAction action, int client, int param)",
+                "{",
+                "    return 0;",
+                "}"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "Panel 函数",
+                    "含义"
+                ],
+                "rows": [
+                    ["panel.SetTitle(\"标题\")", "设置面板标题"],
+                    ["panel.DrawText(\"文本\")", "追加一行只读文本"],
+                    ["panel.DrawItem(\"选项\")", "追加一行可点击选项（较少使用）"],
+                    ["panel.Send(client, 回调, 时间)", "向玩家显示面板"]
+                ]
+            }
+        },
+        { "type": "header", "level": 2, "data": "第六步：完整示例" },
+        {
+            "type": "text",
+            "data": [
+                "下面整合了简单菜单、禁用选项、多级商店菜单的完整示例。玩家可通过以下指令测试：",
+                "\t• <b>!menu</b> — 打开测试菜单（打招呼、回血、查看血量）",
+                "\t• <b>!shop</b> — 打开三级商店菜单（分类 → 商品 → 确认）"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "完整代码见附件 <b>menu_test.sp</b>。编译安装后进入游戏测试即可。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "常见问题" },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "现象",
+                    "可能原因",
+                    "解决方法"
+                ],
+                "rows": [
+                    ["菜单不弹出", "client 为 0（控制台调用）或未调用 Display", "确保仅对有效玩家调用 menu.Display"],
+                    ["选择后无反应", "回调函数名与 CreateMenu 不一致", "检查函数名拼写，确保 public 可见"],
+                    ["按 0 无法返回上一层", "未设置 ExitBackButton 或未处理 MenuAction_Cancel", "子菜单设置 menu.ExitBackButton = true，Cancel 中判断 MenuCancel_ExitBack"],
+                    ["菜单关闭后内存泄漏", "未在 MenuAction_End 中 delete menu", "在 End 分支添加 delete menu"],
+                    ["GetItem 读到空字符串", "AddItem 的 info 参数为空", "确保每个 AddItem 都传入非空 info 标识"]
+                ]
+            }
+        }
+    ],
+    "attachments": [
+        {
+            "url": "data/tutorials/menu/attachments/menu_test.sp",
+            "name": "menu_test.sp"
+        }
+    ]
+}

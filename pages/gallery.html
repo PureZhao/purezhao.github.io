@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="../images/icons/web-gallery.png">
-    <link rel="stylesheet" href="../css/nav.css">
+    <link rel="icon" href="/images/icons/web-gallery.png">
+    <link rel="stylesheet" href="/css/nav.css">
     <title>图片画廊</title>
     <style>
         /* 基础样式 */
@@ -194,17 +194,9 @@
 </head>
 
 <body>
-    <nav class="navbar">
-        <ul class="nav-links">
-            <li><a href="../index.html">首页</a></li>
-            <li><a href="servers.html">服务器列表</a></li>
-            <li><a href="maps.html">地图列表</a></li>
-            <li><a href="plugins.html">插件更新</a></li>
-            <li><a href="bans.html">封禁列表</a></li>
-            <li><a href="gallery.html">图片画廊</a></li>
-            <li><a>插件答疑QQ群：暂无</a></li>
-        </ul>
-    </nav>
+    <script src="/js/site.js"></script>
+    <nav class="navbar" id="site-nav"></nav>
+    <script src="/js/nav.js"></script>
 
     <div class="gallery-container">
         <div class="image-grid" id="imageGrid"></div>
@@ -228,7 +220,7 @@
         const grid = document.getElementById("imageGrid");
 
         // 生成图片卡片
-        fetch("../data/gallery.json")
+        fetch(sitePath("data/gallery.json"))
             .then(response => response.json())
             .then(items => {
                 items.forEach(item => {
@@ -236,13 +228,13 @@
                     card.className = "gallery-card";
                     card.innerHTML = `
                 <div class="image-wrapper">
-                    <img src="${item.url}" 
+                    <img src="${resolveAssetUrl(item.url)}" 
                          alt="${item.title}" 
                          class="gallery-image"
                          loading="lazy"
                          data-title="${item.title}"
                          data-description="${item.description}"
-                         data-fullsize="${item.url}">
+                         data-fullsize="${resolveAssetUrl(item.url)}">
                 </div>
                 <div class="image-caption">
                     <h4 class="caption-title">${item.title}</h4>

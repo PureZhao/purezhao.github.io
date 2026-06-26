@@ -1,0 +1,387 @@
+{
+    "title": "分文件编程",
+    "date": "2026-06-25",
+    "author": "Pure_*",
+    "content": [
+        { "type": "header", "level": 2, "data": "前言" },
+        {
+            "type": "text",
+            "data": [
+                "这篇教程将带你学习 Sourcemod 插件的<b>分文件编程</b>方式。当插件功能逐渐增多，把所有代码写在一个 .sp 文件里会变得难以维护。",
+                "以 <b>l4d2_lottery_draw</b>（抽奖插件）为例，它将常量、变量、数据结构、工具函数、视觉效果、奖品逻辑分别放在不同文件中，主文件只负责组装与核心流程。",
+                "学会分文件编程后，你可以更清晰地组织大型插件，也方便多人协作和后续扩展。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "为什么需要分文件编程" },
+        {
+            "type": "text",
+            "data": [
+                "1. Hello World 级别的插件，一个文件足够。但当插件包含指令、事件、UI、奖品、特效等多种功能时，单文件往往超过上千行。",
+                "2. 分文件的核心思路是<b>按职责拆分</b>：每个文件只负责一类功能，主文件像「目录」一样把它们组合起来。",
+                "3. l4d2_lottery_draw 的目录结构如下（位于 scripting 目录下）"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "scripting/",
+                "├── l4d2_lottery_draw.sp          ← 主文件（入口）",
+                "└── l4d2_lottery_draw/",
+                "    ├── consts.sp                 ← 常量与宏",
+                "    ├── variables.sp              ← 全局变量",
+                "    ├── classes.sp                ← 数据结构（enum struct）",
+                "    ├── utils.sp                  ← 工具函数",
+                "    ├── effects.sp                ← 视觉效果",
+                "    └── awards.sp                 ← 奖品逻辑（对外公开函数）"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "文件",
+                    "职责",
+                    "l4d2_lottery_draw 中的内容示例"
+                ],
+                "rows": [
+                    ["主文件 .sp", "插件信息、生命周期、指令与核心流程", "OnPluginStart、Command_Ldw、Award 开奖逻辑"],
+                    ["consts.sp", "宏定义、常量、固定字符串表", "TEAM_SURVIVOR、粒子名、音效路径、感染者名称表"],
+                    ["variables.sp", "全局变量与共享状态", "luckyNumber、awardCategory、playerInfo 数组"],
+                    ["classes.sp", "自定义数据结构及方法", "PlayerGameInfo 结构体（抽奖次数、计时器等）"],
+                    ["utils.sp", "可复用的 stock 工具函数", "IsSurvivor、IsTank、KillTimerSafety、射线检测"],
+                    ["effects.sp", "特效相关逻辑", "光环圈、屏幕震动、渐隐渐显"],
+                    ["awards.sp", "奖品实现函数", "PGivePlayerHealth、PFreezeBomb、PKobeeHelicopter 等"]
+                ]
+            }
+        },
+        { "type": "header", "level": 2, "data": "第一步：主文件与 #include" },
+        {
+            "type": "text",
+            "data": [
+                "1. SourcePawn 通过 <b>#include</b> 在编译时将子文件内容插入主文件，最终仍编译成一个 .smx。子文件不会被单独编译。",
+                "2. l4d2_lottery_draw.sp 主文件的开头如下。注意：先 #include 官方库，再 #include 自己的子文件。"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "#include <sourcemod>",
+                "#include <colors>",
+                "#include <left4dhooks>",
+                "#include <sdktools>",
+                "#include <sdkhooks>",
+                "#include <json>",
+                "",
+                "#include \"l4d2_lottery_draw/consts.sp\"",
+                "#include \"l4d2_lottery_draw/utils.sp\"",
+                "#include \"l4d2_lottery_draw/classes.sp\"",
+                "#include \"l4d2_lottery_draw/variables.sp\"",
+                "#include \"l4d2_lottery_draw/effects.sp\"",
+                "#include \"l4d2_lottery_draw/awards.sp\""
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 路径规则：#include 使用相对于<b>主 .sp 文件所在目录</b>的路径。主文件在 scripting/ 下，子文件在 scripting/l4d2_lottery_draw/ 下，因此写法为 \"l4d2_lottery_draw/consts.sp\"。",
+                "4. 主文件中保留：PluginInfo、OnPluginStart、OnMapStart、事件回调、指令回调，以及串联各模块的<b>核心业务流程</b>（如抽奖菜单、Roll 滚动、Award 开奖）。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第二步：防止重复包含（Include Guard）" },
+        {
+            "type": "text",
+            "data": [
+                "1. 若多个子文件互相 #include，或同一文件被包含两次，会导致重复定义报错。每个子文件开头应加上<b>Include Guard</b>。",
+                "2. l4d2_lottery_draw 中 consts.sp 的写法如下"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "#if defined _pure_lottery_consts_included",
+                " #endinput",
+                "#endif",
+                "#define _pure_lottery_consts_included",
+                "",
+                "#define TEAM_SURVIVOR 2",
+                "#define ID_TANK 8",
+                "// ... 其余常量 ..."
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 原理：第一次包含时宏未定义，正常编译；第二次包含时宏已定义，#endinput 直接跳过后续内容。",
+                "4. 每个子文件的 guard 宏名应唯一，建议格式：<b>_插件名_文件名_included</b>"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第三步：consts.sp — 常量与宏" },
+        {
+            "type": "text",
+            "data": [
+                "1. 将所有不会变化的固定值集中管理，避免在代码中散落魔法数字和硬编码字符串。",
+                "2. l4d2_lottery_draw/consts.sp 中的典型内容"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "#define TEAM_SURVIVOR 2",
+                "#define ID_TANK 8",
+                "#define ID_Common 9",
+                "",
+                "#define PARTICLE_AWARD_ACHIEVED \"achieved\"",
+                "#define SOUNG_ROLLING \"ui/littlereward.wav\"",
+                "#define MODEL_HELICOPTER \"models/props_vehicles/helicopter_news_downed.mdl\"",
+                "",
+                "char infectedNames[][] =",
+                "{",
+                "    \"boomer\", \"smoker\", \"boomer\", \"hunter\",",
+                "    \"spitter\", \"jockey\", \"charger\", \"witch\", \"tank\"",
+                "};"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第四步：variables.sp — 全局变量" },
+        {
+            "type": "text",
+            "data": [
+                "1. 存放插件运行期间需要跨函数共享的全局状态。",
+                "2. l4d2_lottery_draw/variables.sp 中的典型内容"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "int luckyNumber[MAXPLAYERS + 1];",
+                "Handle ldwMsgDisplayTimer;",
+                "",
+                "JSON_Array awardCategory;",
+                "ArrayList awardDiceSection;",
+                "int awardClsCnt;",
+                "int initialCount;",
+                "",
+                "PlayerGameInfo playerInfo[MAXPLAYERS + 1];",
+                "",
+                "int Beam;",
+                "int Halo;",
+                "StringMap meleeTable;"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 将变量集中到 variables.sp，修改全局状态时只需在一个地方查找，避免「这个变量在哪定义的」的困扰。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第五步：classes.sp — 数据结构" },
+        {
+            "type": "text",
+            "data": [
+                "1. 使用 <b>enum struct</b> 将一组相关数据和方法封装为「类」，适合描述玩家状态、武器数据等。",
+                "2. l4d2_lottery_draw 用 PlayerGameInfo 管理每个玩家的抽奖状态，把计时器操作也封装在结构体方法中"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "enum struct PlayerGameInfo",
+                "{",
+                "    int killCnt[4];",
+                "    int ldwCnt;",
+                "    float lastLdwTime;",
+                "    bool isRolling;",
+                "    Handle ldwTimer;",
+                "",
+                "    void StartLdw(float rollGap, Timer func, int client)",
+                "    {",
+                "        this.ldwTimer = CreateTimer(rollGap, func, client, TIMER_REPEAT);",
+                "        this.isRolling = true;",
+                "        this.ldwCnt--;",
+                "    }",
+                "",
+                "    void StopLdw()",
+                "    {",
+                "        this.lastLdwTime = GetGameTime();",
+                "        this.isRolling = false;",
+                "        KillTimerSafety(this.ldwTimer);",
+                "    }",
+                "",
+                "    void Clear(bool withKillCnt)",
+                "    {",
+                "        this.ldwCnt = 0;",
+                "        this.StopLdw();",
+                "        // ...",
+                "    }",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 主文件中通过 <b>playerInfo[client].StartLdw(...)</b> 调用，逻辑更清晰，也避免在主文件里散落大量玩家状态字段。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第六步：utils.sp — 工具函数" },
+        {
+            "type": "text",
+            "data": [
+                "1. 用 <b>stock</b> 定义工具函数。stock 函数若未被调用，编译器会优化掉，不占用运行时资源。",
+                "2. utils.sp 存放与业务无关的通用判断和辅助逻辑，例如"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "stock bool IsSurvivor(int client)",
+                "{",
+                "    return IsClientValid(client) && GetClientTeam(client) == 2;",
+                "}",
+                "",
+                "stock bool IsTank(int entity)",
+                "{",
+                "    if (!IsInfected(entity))",
+                "        return false;",
+                "    return GetEntProp(entity, Prop_Send, \"m_zombieClass\") == 8;",
+                "}",
+                "",
+                "stock void KillTimerSafety(Handle& timer)",
+                "{",
+                "    if (timer != null)",
+                "        delete timer;",
+                "    timer = null;",
+                "}"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第七步：effects.sp 与 awards.sp — 功能模块" },
+        {
+            "type": "text",
+            "data": [
+                "1. <b>effects.sp</b>：视觉效果，如光环圈、屏幕震动、渐隐渐显。与「玩家长什么样」相关，但不直接改变游戏数值。",
+                "2. <b>awards.sp</b>：奖品逻辑，每个奖品对应一个 <b>public</b> 函数，供配置文件或其他插件通过函数名调用。",
+                "3. l4d2_lottery_draw 的奖品函数命名惯例为 <b>P</b> 开头（Public），例如"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "函数",
+                    "作用"
+                ],
+                "rows": [
+                    ["PGivePlayerHealth", "给玩家回复血量"],
+                    ["PGivePlayerItem", "给玩家物品"],
+                    ["PFreezeBomb", "冰冻炸弹效果"],
+                    ["PKobeeHelicopter", "直升机坠落效果"],
+                    ["PSummonInfected", "召唤感染者"]
+                ]
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "4. 配置文件 l4d2_lottery_draw.json 中通过 <b>func</b> 字段指定奖品函数名，主文件 Award 开奖时通过 CallFunctionByName 动态调用 awards.sp 中的函数。这样新增奖品只需在 awards.sp 添加函数并在 JSON 中配置，无需改动主流程。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第八步：include 顺序" },
+        {
+            "type": "text",
+            "data": [
+                "1. 子文件之间存在依赖关系，#include 顺序必须满足「被依赖的文件先包含」。",
+                "2. l4d2_lottery_draw 的推荐顺序及原因"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "顺序",
+                    "文件",
+                    "原因"
+                ],
+                "rows": [
+                    ["1", "consts.sp", "宏和常量，无依赖，最先包含"],
+                    ["2", "utils.sp", "工具函数，可能引用 consts 中的宏"],
+                    ["3", "classes.sp", "数据结构，可能引用 utils 和 consts"],
+                    ["4", "variables.sp", "全局变量，引用 classes 中的 PlayerGameInfo"],
+                    ["5", "effects.sp", "特效，引用 variables 中的 Beam、Halo"],
+                    ["6", "awards.sp", "奖品，引用 utils、variables、effects"]
+                ]
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 顺序错误时编译器会报「未定义的标识符」错误，根据报错调整 include 顺序即可。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第九步：编译与部署" },
+        {
+            "type": "text",
+            "data": [
+                "1. 编译时只需对<b>主 .sp 文件</b>执行编译（拖拽到 compile.exe 或使用编译脚本），子文件会随 #include 自动合并。",
+                "2. 部署时只需将生成的 <b>.smx</b> 放入 plugins 目录，子 .sp 文件不需要上传到服务器。",
+                "3. 开发时建议保持 scripting 下的目录结构与 include 路径一致，避免编译找不到文件。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第十步：简化示例 lottery_demo" },
+        {
+            "type": "text",
+            "data": [
+                "附件提供了一份按 l4d2_lottery_draw 结构拆分的简化示例 <b>lottery_demo</b>，包含：",
+                "\t• lottery_demo.sp — 主文件（指令、事件、开奖）",
+                "\t• lottery_demo/consts.sp — 队伍常量、滚动间隔",
+                "\t• lottery_demo/classes.sp — PlayerGameInfo 结构体",
+                "\t• lottery_demo/variables.sp — luckyNumber、playerInfo",
+                "\t• lottery_demo/utils.sp — IsSurvivor、KillTimerSafety",
+                "\t• lottery_demo/awards.sp — PGivePlayerHealth",
+                "安装方式：将 lottery_demo.sp 放入 scripting/，lottery_demo 文件夹放入 scripting/lottery_demo/，编译 lottery_demo.sp 即可。",
+                "游戏内：击杀感染者获得抽奖机会，!ldw 开始滚动，再次 !ldw 停止并开奖。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "分文件编程建议" },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "建议",
+                    "说明"
+                ],
+                "rows": [
+                    ["按职责拆分，不按行数拆分", "一个文件对应一类功能，而非每 500 行切一刀"],
+                    ["主文件保持精简", "主文件只做组装和核心流程，具体实现下沉到子文件"],
+                    ["每个子文件加 Include Guard", "避免重复包含导致编译失败"],
+                    ["注意 include 顺序", "被依赖的文件排在前面"],
+                    ["奖品/功能用 public 函数暴露", "便于配置文件或外部插件调用，参考 awards.sp"],
+                    ["常量不放 variables.sp", "不变的数据放 consts.sp，变量放 variables.sp"]
+                ]
+            }
+        }
+    ],
+    "attachments": [
+        {
+            "url": "data/tutorials/file_based_programming/attachments/lottery_demo.sp",
+            "name": "lottery_demo.sp（主文件）"
+        },
+        {
+            "url": "data/tutorials/file_based_programming/attachments/lottery_demo/consts.sp",
+            "name": "lottery_demo/consts.sp"
+        },
+        {
+            "url": "data/tutorials/file_based_programming/attachments/lottery_demo/classes.sp",
+            "name": "lottery_demo/classes.sp"
+        },
+        {
+            "url": "data/tutorials/file_based_programming/attachments/lottery_demo/variables.sp",
+            "name": "lottery_demo/variables.sp"
+        },
+        {
+            "url": "data/tutorials/file_based_programming/attachments/lottery_demo/utils.sp",
+            "name": "lottery_demo/utils.sp"
+        },
+        {
+            "url": "data/tutorials/file_based_programming/attachments/lottery_demo/awards.sp",
+            "name": "lottery_demo/awards.sp"
+        }
+    ]
+}

@@ -1,0 +1,119 @@
+{
+    "stages": [
+        "萌新教程",
+        "数据结构",
+        "初级",
+        "中级",
+        "高级"
+    ],
+    "tutorials": [
+        {
+            "id": 0,
+            "title": "开始之前",
+            "date": "2026-06-25",
+            "author": "Pure_*",
+            "tags": ["基础知识"],
+            "name": "before_start",
+            "type": "萌新教程"
+        },
+        {
+            "id": 1,
+            "title": "Sourcemod开发环境搭建",
+            "date": "2026-06-25",
+            "author": "Pure_*",
+            "tags": ["环境搭建"],
+            "name": "env_setup",
+            "type": "萌新教程"
+        },
+        {
+            "id": 2,
+            "title": "Hello World",
+            "date": "2026-06-25",
+            "author": "Pure_*",
+            "tags": ["代码基本结构", "编译"],
+            "name": "hello_world",
+            "type": "萌新教程"
+        },
+        {
+            "id": 3,
+            "title": "游戏事件监听和处理",
+            "date": "2026-06-25",
+            "author": "Pure_*",
+            "tags": ["代码基本结构", "编译"],
+            "name": "event_listener",
+            "type": "初级"
+        },
+        {
+            "id": 4,
+            "title": "指令绑定与使用",
+            "date": "2026-06-25",
+            "author": "Pure_*",
+            "tags": ["指令绑定", "参数解析"],
+            "name": "command",
+            "type": "初级"
+        },
+        {
+            "id": 5,
+            "title": "创建实体",
+            "date": "2026-06-25",
+            "author": "Pure_*",
+            "tags": ["实体创建", "模型", "粒子"],
+            "name": "entity_spawn",
+            "type": "中级"
+        },
+        {
+            "id": 6,
+            "title": "计时器",
+            "date": "2026-06-25",
+            "author": "Pure_*",
+            "tags": ["计时器", "延迟执行"],
+            "name": "timer",
+            "type": "初级"
+        },
+        {
+            "id": 7,
+            "title": "分文件编程",
+            "date": "2026-06-25",
+            "author": "Pure_*",
+            "tags": ["代码组织", "多文件结构"],
+            "name": "file_based_programming",
+            "type": "中级"
+        },
+        {
+            "id": 8,
+            "title": "菜单 UI",
+            "date": "2026-06-26",
+            "author": "Pure_*",
+            "tags": ["菜单", "Panel", "UI交互"],
+            "name": "menu",
+            "type": "初级"
+        },
+        {
+            "id": 9,
+            "title": "Handle 句柄",
+            "date": "2026-06-26",
+            "author": "Pure_*",
+            "tags": ["Handle", "DataPack", "ArrayList", "StringMap"],
+            "name": "structure_handle",
+            "type": "数据结构"
+        },
+        {
+            "id": 10,
+            "title": "创建自定义 Handle（Methodmap）",
+            "date": "2026-06-26",
+            "author": "Pure_*",
+            "tags": ["Methodmap", "property", "面向对象"],
+            "name": "structure_methodmap",
+            "type": "数据结构"
+        },
+        {
+            "id": 11,
+            "title": "DHook 与 Detour",
+            "date": "2026-06-26",
+            "author": "Pure_*",
+            "tags": ["DHooks", "Detour", "GameData", "签名"],
+            "name": "dhook_detour",
+            "type": "高级"
+        }
+    ]
+}

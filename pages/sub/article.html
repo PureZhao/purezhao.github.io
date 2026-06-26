@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="../../images/icons/web-article.png">
-    <link rel="stylesheet" href="../../css/nav.css">
-    <title>文章详情</title>
+    <link rel="icon" href="/images/icons/web-article.png">
+    <link rel="stylesheet" href="/css/nav.css">
+    <title>教程详情</title>
     <style>
         /* 基础样式 */
         * {
@@ -241,16 +241,9 @@
 </head>
 
 <body>
-    <nav class="navbar">
-        <ul class="nav-links">
-            <li><a href="../../index.html">首页</a></li>
-            <li><a href="../servers.html">服务器列表</a></li>
-            <li><a href="../maps.html">地图列表</a></li>
-            <li><a href="../plugins.html">插件更新</a></li>
-            <li><a href="../bans.html">封禁列表</a></li>
-            <li><a href="../gallery.html">图片画廊</a></li>
-        </ul>
-    </nav>
+    <script src="/js/site.js"></script>
+    <nav class="navbar" id="site-nav"></nav>
+    <script src="/js/nav.js"></script>
 
     <div class="article-container" id="articleContainer"></div>
 
@@ -260,7 +253,7 @@
         const articleId = parseInt(urlParams.get('id'));
         const articleName = urlParams.get('name');
         // 查找文章
-        fetch(`../../data/articles/${articleName}.json`)
+        fetch(sitePath(`data/tutorials/${articleName}/tutorial_${articleName}.json`))
             .then(response => response.json())
             .then(async article => {
                 if (article) {
@@ -276,39 +269,19 @@
                     `;
 
 
-                    // 渲染附件
-                    // if (article.attachments?.length > 0) {
-                    //     const attachmentsDiv = document.createElement('div');
-                    //     attachmentsDiv.className = 'attachments';
-                    //     attachmentsDiv.innerHTML = `
-                    //         <h3>下载</h3>
-                    //         <ul class="attachment-list">
-                    //             ${article.attachments.map(file => `
-                    //                 <li class="attachment-item">
-                    //                     <img src="${getFileIcon(file.url)}" class="attachment-icon">
-                    //                     <a href="${file.url}" 
-                    //                        class="attachment-download" 
-                    //                        download="${file.name}">
-                    //                         ${file.name}
-                    //                     </a>
-                    //                 </li>
-                    //             `).join('')}
-                    //         </ul>
-                    //     `;
-                    //     container.appendChild(attachmentsDiv);
-                    // }
-                    // 渲染附件（使用修改后的函数）
-                    await renderAttachments(article);
                     // 渲染内容
                     article.content.forEach(item => {
                         container.appendChild(renderContentItem(item));
                     });
 
+                    // 渲染附件（放在页面最下方）
+                    await renderAttachments(article);
+
                 } else {
                     document.getElementById('articleContainer').innerHTML = `
                         <div class="error">
                             <h2>文章不存在</h2>
-                            <a href="plugins.html">返回列表</a>
+                            <a href="${sitePath('pages/tutorial.html')}">返回列表</a>
                         </div>
                     `;
                 }
@@ -337,12 +310,12 @@
             <h3>下载</h3>
             <ul class="attachment-list">
                 ${await Promise.all(article.attachments.map(async (file) => {
-                    const exists = await checkFileExists(file.url);
+                    const exists = await checkFileExists(resolveAssetUrl(file.url));
                     if (exists) {
                         return `
                             <li class="attachment-item">
-                                <img src="${getFileIcon(file.url)}" class="attachment-icon">
-                                <a href="${file.url}" class="attachment-download" download="${file.name}">
+                                <img src="${resolveAssetUrl(getFileIcon(file.url))}" class="attachment-icon">
+                                <a href="${resolveAssetUrl(file.url)}" class="attachment-download" download="${file.name}">
                                     ${file.name}
                                 </a>
                             </li>
@@ -350,7 +323,7 @@
                     } else {
                         return `
                             <li class="attachment-item">
-                                <img src="${getFileIcon(file.url)}" class="attachment-icon">
+                                <img src="${resolveAssetUrl(getFileIcon(file.url))}" class="attachment-icon">
                                 <span style="color: gray; text-decoration: line-through;">
                                     ${file.name}
                                 </span>
@@ -379,13 +352,17 @@
                 });
             }
         }
+        function joinLines(data) {
+            return Array.isArray(data) ? data.join('\n') : data;
+        }
+
         function renderContentItem(item) {
             const container = document.createElement('div');
 
             switch (item.type) {
                 case 'text':
                     container.className = 'content-text';
-                    container.innerHTML = item.data.replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+                    container.innerHTML = joinLines(item.data).replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
                     break;
 
                 // 新增 list 类型的处理逻辑
@@ -411,7 +388,7 @@
                             imgWrapper.className = 'image-wrapper';
 
                             const imgElement = document.createElement('img');
-                            imgElement.src = imgData.url;
+                            imgElement.src = resolveAssetUrl(imgData.url);
                             imgElement.alt = imgData.alt || '';
                             imgElement.style.width = imgData.width || 'auto';
                             imgElement.style.height = imgData.height || 'auto';
@@ -431,7 +408,7 @@
                         // 单图处理逻辑
                         container.className = 'content-image';
                         const imgElement = document.createElement('img');
-                        imgElement.src = item.data.url;
+                        imgElement.src = resolveAssetUrl(item.data.url);
                         imgElement.alt = item.data.alt || '';
                         imgElement.style.width = item.data.width || 'auto';
                         imgElement.style.height = item.data.height || 'auto';
@@ -462,9 +439,11 @@
 
                 case 'code':
                     container.className = 'content-code';
-                    container.innerHTML = `
-                        <pre><code>${item.data}</code></pre>
-                    `;
+                    const pre = document.createElement('pre');
+                    const code = document.createElement('code');
+                    code.textContent = joinLines(item.data);
+                    pre.appendChild(code);
+                    container.appendChild(pre);
                     break;
 
                 case 'header':
@@ -491,12 +470,12 @@
         function getFileIcon(url) {
             const ext = url.split('.').pop().toLowerCase();
             const icons = {
-                pdf: '../../images/icons/pdf-icon.png',
-                txt: '../../images/icons/txt-icon.png',
-                zip: '../../images/icons/zip-icon.png',
-                cfg: '../../images/icons/cfg-icon.png',
+                pdf: 'images/icons/pdf-icon.png',
+                txt: 'images/icons/txt-icon.png',
+                zip: 'images/icons/zip-icon.png',
+                cfg: 'images/icons/cfg-icon.png',
             };
-            return icons[ext] || '../../images/icons/file-icon.png';
+            return icons[ext] || 'images/icons/file-icon.png';
         }
     </script>
 </body>

@@ -1,0 +1,170 @@
+{
+    "title": "事件监听与处理",
+    "date": "2026-06-25",
+    "author": "Pure_*",
+    "content": [
+        { "type": "header", "level": 2, "data": "前言" },
+        {
+            "type": "text",
+            "data": [
+                "这篇教程将带你学习Sourcemod的事件监听与处理，求生之路2插件影响游戏效果，大部分都是通过事件监听与处理来实现的。",
+                "比如你想在玩家死亡的时候，在玩家死亡的地方生成一个宝箱，那么你需要监听玩家死亡事件，并在玩家死亡事件中生成一个宝箱。",
+                "比如你想在玩家捡起一个物品的时候，打印一条消息到日志中，那么你需要监听玩家捡起物品事件，并在玩家捡起物品事件中打印一条消息到日志中。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第一步：确定要监听的事件" },
+        {
+            "type": "text",
+            "data": [
+                "1. Sourcemod官方为我们整理了一些常用的事件，网址在这里: <a href=\"https://wiki.alliedmods.net/Left_4_Dead_2_Events\" target=\"_blank\">求生之路2事件列表</a>",
+                "2. 这里就以玩家死亡事件<b>player_death</b>为例，讲解如何监听玩家死亡事件，并在玩家死亡事件中生成一个宝箱。（不会真的生成）",
+                "3. 首先看事件网站中关于玩家死亡事件的说明，这里直接复制官网的说明，如下"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "Note: a game event, name may be 32 charaters long; this extents the original player_death by a new fields",
+                "",
+                "Name:\tplayer_death",
+                "Structure:",
+                "short\tuserid\tuser ID who died",
+                "long\tentityid\tentity ID who died, userid should be used first, to get the dead Player. Otherwise, it is not a player, so use this.",
+                "short\tattacker\tuser ID who killed",
+                "string\tattackername\tWhat type of zombie, so we don't have zombie names",
+                "long\tattackerentid\tif killer not a player, the entindex of who killed. Again, use attacker first",
+                "string\tweapon\tweapon name killer used",
+                "bool\theadshot\tsignals a headshot",
+                "bool\tattackerisbot\tis the attacker a bot",
+                "string\tvictimname\tWhat type of zombie, so we don't have zombie names",
+                "bool\tvictimisbot\tis the victim a bot",
+                "bool\tabort\tdid the victim abort",
+                "long\ttype\tdamage type",
+                "float\tvictim_x",
+                "float\tvictim_y",
+                "float\tvictim_z"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "4. Structure部分就是这个事件会向往传递的信息（通常叫做参数列表），通过参数列表，我们可以获取到玩家死亡的相关信息，并作出相应的处理。",
+                "\t这里我列一下每个参数所对应的含义，如下"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "参数名",
+                    "类型",
+                    "参数含义"
+                ],
+                "rows": [
+                    ["userid", "short", "死亡的玩家ID，但不算是客户端ID，需要转换为客户端ID才能使用"],
+                    ["entityid", "long", "实体ID，通常是玩家ID，但是如果死亡的不是玩家，而是实体如小僵尸，就用这个ID"],
+                    ["attacker", "short", "攻击者ID，但不算是客户端ID，需要转换为客户端ID才能使用"],
+                    ["attackername", "string", "攻击者名称，比如僵尸名称（但永远不使用这个参数）"],
+                    ["attackerentid", "long", "攻击者实体ID，通常是玩家ID，但也有可能是其他实体，比如小僵尸"],
+                    ["weapon", "string", "武器名称，杀死玩家使用的武器名称"],
+                    ["headshot", "bool", "是否是爆头击杀"],
+                    ["attackerisbot", "bool", "是否是机器人"],
+                    ["victimname", "string", "受害者名称，比如僵尸名称（但永远不使用这个参数）"],
+                    ["victimisbot", "bool", "是否是机器人"],
+                    ["abort", "bool", "是否是取消"],
+                    ["type", "long", "伤害类型，比如子弹伤害、刀杀、爆炸伤害等"],
+                    ["victim_x", "float", "死亡时的X坐标"],
+                    ["victim_y", "float", "死亡时的Y坐标"],
+                    ["victim_z", "float", "死亡时的Z坐标"]
+                ]
+            }
+        },
+        { "type": "header", "level": 2, "data": "第二步：代码中监听事件" },
+        {
+            "type": "text",
+            "data": [
+                "1. Sourcemod中，提供了监听事件的函数<b>HookEvent</b>，这个函数可以监听一个事件，并指定一个函数来处理事件（在Sourcemod的开发中一般称为钩子，通常称为回调函数）。",
+                "2. 这个函数的形式如下"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)",
+                "{",
+                "    // 在这里处理玩家死亡事件",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 使用HookEvent监听玩家死亡事件，并指定Event_PlayerDeath函数来处理事件",
+                "\t需要注意的是，HookEvent一般在OnPluginStart函数中使用，上述完整代码如下"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "#include <sourcemod>",
+                "",
+                "public void OnPluginStart()",
+                "{",
+                "    HookEvent(\"player_death\", Event_PlayerDeath);",
+                "}",
+                "",
+                "void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)",
+                "{",
+                "    // 在这里处理玩家死亡事件",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "4. 这样，我们就完成了事件监听的代码结构编写，接下来就是获取参数，进行一定的处理。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第三步：获取参数，完成自定义处理" },
+        {
+            "type": "text",
+            "data": [
+                "1. 在Event_PlayerDeath函数中，有三个参数，这三个参数是系统自动赋值的，我们可以直接使用",
+                "\t其中<b>event</b>中，存储了上述列举的这个函数的所有参数，我们可以通过<b>event</b>来获取其中的参数。",
+                "\t比如我们要获取死亡玩家的ID，就可以使用<b>event.GetInt(\"userid\")</b>来获取。(GetInt函数是Sourcemod中获取整型参数的函数，自带的)",
+                "2. 我们这里简单处理，获取死亡玩家和攻击者ID，并打印到游戏的聊天框中，代码如下"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "#include <sourcemod>",
+                "",
+                "public void OnPluginStart()",
+                "{",
+                "    HookEvent(\"player_death\", Event_PlayerDeath);",
+                "}",
+                "",
+                "void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)",
+                "{",
+                "    // 在这里处理玩家死亡事件",
+                "    int userid = GetClientOfUserId(event.GetInt(\"userid\"));",
+                "    int attacker = GetClientOfUserId(event.GetInt(\"attacker\"));",
+                "    PrintToChatAll(\"玩家%d死亡，攻击者%d\", userid, attacker);",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "5. 编译插件，并安装到服务器，重启服务器，进入游戏，死亡一个玩家，查看聊天框，如果出现玩家ID和攻击者ID，则说明事件监听成功。"
+            ]
+        }
+    ],
+    "attachments": [
+        {
+            "url": "data/tutorials/event_listener/attachments/event_listener_test.sp",
+            "name": "event_listener_test.sp"
+        }
+    ]
+}

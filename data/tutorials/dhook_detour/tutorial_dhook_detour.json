@@ -1,0 +1,402 @@
+{
+    "title": "DHook 与 Detour",
+    "date": "2026-06-26",
+    "author": "Pure_*",
+    "content": [
+        { "type": "header", "level": 2, "data": "前言" },
+        {
+            "type": "text",
+            "data": [
+                "这篇教程介绍 Sourcemod 扩展 <b>DHooks</b> 的用法，重点讲解 <b>Detour</b>（函数拦截）与 <b>Dynamic Hook</b>（虚函数 Hook）。",
+                "SDKHooks、Left4DHooks 等扩展能覆盖大量常见需求，但当需要拦截游戏内部 C++ 函数、修改返回值或阻止原逻辑执行时，就需要 DHooks。",
+                "本教程以项目中的 <b>l4d2_weapon_random_attributes</b>（武器随机属性插件）为主要参考：它通过 Detour 拦截 CTerrorGun::Reload、PrimaryAttack 等函数，实现弹匣限制与射击属性动态修改。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "准备工作" },
+        {
+            "type": "text",
+            "data": [
+                "1. 安装 <b>DHooks</b> 扩展（<a href=\"https://github.com/alliedmodders/sourcemod/tree/master/extensions/dhooks\" target=\"_blank\">官方仓库</a>），将 dhooks.ext 放入 extensions 目录。",
+                "2. 插件代码中 #include &lt;dhooks&gt;。",
+                "3. 准备 <b>GameData</b> 文件（.txt），放在 addons/sourcemod/gamedata/ 目录。GameData 描述游戏函数的签名、调用约定和虚表偏移，Detour 和 Hook 都依赖它定位内存地址。",
+                "4. DHooks 属于<b>高级</b>技术：需要了解逆向基础（签名、虚表），且游戏更新后签名可能失效，需重新维护 GameData。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "Detour 与 Dynamic Hook 的区别" },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "特性",
+                    "Detour（偏移/Detour）",
+                    "Dynamic Hook（虚函数 Hook）"
+                ],
+                "rows": [
+                    ["创建方式", "DHookCreateFromConf + DHookEnableDetour", "DHookCreate + DHookEntity"],
+                    ["作用范围", "拦截所有对该函数的调用（全局）", "仅 Hook 指定实体实例"],
+                    ["GameData 配置", "Functions + Signatures", "Offsets（虚表索引）"],
+                    ["典型用途", "拦截 CTerrorGun::Reload 阻止换弹", "Hook 单个武器的 GetRateOfFire 修改射速"],
+                    ["项目示例", "l4d2_weapon_random_attributes/common_hooks.sp", "WeaponHandling.sp"]
+                ]
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "l4d2_weapon_random_attributes 主要使用 <b>Detour</b>：所有 CTerrorGun 换弹、开火都会经过同一套拦截逻辑。",
+                "同项目还通过 WeaponHandling 扩展的 <b>WH_OnReloadModifier</b> 转发（Left4DHooks + WeaponHandling 的 Dynamic Hook）修改换弹速度——这是 Hook 与 Detour 配合使用的例子。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第一步：GameData 文件结构" },
+        {
+            "type": "text",
+            "data": [
+                "1. l4d2_weapon_random_attributes 的 GameData 文件为 gamedata/l4d2_weapon_random_attributes.txt，核心包含三个区块："
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "区块",
+                    "作用",
+                    "示例"
+                ],
+                "rows": [
+                    ["Signatures", "在 server.dll 中定位函数地址", "CTerrorGun::Reload 的字节特征 / Linux 符号名"],
+                    ["Functions", "描述函数签名供 DHookCreateFromConf 使用", "callconv、return、this、arguments"],
+                    ["Offsets", "虚表索引，供 Dynamic Hook 使用", "CTerrorGun::PrimaryAttack 的 vtable offset"]
+                ]
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "2. Functions 区块示例（Detour 用）"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "\"CTerrorGun::Reload\"",
+                "{",
+                "    \"signature\"  \"CTerrorGun::Reload\"",
+                "    \"callconv\"  \"thiscall\"",
+                "    \"return\"  \"int\"",
+                "    \"this\"  \"entity\"",
+                "    \"arguments\"",
+                "    {",
+                "    }",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. Signatures 区块引用 Functions 中的名称，并提供各平台的定位方式"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "\"CTerrorGun::Reload\"",
+                "{",
+                "    \"library\"   \"server\"",
+                "    \"linux\"     \"@_ZN10CTerrorGun6ReloadEv\"",
+                "    \"windows\"   \"\\x55\\x8B\\EC\\x83\\EC\\x08\\x53\\x56\\x8B\\F1\\xE8\\x2A\\x2A\\x2A\\x2A\\x8B\\xD8\\x85\\DB\\x0F\\x84\\x2A\\x2A\\x2A\\x2A\"",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "4. Linux 常用 @_ZN 开头的 Itanium ABI 符号名；Windows 使用字节特征码，未知字节用 \\x2A 占位。签名需通过 IDA 等工具从 server.dll 中提取，游戏更新后可能需要重新查找。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第二步：Detour 基本流程" },
+        {
+            "type": "text",
+            "data": [
+                "1. l4d2_weapon_random_attributes 在 OnPluginStart 中加载 GameData 并初始化所有 Detour"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "#include <dhooks>",
+                "",
+                "#define GAME_DATA_FILENAME \"l4d2_weapon_random_attributes\"",
+                "",
+                "public void OnPluginStart()",
+                "{",
+                "    GameData gameData = LoadGameConfigFile(GAME_DATA_FILENAME);",
+                "    if (gameData == null)",
+                "    {",
+                "        SetFailState(\"未能加载游戏数据文件: %s\", GAME_DATA_FILENAME);",
+                "        return;",
+                "    }",
+                "",
+                "    InitCommonDHooks(gameData);",
+                "    delete gameData;",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "2. 单个 Detour 的标准 setup 模式（以 CTerrorGun::Reload 为例）"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "void SetupDetour_TerrorGun_Reload(GameData data)",
+                "{",
+                "    DHookSetup detour = DHookCreateFromConf(data, \"CTerrorGun::Reload\");",
+                "    if (detour == null)",
+                "    {",
+                "        LogError(\"CTerrorGun::Reload 创建失败\");",
+                "        return;",
+                "    }",
+                "",
+                "    if (!DHookEnableDetour(detour, false, DHook_TerrorGun_Reload_Pre))",
+                "        LogError(\"CTerrorGun::Reload Pre Detour 启用失败\");",
+                "",
+                "    delete detour;",
+                "}"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "API",
+                    "含义"
+                ],
+                "rows": [
+                    ["DHookCreateFromConf(data, \"函数名\")", "从 GameData 创建 Detour 配置，返回 DHookSetup"],
+                    ["DHookEnableDetour(detour, post, callback)", "启用 Detour。post=false 为 Pre（原函数执行前），post=true 为 Post（执行后）"],
+                    ["delete detour", "释放 DHookSetup 配置对象（Detour 本身保持生效）"]
+                ]
+            }
+        },
+        { "type": "header", "level": 2, "data": "第三步：Detour 回调与 MRESReturn" },
+        {
+            "type": "text",
+            "data": [
+                "1. Detour 回调函数签名：第一个参数为 this 指针（实体索引），第二个为 DHookReturn（用于修改返回值）。",
+                "2. l4d2_weapon_random_attributes 中 CTerrorGun::Reload 的 Pre 回调：若当前弹匣已满，阻止换弹"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "MRESReturn DHook_TerrorGun_Reload_Pre(int pthis, DHookReturn hookReturn)",
+                "{",
+                "    static char classname[32];",
+                "    if (!CheckWeaponValid(pthis, classname))",
+                "        return MRES_Ignored;",
+                "",
+                "    int clipSize = RuntimeData_GetWeaponClipSize(pthis, classname);",
+                "    int currentClipCount = GetWeaponCurrentClipCount(pthis);",
+                "",
+                "    if (currentClipCount >= clipSize)",
+                "    {",
+                "        DHookSetReturn(hookReturn, 0);",
+                "        return MRES_Supercede;",
+                "    }",
+                "    return MRES_Ignored;",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. MRESReturn 返回值含义"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "返回值",
+                    "含义"
+                ],
+                "rows": [
+                    ["MRES_Ignored", "不干预，继续执行原函数"],
+                    ["MRES_Handled", "已处理，但原函数仍会执行（具体行为取决于 Hook 类型）"],
+                    ["MRES_ChangedHandled", "已修改参数或返回值，原函数继续执行"],
+                    ["MRES_Supercede", "跳过原函数，使用 DHookSetReturn 设置的返回值"],
+                    ["MRES_SupercedeOverride", "跳过原函数，且覆盖已有返回值"]
+                ]
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "4. 阻止原逻辑的典型写法：<b>DHookSetReturn(hookReturn, 值)</b> + <b>return MRES_Supercede</b>"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第四步：Pre / Post 配合使用" },
+        {
+            "type": "text",
+            "data": [
+                "1. l4d2_weapon_random_attributes 对 CTerrorGun::PrimaryAttack 同时启用 Pre 和 Post Detour，实现「射击前改属性、射击后还原」"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "MRESReturn DHook_CTerrorGun_PrimaryAttack_Pre(int pthis, DHookReturn hookReturn)",
+                "{",
+                "    static char classname[32];",
+                "    if (!CheckWeaponValid(pthis, classname))",
+                "        return MRES_Ignored;",
+                "    ChangeWeaponShootAttr(pthis, classname);  // 射击前写入随机属性",
+                "    return MRES_Ignored;",
+                "}",
+                "",
+                "MRESReturn DHook_CTerrorGun_PrimaryAttack_Post(int pthis, DHookReturn hookReturn)",
+                "{",
+                "    static char classname[32];",
+                "    if (!CheckWeaponValid(pthis, classname))",
+                "        return MRES_Ignored;",
+                "    RestoreWeaponShootAttr(classname);  // 射击后还原基础属性",
+                "    return MRES_Ignored;",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "2. 这种模式适用于：只在函数执行期间临时修改全局/静态游戏数据，执行完毕必须还原，避免影响其他武器或后续逻辑。",
+                "3. FinishReload、CBaseShotgun::Reload 等 Detour 还用于在换弹前后临时修改 L4D2IWA_ClipSize 属性，原理相同。",
+                "4. 部分武器（如 weapon_rifle_desert、weapon_chainsaw）有独立的 PrimaryAttack 实现，需单独 Detour 各自的类函数。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第五步：Dynamic Hook（虚函数 Hook）" },
+        {
+            "type": "text",
+            "data": [
+                "1. Dynamic Hook 通过虚表偏移 Hook 特定实体的虚函数，适合「只改某一个实体行为」的场景。",
+                "2. WeaponHandling 扩展中的典型用法（GameData 中 Offsets 区块提供虚表索引）"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "int offset = GameConfGetOffset(hGamedata, \"CTerrorWeapon::GetReloadDurationModifier\");",
+                "DynamicHook hReloadMod = DHookCreate(offset, HookType_Entity, ReturnType_Float,",
+                "    ThisPointer_CBaseEntity, OnReloadModifier);",
+                "",
+                "// 武器实体创建后，对该实体启用 Hook",
+                "DHookEntity(hReloadMod, true, weaponEntity);"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 回调中通过 DHookSetReturn 修改返回值"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "public MRESReturn OnReloadModifier(int pThis, DHookReturn hReturn)",
+                "{",
+                "    int client = GetEntPropEnt(pThis, Prop_Send, \"m_hOwnerEntity\");",
+                "    if (client < 1)",
+                "        return MRES_Ignored;",
+                "",
+                "    float speed = 1.0;",
+                "    // 通过 Forward 让其他插件修改 speed ...",
+                "    DHookSetReturn(hReturn, speed);",
+                "    return MRES_Supercede;",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "4. l4d2_weapon_random_attributes 注册了 WH_OnReloadModifier 回调，在 WeaponHandling 的 Dynamic Hook 触发时修改换弹速度——自身不直接创建 Dynamic Hook，而是复用扩展提供的 Hook 点。",
+                "5. 编写插件时可优先查找是否已有扩展（Left4DHooks、WeaponHandling 等）暴露了 Forward；若无，再自行用 DHooks 创建 Detour 或 Dynamic Hook。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第六步：l4d2_weapon_random_attributes Detour 一览" },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "Detour 函数",
+                    "Pre 作用",
+                    "Post 作用"
+                ],
+                "rows": [
+                    ["CTerrorGun::Reload", "弹匣已满时阻止换弹", "—"],
+                    ["CTerrorGun::FinishReload", "换弹完成前写入随机弹匣容量", "还原基础弹匣容量"],
+                    ["CBaseShotgun::Reload", "换弹前写入随机弹匣容量", "还原基础弹匣容量"],
+                    ["CTerrorGun::PrimaryAttack", "射击前写入随机射击属性", "射击后还原基础属性"],
+                    ["CRifle_Desert::PrimaryAttack", "同上（沙漠步枪独立实现）", "同上"],
+                    ["CChainsaw::PrimaryAttack", "同上（电锯）", "同上"],
+                    ["CGrenadeLauncher::PrimaryAttack", "同上（榴弹发射器）", "同上"]
+                ]
+            }
+        },
+        { "type": "header", "level": 2, "data": "第七步：部署与调试" },
+        {
+            "type": "text",
+            "data": [
+                "1. 文件部署：",
+                "\t• gamedata/*.txt → addons/sourcemod/gamedata/",
+                "\t• 编译后的 .smx → addons/sourcemod/plugins/",
+                "\t• 确保 dhooks.ext 已安装",
+                "2. 加载失败时检查服务器日志（sourcemod/logs/），常见错误：",
+                "\t• Signature not found — 游戏版本更新，需重新提取签名",
+                "\t• Failed to load gamedata — 文件名与 LoadGameConfigFile 参数不一致",
+                "3. 调试技巧：在 Pre/Post 回调中临时 PrintToChatAll 或 LogMessage，确认 Detour 是否被触发；l4d2_weapon_random_attributes 中保留了大量注释掉的 PrintToChatAll 供调试参考。",
+                "4. 插件重载：!rcon sm plugins reload 插件名"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第八步：完整示例" },
+        {
+            "type": "text",
+            "data": [
+                "附件提供简化版示例：",
+                "\t• <b>dhook_demo.sp</b> — Detour CTerrorGun::Reload 与 PrimaryAttack",
+                "\t• <b>dhook_demo.txt</b> — 对应 GameData（签名摘自 l4d2_weapon_random_attributes）",
+                "部署步骤：",
+                "\t1. 将 dhook_demo.txt 放入 addons/sourcemod/gamedata/",
+                "\t2. 编译 dhook_demo.sp，将 .smx 放入 plugins/",
+                "\t3. 进入游戏，换弹 / 射击时聊天框会显示 Detour 调试信息；弹匣已满时换弹被阻止"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "常见问题" },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "现象",
+                    "可能原因",
+                    "解决方法"
+                ],
+                "rows": [
+                    ["插件 SetFailState 无法加载", "GameData 或签名找不到", "检查 gamedata 路径与签名是否匹配当前游戏版本"],
+                    ["Detour 无效果", "回调返回 MRES_Ignored 但逻辑条件未满足", "加日志确认 pthis 实体与判断分支"],
+                    ["换弹/射击后游戏崩溃", "Post 中修改了不该改的数据", "参考 PrimaryAttack Pre改/Post还原 模式，确保对称还原"],
+                    ["Linux 正常 Windows 失败", "Signatures 仅配置了 linux", "为 windows 补充字节特征码"],
+                    ["Detour 与 Hook 选哪个", "需求不同", "全局拦截用 Detour；单实体虚函数用 Dynamic Hook"]
+                ]
+            }
+        }
+    ],
+    "attachments": [
+        {
+            "url": "data/tutorials/dhook_detour/attachments/dhook_demo.sp",
+            "name": "dhook_demo.sp"
+        },
+        {
+            "url": "data/tutorials/dhook_detour/attachments/dhook_demo.txt",
+            "name": "dhook_demo.txt（GameData）"
+        }
+    ]
+}

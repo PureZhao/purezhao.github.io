@@ -1,0 +1,381 @@
+{
+    "title": "计时器",
+    "date": "2026-06-25",
+    "author": "Pure_*",
+    "content": [
+        { "type": "header", "level": 2, "data": "前言" },
+        {
+            "type": "text",
+            "data": [
+                "这篇教程将带你学习 Sourcemod 的计时器用法。插件开发中，很多效果不能立刻执行，而需要在一段时间后触发，或者每隔固定时间重复执行。",
+                "比如玩家被闪光弹命中后，3 秒才能恢复视野；玩家获得 30 秒无敌后，需要每秒倒计时并在结束时取消效果。",
+                "这些「延迟执行」和「定时重复」的需求，都通过计时器来实现。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "计时器的基本概念" },
+        {
+            "type": "text",
+            "data": [
+                "1. Sourcemod 提供两种创建计时器的方式："
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "函数",
+                    "传参方式",
+                    "适用场景"
+                ],
+                "rows": [
+                    ["CreateTimer", "只能传一个 int 参数", "简单场景，如延迟几秒、传递客户端 ID"],
+                    ["CreateDataTimer", "通过 DataPack 传递多个参数", "需要传递多个 int、float、string 等数据时"]
+                ]
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "2. 计时器按执行方式可分为两类："
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "类型",
+                    "标志",
+                    "说明"
+                ],
+                "rows": [
+                    ["单次计时器", "默认（无 TIMER_REPEAT）", "延迟指定时间后执行一次，然后自动销毁"],
+                    ["重复计时器", "TIMER_REPEAT", "每隔指定时间重复执行，直到回调返回 Plugin_Stop"]
+                ]
+            }
+        },
+        { "type": "header", "level": 2, "data": "第一步：创建单次计时器" },
+        {
+            "type": "text",
+            "data": [
+                "1. <b>CreateTimer</b> 是最常用的计时器函数，形式如下"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "CreateTimer(3.0, Timer_DelayMessage, client);"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "2. 参数含义如下"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "参数",
+                    "类型",
+                    "含义"
+                ],
+                "rows": [
+                    ["间隔时间", "float", "延迟多少秒后执行，单位秒"],
+                    ["回调函数", "function", "时间到达后系统自动调用的函数"],
+                    ["data", "int", "可选，传给回调函数的自定义数据，通常传客户端 ID"],
+                    ["flags", "int", "可选，计时器标志，如 TIMER_REPEAT、TIMER_FLAG_NO_MAPCHANGE"]
+                ]
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 回调函数的标准形式如下。注意：单次计时器执行完毕后，应返回 <b>Plugin_Stop</b>。"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "public Action Timer_DelayMessage(Handle timer, int client)",
+                "{",
+                "    if (!IsClientInGame(client))",
+                "        return Plugin_Stop;",
+                "",
+                "    PrintToChat(client, \"[提示] 3秒到了！\");",
+                "    return Plugin_Stop;",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "4. 以下示例：玩家输入 !delay 后，3 秒后在聊天框显示一条消息"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "public Action Command_Delay(int client, int args)",
+                "{",
+                "    if (client == 0)",
+                "        return Plugin_Handled;",
+                "",
+                "    ReplyToCommand(client, \"[提示] 3秒后显示消息...\");",
+                "    CreateTimer(3.0, Timer_DelayMessage, client);",
+                "    return Plugin_Handled;",
+                "}",
+                "",
+                "public Action Timer_DelayMessage(Handle timer, int client)",
+                "{",
+                "    if (!IsClientInGame(client))",
+                "        return Plugin_Stop;",
+                "",
+                "    PrintToChat(client, \"[提示] 延迟消息到了！\");",
+                "    return Plugin_Stop;",
+                "}"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第二步：创建重复计时器" },
+        {
+            "type": "text",
+            "data": [
+                "1. 在 <b>CreateTimer</b> 的第四个参数加上 <b>TIMER_REPEAT</b>，即可创建重复计时器。每隔指定时间执行一次回调，直到回调返回 <b>Plugin_Stop</b>。",
+                "2. 以下示例：玩家获得 10 秒增益，每秒在聊天框显示剩余时间"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "Handle g_CountdownTimer[MAXPLAYERS + 1];",
+                "int g_Remaining[MAXPLAYERS + 1];",
+                "",
+                "public Action Command_Countdown(int client, int args)",
+                "{",
+                "    if (client == 0)",
+                "        return Plugin_Handled;",
+                "",
+                "    int seconds = 10;",
+                "    if (args >= 1)",
+                "        seconds = GetCmdArgInt(1);",
+                "",
+                "    if (seconds <= 0)",
+                "        return Plugin_Handled;",
+                "",
+                "    KillTimerSafety(g_CountdownTimer[client]);",
+                "    g_Remaining[client] = seconds;",
+                "    g_CountdownTimer[client] = CreateTimer(1.0, Timer_Countdown, client, TIMER_REPEAT);",
+                "    ReplyToCommand(client, \"[提示] 倒计时开始，共 %d 秒\", seconds);",
+                "    return Plugin_Handled;",
+                "}",
+                "",
+                "public Action Timer_Countdown(Handle timer, int client)",
+                "{",
+                "    if (!IsClientInGame(client))",
+                "    {",
+                "        g_CountdownTimer[client] = null;",
+                "        g_Remaining[client] = 0;",
+                "        return Plugin_Stop;",
+                "    }",
+                "",
+                "    PrintToChat(client, \"[倒计时] 剩余 %d 秒\", g_Remaining[client]);",
+                "    g_Remaining[client]--;",
+                "",
+                "    if (g_Remaining[client] <= 0)",
+                "    {",
+                "        PrintToChat(client, \"[倒计时] 时间到！\");",
+                "        g_CountdownTimer[client] = null;",
+                "        return Plugin_Stop;",
+                "    }",
+                "    return Plugin_Continue;",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 重复计时器回调函数的返回值含义"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "返回值",
+                    "含义"
+                ],
+                "rows": [
+                    ["Plugin_Continue", "继续重复执行，下次间隔时间后再次调用回调"],
+                    ["Plugin_Stop", "停止计时器，不再重复执行"],
+                    ["Plugin_Handled", "与 Plugin_Stop 类似，停止计时器"]
+                ]
+            }
+        },
+        { "type": "header", "level": 2, "data": "第三步：使用 DataPack 传递多个参数" },
+        {
+            "type": "text",
+            "data": [
+                "1. 当回调函数需要多个参数时（例如客户端 ID、延迟时间、半径等），应使用 <b>CreateDataTimer</b> 配合 <b>DataPack</b>。",
+                "2. 创建 DataPack 后，用 Write 系列函数写入数据；回调中先 <b>dp.Reset()</b>，再用 Read 系列函数按相同顺序读取。",
+                "3. 以下示例：延迟 5 秒后向玩家发送自定义消息"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "void StartDelayedMessage(int client, float delay, const char[] message)",
+                "{",
+                "    DataPack dp;",
+                "    CreateDataTimer(delay, Timer_DelayedMessage, dp);",
+                "    dp.WriteCell(client);",
+                "    dp.WriteString(message);",
+                "}",
+                "",
+                "public Action Timer_DelayedMessage(Handle timer, DataPack dp)",
+                "{",
+                "    dp.Reset();",
+                "    int client = dp.ReadCell();",
+                "",
+                "    char message[128];",
+                "    dp.ReadString(message, sizeof(message));",
+                "",
+                "    if (!IsClientInGame(client))",
+                "        return Plugin_Stop;",
+                "",
+                "    PrintToChat(client, \"[延迟消息] %s\", message);",
+                "    return Plugin_Stop;",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "4. DataPack 常用读写函数"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "写入",
+                    "读取",
+                    "类型"
+                ],
+                "rows": [
+                    ["dp.WriteCell(value)", "dp.ReadCell()", "int"],
+                    ["dp.WriteFloat(value)", "dp.ReadFloat()", "float"],
+                    ["dp.WriteString(str)", "dp.ReadString(buf, size)", "string"]
+                ]
+            }
+        },
+        { "type": "header", "level": 2, "data": "第四步：停止与销毁计时器" },
+        {
+            "type": "text",
+            "data": [
+                "1. 重复计时器在运行期间需要手动停止时，应保存 <b>CreateTimer</b> 返回的 Handle，并调用 <b>KillTimer</b> 或 <b>delete</b> 销毁。",
+                "2. 玩家断线、效果提前结束时，务必停止该玩家关联的计时器，否则可能访问无效客户端导致报错。",
+                "3. 推荐在 <b>OnClientDisconnect</b> 中清理玩家计时器"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "void KillTimerSafety(Handle& timer)",
+                "{",
+                "    if (timer != null)",
+                "    {",
+                "        delete timer;",
+                "    }",
+                "    timer = null;",
+                "}",
+                "",
+                "public void OnClientDisconnect(int client)",
+                "{",
+                "    KillTimerSafety(g_CountdownTimer[client]);",
+                "    g_Remaining[client] = 0;",
+                "}"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第五步：常用计时器标志" },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "标志",
+                    "含义"
+                ],
+                "rows": [
+                    ["TIMER_REPEAT", "重复执行，直到回调返回 Plugin_Stop"],
+                    ["TIMER_FLAG_NO_MAPCHANGE", "换图时不自动销毁，适用于跨地图仍需执行的逻辑"]
+                ]
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "多个标志可用按位或组合，例如：<b>TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE</b>"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "补充：RequestFrame" },
+        {
+            "type": "text",
+            "data": [
+                "1. 有时需要在<b>当前帧结束后的下一帧</b>执行逻辑，例如实体刚创建后立刻操作可能失败，可延迟一帧再处理。",
+                "2. <b>RequestFrame</b> 不是计时器，但常用于类似的「延后执行」场景。下一帧即执行，延迟约 0.03 秒（取决于服务器帧率）。",
+                "3. 用法示例"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "RequestFrame(OnNextFrame, client);",
+                "",
+                "void OnNextFrame(int client)",
+                "{",
+                "    if (!IsClientInGame(client))",
+                "        return;",
+                "    // 在下一帧执行的逻辑",
+                "}"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第六步：完整示例" },
+        {
+            "type": "text",
+            "data": [
+                "下面整合了单次计时器、重复计时器、DataPack 三种用法的完整示例。玩家可通过以下指令测试：",
+                "\t• <b>!delay</b> — 3 秒后显示一条消息",
+                "\t• <b>!countdown [秒数]</b> — 每秒显示剩余时间，默认 10 秒",
+                "\t• <b>!delaymsg [消息]</b> — 5 秒后显示自定义消息"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "完整代码见附件 <b>timer_test.sp</b>。编译安装后进入游戏测试即可。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "常见问题" },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "现象",
+                    "可能原因",
+                    "解决方法"
+                ],
+                "rows": [
+                    ["重复计时器停不下来", "回调一直返回 Plugin_Continue", "在条件满足时返回 Plugin_Stop"],
+                    ["玩家断线后服务器报错", "计时器仍在运行并访问无效客户端", "OnClientDisconnect 中 KillTimer"],
+                    ["DataPack 读取数据错乱", "读写顺序不一致", "确保 Read 顺序与 Write 顺序完全相同"],
+                    ["换图后计时器消失", "未使用 TIMER_FLAG_NO_MAPCHANGE", "需要跨图保留时添加该标志"]
+                ]
+            }
+        }
+    ],
+    "attachments": [
+        {
+            "url": "data/tutorials/timer/attachments/timer_test.sp",
+            "name": "timer_test.sp"
+        }
+    ]
+}

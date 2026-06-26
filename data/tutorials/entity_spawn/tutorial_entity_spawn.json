@@ -1,0 +1,390 @@
+{
+    "title": "创建实体",
+    "date": "2026-06-25",
+    "author": "Pure_*",
+    "content": [
+        { "type": "header", "level": 2, "data": "前言" },
+        {
+            "type": "text",
+            "data": [
+                "这篇教程将带你学习如何在求生之路2中通过 Sourcemod 创建游戏实体。",
+                "插件开发中，很多视觉效果和功能都依赖实体：在玩家脚下生成一个道具、在准星位置召唤一只小僵尸、在爆炸点播放粒子特效，本质上都是创建并配置实体。",
+                "掌握实体创建，是编写抽奖奖励、自定义武器、娱乐玩法等插件的基础能力之一。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "实体创建的基本流程" },
+        {
+            "type": "text",
+            "data": [
+                "在 Source 引擎中，创建实体通常遵循以下固定步骤。不同实体类型在细节上略有差异，但核心流程一致："
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "步骤",
+                    "函数",
+                    "说明"
+                ],
+                "rows": [
+                    ["1. 创建", "CreateEntityByName", "按类名创建实体，返回实体索引；失败时返回 -1"],
+                    ["2. 配置", "DispatchKeyValue / SetEntityModel", "设置模型、名称、碰撞等属性，须在生成前完成"],
+                    ["3. 生成", "DispatchSpawn", "将实体真正放入游戏世界，返回是否成功"],
+                    ["4. 定位", "TeleportEntity", "设置实体的位置与朝向"],
+                    ["5. 激活", "ActivateEntity / AcceptEntityInput", "部分实体需要额外激活或触发输入才能生效"]
+                ]
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "下面以最常用的三种实体为例，分别讲解道具、感染者、粒子效果的创建方式。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第一步：创建道具实体" },
+        {
+            "type": "text",
+            "data": [
+                "1. 求生之路2中，大多数自定义道具使用 <b>prop_dynamic_override</b> 类名创建。这类实体可以显示模型，且不会像物理道具那样随意滚动。",
+                "2. 创建前需要 <b>PrecacheModel</b> 预缓存模型，否则模型可能显示为紫色错误方块。",
+                "3. 以下示例在玩家脚下生成一个油桶道具"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "#define MODEL_GASCAN \"models/props_junk/gascan001a.mdl\"",
+                "",
+                "public void OnPluginStart()",
+                "{",
+                "    PrecacheModel(MODEL_GASCAN, true);",
+                "}",
+                "",
+                "void SpawnPropAtClient(int client)",
+                "{",
+                "    float pos[3];",
+                "    GetClientAbsOrigin(client, pos);",
+                "",
+                "    int entity = CreateEntityByName(\"prop_dynamic_override\");",
+                "    if (entity <= 0)",
+                "    {",
+                "        PrintToChat(client, \"[错误] 实体创建失败\");",
+                "        return;",
+                "    }",
+                "",
+                "    char name[64];",
+                "    Format(name, sizeof(name), \"Prop-%d-%d\", entity, client);",
+                "    DispatchKeyValue(entity, \"targetname\", name);",
+                "    DispatchKeyValue(entity, \"model\", MODEL_GASCAN);",
+                "    DispatchKeyValue(entity, \"solid\", \"0\");",
+                "",
+                "    if (!DispatchSpawn(entity))",
+                "    {",
+                "        DeleteEntity(entity);",
+                "        PrintToChat(client, \"[错误] 实体生成失败\");",
+                "        return;",
+                "    }",
+                "",
+                "    TeleportEntity(entity, pos, NULL_VECTOR, NULL_VECTOR);",
+                "    ActivateEntity(entity);",
+                "    PrintToChat(client, \"[成功] 已在脚下生成油桶\");",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "4. 常用 KeyValue 参数说明"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "KeyValue",
+                    "示例值",
+                    "含义"
+                ],
+                "rows": [
+                    ["model", "models/props_junk/gascan001a.mdl", "实体显示的模型路径"],
+                    ["targetname", "Prop-123-1", "实体名称，便于后续通过输入或逻辑引用"],
+                    ["solid", "0", "碰撞类型，0 表示无碰撞（纯装饰）"]
+                ]
+            }
+        },
+        { "type": "header", "level": 2, "data": "第二步：获取生成位置" },
+        {
+            "type": "text",
+            "data": [
+                "1. 实体生成在哪里，取决于你传入 <b>TeleportEntity</b> 的坐标。常见获取坐标的方式如下"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "函数",
+                    "获取位置",
+                    "适用场景"
+                ],
+                "rows": [
+                    ["GetClientAbsOrigin", "玩家脚底坐标", "在玩家脚下、身旁生成实体"],
+                    ["GetClientEyePosition", "玩家眼睛坐标", "从玩家视角出发的效果"],
+                    ["射线检测（TR_TraceRay）", "准星瞄准的世界坐标", "在玩家看向的位置生成实体"]
+                ]
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "2. 射线检测是插件中最常用的定位方式。下面是一个简化版函数，获取玩家准星瞄准的位置"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "bool GetAimPosition(int client, float hitPoint[3])",
+                "{",
+                "    float origin[3], angles[3];",
+                "    GetClientEyePosition(client, origin);",
+                "    GetClientEyeAngles(client, angles);",
+                "",
+                "    Handle trace = TR_TraceRayFilterEx(origin, angles, MASK_SHOT, RayType_Infinite, TraceFilterPlayers);",
+                "    if (TR_DidHit(trace))",
+                "    {",
+                "        TR_GetEndPosition(hitPoint, trace);",
+                "        delete trace;",
+                "        return true;",
+                "    }",
+                "    delete trace;",
+                "    return false;",
+                "}",
+                "",
+                "public bool TraceFilterPlayers(int entity, int contentsMask)",
+                "{",
+                "    return entity > MaxClients;",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 配合 <b>TeleportEntity</b> 设置位置和朝向。函数签名为：<b>TeleportEntity(实体, 位置, 朝向, 速度)</b>，不需要设置的参数可传 <b>NULL_VECTOR</b>。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第三步：创建感染者实体" },
+        {
+            "type": "text",
+            "data": [
+                "1. 小僵尸（普通感染者）的类名为 <b>infected</b>。与道具不同，感染者需要先设置模型，再传送到目标位置，最后生成。",
+                "2. 以下示例在玩家准星位置召唤一只小僵尸（参考抽奖插件中的实现方式）"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "#define MODEL_COMMON \"models/infected/common_male_riot.mdl\"",
+                "",
+                "public void OnMapStart()",
+                "{",
+                "    PrecacheModel(MODEL_COMMON, true);",
+                "}",
+                "",
+                "void SpawnCommonInfected(int client, const float pos[3])",
+                "{",
+                "    int zombie = CreateEntityByName(\"infected\");",
+                "    if (zombie == -1)",
+                "    {",
+                "        PrintToChat(client, \"[错误] 感染者创建失败\");",
+                "        return;",
+                "    }",
+                "",
+                "    SetEntityModel(zombie, MODEL_COMMON);",
+                "    TeleportEntity(zombie, pos, {0.0, 0.0, 0.0});",
+                "    DispatchSpawn(zombie);",
+                "    PrintToChat(client, \"[成功] 已召唤一只小僵尸\");",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 感染者常用的模型路径（均放在 models/infected/ 目录下）"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "模型文件",
+                    "外观"
+                ],
+                "rows": [
+                    ["common_male_riot.mdl", "防暴僵尸"],
+                    ["common_male_tshirt_cargos.mdl", "工装僵尸"],
+                    ["common_female01.mdl", "女性僵尸"]
+                ]
+            }
+        },
+        { "type": "header", "level": 2, "data": "第四步：创建粒子效果" },
+        {
+            "type": "text",
+            "data": [
+                "1. 粒子效果使用 <b>info_particle_system</b> 类名创建，通过 <b>effect_name</b> 指定粒子名称，生成后调用 <b>Start</b> 输入来播放。",
+                "2. 粒子名称需要提前注册到粒子表中，否则可能无法显示。可使用 <b>PrecacheParticleEffect</b> 进行预缓存。",
+                "3. 以下示例在指定位置播放爆炸粒子"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "void PrecacheParticleEffect(const char[] effectName)",
+                "{",
+                "    static int table = INVALID_STRING_TABLE;",
+                "    if (table == INVALID_STRING_TABLE)",
+                "    {",
+                "        table = FindStringTable(\"ParticleEffectNames\");",
+                "    }",
+                "    bool save = LockStringTables(false);",
+                "    AddToStringTable(table, effectName);",
+                "    LockStringTables(save);",
+                "}",
+                "",
+                "int CreateParticle(const char[] effectName, const float pos[3])",
+                "{",
+                "    int particle = CreateEntityByName(\"info_particle_system\");",
+                "    if (particle <= 0)",
+                "        return -1;",
+                "",
+                "    DispatchKeyValue(particle, \"effect_name\", effectName);",
+                "    DispatchKeyValue(particle, \"targetname\", effectName);",
+                "",
+                "    if (!DispatchSpawn(particle))",
+                "    {",
+                "        DeleteEntity(particle);",
+                "        return -1;",
+                "    }",
+                "",
+                "    TeleportEntity(particle, pos, NULL_VECTOR, NULL_VECTOR);",
+                "    ActivateEntity(particle);",
+                "    AcceptEntityInput(particle, \"Start\");",
+                "    return particle;",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "4. 求生之路2中部分常用粒子名称"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "粒子名称",
+                    "效果"
+                ],
+                "rows": [
+                    ["boomer_explode", "Boomer 爆炸"],
+                    ["gas_can_fire", "油桶燃烧"],
+                    ["fire_medium_01", "中等火焰"]
+                ]
+            }
+        },
+        { "type": "header", "level": 2, "data": "第五步：完整示例" },
+        {
+            "type": "text",
+            "data": [
+                "下面是一份整合了道具、感染者、粒子三种实体创建的完整示例。管理员可通过以下指令测试：",
+                "\t• <b>!spawnprop</b> — 在脚下生成油桶",
+                "\t• <b>!spawnzombie</b> — 在准星位置召唤小僵尸",
+                "\t• <b>!spawnfx</b> — 在准星位置播放爆炸粒子"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "#include <sourcemod>",
+                "#include <sdktools>",
+                "",
+                "#define MODEL_GASCAN \"models/props_junk/gascan001a.mdl\"",
+                "#define MODEL_COMMON \"models/infected/common_male_riot.mdl\"",
+                "#define PARTICLE_EXPLODE \"boomer_explode\"",
+                "",
+                "public void OnPluginStart()",
+                "{",
+                "    RegAdminCmd(\"sm_spawnprop\", Command_SpawnProp, ADMFLAG_GENERIC, \"在脚下生成油桶\");",
+                "    RegAdminCmd(\"sm_spawnzombie\", Command_SpawnZombie, ADMFLAG_GENERIC, \"在准星位置召唤小僵尸\");",
+                "    RegAdminCmd(\"sm_spawnfx\", Command_SpawnFx, ADMFLAG_GENERIC, \"在准星位置播放粒子\");",
+                "}",
+                "",
+                "public void OnMapStart()",
+                "{",
+                "    PrecacheModel(MODEL_GASCAN, true);",
+                "    PrecacheModel(MODEL_COMMON, true);",
+                "    PrecacheParticleEffect(PARTICLE_EXPLODE);",
+                "}",
+                "",
+                "public Action Command_SpawnProp(int client, int args)",
+                "{",
+                "    if (client == 0) return Plugin_Handled;",
+                "    SpawnPropAtClient(client);",
+                "    return Plugin_Handled;",
+                "}",
+                "",
+                "public Action Command_SpawnZombie(int client, int args)",
+                "{",
+                "    if (client == 0) return Plugin_Handled;",
+                "    float pos[3];",
+                "    if (!GetAimPosition(client, pos))",
+                "    {",
+                "        ReplyToCommand(client, \"[错误] 无法获取准星位置\");",
+                "        return Plugin_Handled;",
+                "    }",
+                "    SpawnCommonInfected(client, pos);",
+                "    return Plugin_Handled;",
+                "}",
+                "",
+                "// SpawnPropAtClient、SpawnCommonInfected、CreateParticle、",
+                "// GetAimPosition、PrecacheParticleEffect 函数见上文各步骤"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "测试步骤：",
+                "\t1. 编译插件，安装到服务器并换图加载",
+                "\t2. 管理员输入 !spawnprop，脚下应出现油桶模型",
+                "\t3. 管理员输入 !spawnzombie，准星位置应出现一只小僵尸",
+                "\t4. 管理员输入 !spawnfx，准星位置应播放爆炸粒子效果",
+                "提示：若模型显示为紫色方块，检查是否已 PrecacheModel；若粒子不显示，检查是否已 PrecacheParticleEffect。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "常见问题" },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "现象",
+                    "可能原因",
+                    "解决方法"
+                ],
+                "rows": [
+                    ["模型为紫色方块", "模型未预缓存", "在 OnMapStart 中调用 PrecacheModel"],
+                    ["CreateEntityByName 返回 -1", "类名错误或实体数量达上限", "检查类名拼写，减少同屏实体数量"],
+                    ["DispatchSpawn 返回 false", "KeyValue 配置有误", "检查 model 路径是否正确，删除实体后重试"],
+                    ["粒子不显示", "粒子名未注册", "调用 PrecacheParticleEffect 预缓存"],
+                    ["实体位置不对", "坐标获取或传送顺序有误", "确认 TeleportEntity 在 DispatchSpawn 之后调用"]
+                ]
+            }
+        }
+    ],
+    "attachments": [
+        {
+            "url": "data/tutorials/entity_spawn/attachments/entity_spawn_test.sp",
+            "name": "entity_spawn_test.sp"
+        }
+    ]
+}

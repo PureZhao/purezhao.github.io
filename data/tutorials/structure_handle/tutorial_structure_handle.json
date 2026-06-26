@@ -1,0 +1,385 @@
+{
+    "title": "Handle 句柄",
+    "date": "2026-06-26",
+    "author": "Pure_*",
+    "content": [
+        { "type": "header", "level": 2, "data": "前言" },
+        {
+            "type": "text",
+            "data": [
+                "这篇教程将介绍 Sourcemod 中的 <b>Handle</b>（句柄）。",
+                "在 Hello World 和指令教程中，我们主要使用 int、float、char[] 等基础类型；而计时器、菜单、数据容器等对象，则通过 Handle 来管理。",
+                "理解 Handle 是阅读后续教程（计时器、菜单 UI、分文件编程）的前提：那些教程里的 CreateTimer、CreateMenu、ArrayList 都与 Handle 密切相关。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "Handle 是什么" },
+        {
+            "type": "text",
+            "data": [
+                "1. Handle 可以理解为<b>指向 Sourcemod 内部对象的引用</b>，类似其他语言中的指针或引用。对象实际存储在 Sourcemod 运行时管理的内存中，插件只持有其 Handle。",
+                "2. 与 int、float 等值类型不同，Handle 类型的变量<b>不直接保存数据</b>，而是保存「如何找到那个对象」的信息。",
+                "3. 许多 Sourcemod API 的返回值或参数都是 Handle，例如："
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "API",
+                    "返回/使用的 Handle 类型",
+                    "用途"
+                ],
+                "rows": [
+                    ["CreateTimer / CreateDataTimer", "Handle", "计时器"],
+                    ["CreateMenu", "Menu（继承 Handle）", "游戏内菜单"],
+                    ["new ArrayList()", "ArrayList", "动态数组"],
+                    ["new StringMap()", "StringMap", "键值映射表"],
+                    ["CreateDataTimer 的 DataPack", "DataPack", "向计时器传递多个参数"]
+                ]
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "4. 较新的 Sourcemod 版本为常用 Handle 提供了<b>方法映射（Methodmap）</b>，如 Menu、DataPack、ArrayList。它们本质仍是 Handle，但可以直接调用方法，例如 menu.SetTitle()、dp.WriteCell()。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第一步：声明与赋值" },
+        {
+            "type": "text",
+            "data": [
+                "1. 声明 Handle 变量时，类型写 Handle 或具体的 Methodmap 类型"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "Handle g_Timer;           // 通用 Handle，常用于计时器",
+                "ArrayList g_List;         // 动态数组",
+                "StringMap g_Map;          // 字符串到值的映射",
+                "Handle g_Timer[MAXPLAYERS + 1];  // 每个玩家一个计时器"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "2. 创建对象后，将返回的 Handle 保存到变量中，以便后续使用或销毁"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "g_Timer[client] = CreateTimer(3.0, Timer_Callback, client);",
+                "",
+                "g_List = new ArrayList();",
+                "g_Map = new StringMap();",
+                "",
+                "DataPack dp;",
+                "CreateDataTimer(5.0, Timer_Callback, dp);",
+                "dp.WriteCell(client);"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 未赋值的 Handle 为 <b>null</b>，表示当前不指向任何有效对象。判断方式如下"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "if (g_Timer[client] != null)",
+                "{",
+                "    delete g_Timer[client];",
+                "    g_Timer[client] = null;",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "4. 旧版代码中可能见到 <b>INVALID_HANDLE</b>，与 null 含义相同，表示无效句柄。新代码建议统一使用 null。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第二步：释放 Handle" },
+        {
+            "type": "text",
+            "data": [
+                "1. Handle 指向的对象由 Sourcemod 分配，插件不再使用时<b>必须主动释放</b>，否则会造成内存泄漏。",
+                "2. 释放方式："
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "方式",
+                    "适用场景",
+                    "说明"
+                ],
+                "rows": [
+                    ["delete handle", "计时器、ArrayList、StringMap、Menu 等", "新版推荐写法"],
+                    ["CloseHandle(handle)", "同上", "旧版写法，与 delete 等价"],
+                    ["KillTimer(handle)", "仅计时器", "专门用于停止并销毁计时器"]
+                ]
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 释放后应将变量置为 null，避免重复释放或误用"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "void KillTimerSafe(Handle& timer)",
+                "{",
+                "    if (timer != null)",
+                "        delete timer;",
+                "",
+                "    timer = null;",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "4. 注意参数类型 <b>Handle&</b>：末尾的 & 表示按引用传递，函数内将 timer 置为 null 后，调用方的变量也会变为 null。计时器教程中的 KillTimerSafety 即采用此写法。",
+                "5. 应在以下时机释放 Handle："
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "时机",
+                    "示例"
+                ],
+                "rows": [
+                    ["插件卸载", "OnPluginEnd 中 delete 全局 ArrayList、StringMap"],
+                    ["玩家断线", "OnClientDisconnect 中销毁该玩家的计时器"],
+                    ["对象生命周期结束", "MenuAction_End 回调中 delete menu"],
+                    ["重新创建前", "创建新计时器前先 KillTimerSafe 旧的，避免重复运行"]
+                ]
+            }
+        },
+        { "type": "header", "level": 2, "data": "第三步：Handle 与计时器" },
+        {
+            "type": "text",
+            "data": [
+                "1. <b>CreateTimer</b> 和 <b>CreateDataTimer</b> 返回 Handle，保存后可手动停止计时器。",
+                "2. 单次计时器执行完毕后会自动销毁，但重复计时器（TIMER_REPEAT）必须手动停止。",
+                "3. 以下示例：保存计时器 Handle，玩家断线或重新触发时安全销毁"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "Handle g_Timer[MAXPLAYERS + 1];",
+                "",
+                "public void OnClientDisconnect(int client)",
+                "{",
+                "    KillTimerSafe(g_Timer[client]);",
+                "}",
+                "",
+                "public Action Command_Delay(int client, int args)",
+                "{",
+                "    KillTimerSafe(g_Timer[client]);",
+                "",
+                "    DataPack dp;",
+                "    g_Timer[client] = CreateDataTimer(3.0, Timer_DelayedHello, dp);",
+                "    dp.WriteCell(client);",
+                "    dp.WriteString(\"Hello Handle\");",
+                "    return Plugin_Handled;",
+                "}",
+                "",
+                "public Action Timer_DelayedHello(Handle timer, DataPack dp)",
+                "{",
+                "    dp.Reset();",
+                "    int client = dp.ReadCell();",
+                "    // ... 处理逻辑 ...",
+                "    g_Timer[client] = null;",
+                "    return Plugin_Stop;",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "4. 计时器回调的第一个参数也是 Handle（timer），通常无需手动 delete，停止计时器时销毁即可。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第四步：Handle 与 DataPack" },
+        {
+            "type": "text",
+            "data": [
+                "1. <b>DataPack</b> 是一种 Handle，用于在计时器、RequestFrame 等回调中传递多个数据。",
+                "2. 创建 DataPack 时不需要 new，由 CreateDataTimer 自动分配；写入数据用 Write 系列，读取前需 Reset，再用 Read 系列按相同顺序读取。",
+                "3. DataPack 在计时器执行完毕后会随计时器一起销毁，一般无需手动 delete。"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "DataPack dp;",
+                "CreateDataTimer(3.0, Timer_Callback, dp);",
+                "dp.WriteCell(client);",
+                "dp.WriteFloat(1.5);",
+                "dp.WriteString(\"test\");",
+                "",
+                "public Action Timer_Callback(Handle timer, DataPack dp)",
+                "{",
+                "    dp.Reset();",
+                "    int client = dp.ReadCell();",
+                "    float value = dp.ReadFloat();",
+                "    char text[64];",
+                "    dp.ReadString(text, sizeof(text));",
+                "    return Plugin_Stop;",
+                "}"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "写入",
+                    "读取",
+                    "类型"
+                ],
+                "rows": [
+                    ["dp.WriteCell(v)", "dp.ReadCell()", "int"],
+                    ["dp.WriteFloat(v)", "dp.ReadFloat()", "float"],
+                    ["dp.WriteString(s)", "dp.ReadString(buf, size)", "string"]
+                ]
+            }
+        },
+        { "type": "header", "level": 2, "data": "第五步：ArrayList 与 StringMap" },
+        {
+            "type": "text",
+            "data": [
+                "1. <b>ArrayList</b> 是动态数组，元素按索引 0、1、2… 访问，适合存储长度不固定的列表。",
+                "2. l4d2_shop_system 用 ArrayList 记录菜单路径（trace），l4d2_lottery_draw 用 ArrayList 存储奖品区间数据。",
+                "3. 基本用法"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "ArrayList list = new ArrayList(ByteCountToCells(64));  // 存储字符串",
+                "list.PushString(\"Alice\");",
+                "list.PushString(\"Bob\");",
+                "",
+                "PrintToServer(\"长度: %d\", list.Length);  // 2",
+                "",
+                "char name[64];",
+                "list.GetString(0, name, sizeof(name));  // Alice",
+                "",
+                "list.Clear();   // 清空元素，不销毁对象",
+                "delete list;    // 插件卸载时销毁"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "4. <b>StringMap</b> 是键值映射表，通过字符串键查找 int 值，适合按 ID、名称做快速查找。",
+                "5. l4d2_lottery_draw 中的 meleeTable 即 StringMap，用于存储近战武器名称映射。",
+                "6. 基本用法"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "StringMap map = new StringMap();",
+                "map.SetValue(\"score_1\", 100);",
+                "map.SetValue(\"score_2\", 200);",
+                "",
+                "int score;",
+                "if (map.GetValue(\"score_1\", score))",
+                "{",
+                "    PrintToServer(\"score_1 = %d\", score);",
+                "}",
+                "",
+                "delete map;"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "类型",
+                    "创建",
+                    "典型操作",
+                    "销毁"
+                ],
+                "rows": [
+                    ["ArrayList", "new ArrayList( cellSize )", "Push、Get、Length、Clear", "delete"],
+                    ["StringMap", "new StringMap()", "SetValue、GetValue", "delete"]
+                ]
+            }
+        },
+        { "type": "header", "level": 2, "data": "第六步：Handle 与 Menu" },
+        {
+            "type": "text",
+            "data": [
+                "1. <b>CreateMenu</b> 返回 Menu 对象（Methodmap，底层是 Handle）。菜单显示后，在 <b>MenuAction_End</b> 中应 delete menu 释放。",
+                "2. 菜单 UI 教程中有完整示例，此处仅强调 Handle 生命周期"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "Menu menu = CreateMenu(MenuHandler);",
+                "menu.SetTitle(\"标题\");",
+                "menu.AddItem(\"key\", \"显示文字\");",
+                "menu.Display(client, MENU_TIME_FOREVER);",
+                "",
+                "public int MenuHandler(Menu menu, MenuAction action, int client, int param)",
+                "{",
+                "    switch (action)",
+                "    {",
+                "        case MenuAction_End:",
+                "        {",
+                "            delete menu;",
+                "        }",
+                "    }",
+                "    return 0;",
+                "}"
+            ]
+        },
+        { "type": "header", "level":  2, "data": "第七步：完整示例" },
+        {
+            "type": "text",
+            "data": [
+                "附件 handle_test.sp 整合了 Timer Handle、DataPack、ArrayList、StringMap 的用法。编译安装后可测试：",
+                "\t• <b>!handle_demo</b> — 用 DataPack 延迟 3 秒发送消息",
+                "\t• <b>!list_demo</b> — 用 ArrayList 列出在线玩家",
+                "\t• <b>!map_demo</b> — 用 StringMap 记录指令使用次数"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "常见问题" },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "现象",
+                    "可能原因",
+                    "解决方法"
+                ],
+                "rows": [
+                    ["运行时报错 invalid handle", "使用了已 delete 或未初始化的 Handle", "使用前判断 != null；delete 后置 null"],
+                    ["重复计时器无法停止", "CreateTimer 返回值未保存", "保存 Handle，停止时用 delete 或 KillTimer"],
+                    ["DataPack 读到错误数据", "Read 顺序与 Write 不一致，或未 Reset", "回调开头 dp.Reset()，Read 顺序与 Write 相同"],
+                    ["插件重载后内存上涨", "OnPluginEnd 未 delete 全局 Handle", "在 OnPluginEnd 中释放所有全局 ArrayList、StringMap 等"],
+                    ["CloseHandle 与 delete 混用困惑", "两者功能相同", "新代码统一用 delete 即可"]
+                ]
+            }
+        }
+    ],
+    "attachments": [
+        {
+            "url": "data/tutorials/structure_handle/attachments/handle_test.sp",
+            "name": "handle_test.sp"
+        }
+    ]
+}

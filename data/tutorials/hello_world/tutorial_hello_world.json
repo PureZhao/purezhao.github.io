@@ -1,0 +1,117 @@
+{
+    "title": "Hello World",
+    "date": "2026-06-25",
+    "author": "Pure_*",
+    "content": [
+        { "type": "header", "level": 2, "data": "前言" },
+        {
+            "type": "text",
+            "data": [
+                "这篇教程将带你创建你的第一个Sourcemod插件，并将其部署到你的服务器上，运行起来。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "创建第一个插件" },
+        {
+            "type": "text",
+            "data": [
+                "1. 在 scripting 目录下新建 hello_world.sp 文件",
+                "2. 与C语言类似，要引入插件开发必须的头文件: <b>sourcemod.inc</b>。这个文件中包含了很多常用函数，比如判定玩家所属队伍，获取玩家状态等等。写法如下"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "#include <sourcemod>"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 在 C语言中，main函数是程序的入口，在Sourcemod中，起同样作用的函数为OnPluginStart",
+                "4. 在OnPluginStart函数中，打印一条消息到日志中"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "public void OnPluginStart()",
+                "{",
+                "    LogMessage(\"[Hello] Plugin loaded successfully!\");",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "5. 这个Hello World的插件完整代码，如下"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "#include <sourcemod>",
+                "",
+                "public void OnPluginStart()",
+                "{",
+                "    PrintToServer(\"[Hello] Plugin loaded successfully!\");",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "6. 保存文件，编译插件"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "编译插件" },
+        {
+            "type": "text",
+            "data": [
+                "1. 进入 scripting 文件夹，将hello_world.sp文件拖拽到compile.exe文件上后，松手，等待编译完成。下图即为编译成功"
+            ]
+        },
+        {
+            "type": "image",
+            "data": {
+                "url": "data/tutorials/hello_world/images/compile_success.png",
+                "alt": "编译成功",
+                "caption": "图1 编译成功"
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "2. 编译成功后，会在scripting文件夹下生成一个compiled文件夹，里面就能找到编译好的插件，插件名称与代码文件名称一致，以.smx结尾"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "安装插件到服务器" },
+        {
+            "type": "text",
+            "data": [
+                "1. 进入 scripting/compiled 文件夹，将hello_world.smx文件拖拽到服务器addons/sourcemod/plugins文件夹下（此处默认服务器已经安装了Sourcemod）"
+            ]
+        },
+        {
+            "type": "image",
+            "data": {
+                "url": "data/tutorials/hello_world/images/plugins_on_server.png",
+                "alt": "服务器上安装插件的文件夹",
+                "caption": "图2 服务器上安装插件的文件夹"
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "2. 重启服务器，找在服务器后台找到sourceomod/logs文件夹，在里面有一个名为<b>Lxxxxxxx.log</b>日志文件。（xxxxxxx为当天的日期）",
+                "3. 打开日志文件，查找是否有<b>[Hello] Plugin loaded successfully!</b>这条消息，如果有，则说明插件安装成功。"
+            ]
+        }
+        
+    ],
+    "attachments": [
+        {
+            "url": "data/tutorials/hello_world/attachments/hello_world.sp",
+            "name": "test_hello.sp"
+        }
+    ]
+}

@@ -3,83 +3,223 @@
     "title": "商店插件",
     "date": "2025-08-09",
     "author": "Pure_*",
-    "attachments":[
-        {"url": "/archieves/l4d2_shop_system-sqlite.zip", "name":"商店（本地数据库）-插件压缩包"},
-        {"url": "/archieves/l4d2_shop_system-mysql.zip", "name":"商店（远程数据库）-插件压缩包"}
+    "attachments": [
+        {
+            "url": "/archieves/l4d2_shop_system-sqlite.zip",
+            "name": "商店（本地数据库）-插件压缩包"
+        },
+        {
+            "url": "/archieves/l4d2_shop_system-mysql.zip",
+            "name": "商店（远程数据库）-插件压缩包"
+        }
     ],
     "content": [
-        { "type": "text", "data": "这是一个比较全面的商店，除了管理员的各项关键功能（如踢人、封禁等），基本上能够满足各方面需求" },
+        {
+            "type": "text",
+            "data": [
+                "这是一个比较全面的商店，除了管理员的各项关键功能（如踢人、封禁等），基本上能够满足各方面需求"
+            ]
+        },
         { "type": "header", "level": 3, "data": "使用说明" },
-        { "type": "text", "data": "\t1. 在游戏中，按 y 打开在聊天框\n\t2. 输入指令!buy，即可打开商店菜单\n\t3. 输入指令!repeatbuy，即可重复购买上次的商品" },
+        {
+            "type": "text",
+            "data": [
+                "\t1. 在游戏中，按 y 打开在聊天框",
+                "\t2. 输入指令!buy，即可打开商店菜单",
+                "\t3. 输入指令!repeatbuy，即可重复购买上次的商品"
+            ]
+        },
         { "type": "header", "level": 2, "data": "配置文件介绍" },
         { "type": "header", "level": 3, "data": "配置文件路径" },
-        { "type": "text", "data": "配置文件为：data/l4d2_shop_system.json" },
+        {
+            "type": "text",
+            "data": [
+                "配置文件为：data/l4d2_shop_system.json"
+            ]
+        },
         { "type": "header", "level": 3, "data": "配置表键值（Key-Value）" },
-        { "type": "table",
+        {
+            "type": "table",
             "data": {
-                "headers": ["Key", "说明", "备注"],
+                "headers": [
+                    "Key",
+                    "说明",
+                    "备注"
+                ],
                 "rows": [
-                    ["EarnTypes", "获取积分的条件（方式）", "一共22种条件，预设在插件中，不可增加或者删除"],
-                    ["ShopItems", "商品列表", "会出现在商店中的所有商品，可以自行修改编辑，后面会有如何修改的详细说明"]
+                    [
+                        "EarnTypes",
+                        "获取积分的条件（方式）",
+                        "一共22种条件，预设在插件中，不可增加或者删除"
+                    ],
+                    [
+                        "ShopItems",
+                        "商品列表",
+                        "会出现在商店中的所有商品，可以自行修改编辑，后面会有如何修改的详细说明"
+                    ]
                 ]
             }
         },
         { "type": "header", "level": 3, "data": "EarnTypes中可编辑项的键值说明" },
-        { "type": "table",
+        {
+            "type": "table",
             "data": {
-                "headers": ["Key", "说明", "备注"],
+                "headers": [
+                    "Key",
+                    "说明",
+                    "备注"
+                ],
                 "rows": [
-                    ["order", "表示顺序", "不可更改"],
-                    ["isOn", "是否启用这个条件", "true为启用，false为不启用"],
-                    ["goal", "目标数量", "当游戏中完成这个条件的数量达到这个值时，玩家可以获得商店积分"],
-                    ["point", "达成目标后，给予多少上商店积分", "可正可负，但不要超出int上限"],
-                    ["tip", "获得此条件的积分后，在聊天框中打印的提示", "目前只支持32个中文字及以下或64个英文字及以下的提示"]
+                    [
+                        "order",
+                        "表示顺序",
+                        "不可更改"
+                    ],
+                    [
+                        "isOn",
+                        "是否启用这个条件",
+                        "true为启用，false为不启用"
+                    ],
+                    [
+                        "goal",
+                        "目标数量",
+                        "当游戏中完成这个条件的数量达到这个值时，玩家可以获得商店积分"
+                    ],
+                    [
+                        "point",
+                        "达成目标后，给予多少上商店积分",
+                        "可正可负，但不要超出int上限"
+                    ],
+                    [
+                        "tip",
+                        "获得此条件的积分后，在聊天框中打印的提示",
+                        "目前只支持32个中文字及以下或64个英文字及以下的提示"
+                    ]
                 ]
             }
         },
         { "type": "header", "level": 3, "data": "ShopItems中可编辑项的键值说明" },
-        { "type": "table",
+        {
+            "type": "table",
             "data": {
-                "headers": ["Key", "说明", "备注"],
+                "headers": [
+                    "Key",
+                    "说明",
+                    "备注"
+                ],
                 "rows": [
-                    ["descOnPanel", "面板上商品的描述，这个是打开商店后，该条商品显示的名字", "必要参数，目前只支持16个中文字及以下或32个英文字及以下的描述"],
-                    ["point", "商品售价", "必要参数，可正可负，但不要超出int范围"],
-                    ["broadcast", "购买商品后需不需要让其他玩家也知道", "必要参数，true为启用，false为不启用"],
-                    ["func", "函数名称", "可选参数，插件中使该商品起作用的函数的名称"],
-                    ["plugin", "插件名称", "可选参数，如果该条目使用的是其他插件的函数，此处填写目标插件的文件名称"],
-                    ["cmd", "指令名称", "可选参数，如果该条目使用的是指令来完成效果触发，此处填写目标指令"],
-                    ["flag", "标识", "可选参数，配合cmd参数使用，如果cmd的指令第一个参数不是玩家ID，声明这个参数并赋值为true"],
-                    ["args", "参数列表，不论是函数还是指令都会有参数，这个就是用来按顺序填写对应参数", "必要参数"]
+                    [
+                        "descOnPanel",
+                        "面板上商品的描述，这个是打开商店后，该条商品显示的名字",
+                        "必要参数，目前只支持16个中文字及以下或32个英文字及以下的描述"
+                    ],
+                    [
+                        "point",
+                        "商品售价",
+                        "必要参数，可正可负，但不要超出int范围"
+                    ],
+                    [
+                        "broadcast",
+                        "购买商品后需不需要让其他玩家也知道",
+                        "必要参数，true为启用，false为不启用"
+                    ],
+                    [
+                        "func",
+                        "函数名称",
+                        "可选参数，插件中使该商品起作用的函数的名称"
+                    ],
+                    [
+                        "plugin",
+                        "插件名称",
+                        "可选参数，如果该条目使用的是其他插件的函数，此处填写目标插件的文件名称"
+                    ],
+                    [
+                        "cmd",
+                        "指令名称",
+                        "可选参数，如果该条目使用的是指令来完成效果触发，此处填写目标指令"
+                    ],
+                    [
+                        "flag",
+                        "标识",
+                        "可选参数，配合cmd参数使用，如果cmd的指令第一个参数不是玩家ID，声明这个参数并赋值为true"
+                    ],
+                    [
+                        "args",
+                        "参数列表，不论是函数还是指令都会有参数，这个就是用来按顺序填写对应参数",
+                        "必要参数"
+                    ]
                 ]
             }
         },
         { "type": "header", "level": 3, "data": "ShopItems中args参数类型说明" },
-        { "type": "table",
+        {
+            "type": "table",
             "data": {
-                "headers": ["参数类型", "说明"],
+                "headers": [
+                    "参数类型",
+                    "说明"
+                ],
                 "rows": [
-                    ["int", "整型数(不能有小数点)，如1、2、3"],
-                    ["float", "浮点数，简单理解为小数，如1.1、2.2、3.3，需要注意的是就算是给整数也必须写成小数形式，比如1就必须写为1.0"],
-                    ["string", "字符串，内容必须在两个英文引号中，如\"weapon_rifle_ak47\""],
-                    ["bool", "布尔值，只能是true或者false，true为真，false为假"]
+                    [
+                        "int",
+                        "整型数(不能有小数点)，如1、2、3"
+                    ],
+                    [
+                        "float",
+                        "浮点数，简单理解为小数，如1.1、2.2、3.3，需要注意的是就算是给整数也必须写成小数形式，比如1就必须写为1.0"
+                    ],
+                    [
+                        "string",
+                        "字符串，内容必须在两个英文引号中，如\"weapon_rifle_ak47\""
+                    ],
+                    [
+                        "bool",
+                        "布尔值，只能是true或者false，true为真，false为假"
+                    ]
                 ]
             }
         },
         { "type": "header", "level": 3, "data": "本插件预设的可使用函数" },
-        { "type": "table",
+        {
+            "type": "table",
             "data": {
-                "headers": ["函数名", "效果说明", "参数说明(args)"],
+                "headers": [
+                    "函数名",
+                    "效果说明",
+                    "参数说明(args)"
+                ],
                 "rows": [
-                    ["PGivePlayerItem", "获得某个物品/武器", "1. itemName(string): 物品名称"],
-                    ["PUpgradePlayerWeapon", "升级玩家子弹", "1. itemName(string): 子弹类型，只有两种燃烧弹(Incendiary_ammo)、爆炸弹(explosive_ammo)"],
-                    ["PSummonInfected", "召唤特感", "1. client(int): 客户端ID<br>2. infected(int): 感染者ID<br>3. count(int): 数量<br>感染者ID如下:<br>随机特感(不包括Tank和Witch): -1<br>Smoker: 1<br>Boomer : 2<br>Hunter : 3<br>Spitter : 4<br>Jockey : 5<br>Charger : 6<br>Witch : 7<br>Tank : 8"],
-                    ["PRespawnPlayer", "复活", ""]
+                    [
+                        "PGivePlayerItem",
+                        "获得某个物品/武器",
+                        "1. itemName(string): 物品名称"
+                    ],
+                    [
+                        "PUpgradePlayerWeapon",
+                        "升级玩家子弹",
+                        "1. itemName(string): 子弹类型，只有两种燃烧弹(Incendiary_ammo)、爆炸弹(explosive_ammo)"
+                    ],
+                    [
+                        "PSummonInfected",
+                        "召唤特感",
+                        "1. client(int): 客户端ID<br>2. infected(int): 感染者ID<br>3. count(int): 数量<br>感染者ID如下:<br>随机特感(不包括Tank和Witch): -1<br>Smoker: 1<br>Boomer : 2<br>Hunter : 3<br>Spitter : 4<br>Jockey : 5<br>Charger : 6<br>Witch : 7<br>Tank : 8"
+                    ],
+                    [
+                        "PRespawnPlayer",
+                        "复活",
+                        ""
+                    ]
                 ]
             }
         },
         { "type": "header", "level": 2, "data": "如何扩充商店" },
         { "type": "header", "level": 3, "data": "增加商品分类" },
-        { "type": "text", "data": "当商品足够多时，下图中的商品分类就可能不够太，则需要添加" },
+        {
+            "type": "text",
+            "data": [
+                "当商品足够多时，下图中的商品分类就可能不够太，则需要添加"
+            ]
+        },
         {
             "type": "image",
             "data": {
@@ -88,35 +228,113 @@
                 "caption": "图1 商品分类条目"
             }
         },
-        { "type": "text", "data": "要添加分类是非常简单的，只需要在配置文件对应的节点下，进行操作。如我们要将医疗菜单中的商品再分类" },
         {
-            "type": "code",
-            "data": "// 原配置示例\n\"医疗菜单\":\n\t[\n\t\t{\"descOnPanel\": \"肾上腺素\", \"point\": 18, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"adrenaline\"]},\n\t\t{\"descOnPanel\": \"电击器\", \"point\": 15, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"defibrillator\"]},\n\t\t{\"descOnPanel\": \"医疗包\", \"point\": 40, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"first_aid_kit\"]},\n\t\t{\"descOnPanel\": \"止疼药\", \"point\": 20, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"pain_pills\"]},\n\t\t{\"descOnPanel\": \"满血\", \"point\": 100, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"health\"]},\n\t\t{\"descOnPanel\": \"复活\", \"point\": 120, \"broadcast\": false, \"func\": \"PRespawnPlayer\", \"args\": []}\n\t]"
+            "type": "text",
+            "data": [
+                "要添加分类是非常简单的，只需要在配置文件对应的节点下，进行操作。如我们要将医疗菜单中的商品再分类"
+            ]
         },
-        { "type": "text", "data": "配置文件应该改为如下:" },
         {
             "type": "code",
-            "data": "// 修改后配置示例\n\"医疗菜单\":\n{\n\t\"药品类型一\":\n\t[\n\t\t{\"descOnPanel\": \"肾上腺素\", \"point\": 18, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"adrenaline\"]},\n\t\t{\"descOnPanel\": \"止疼药\", \"point\": 20, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"pain_pills\"]}\n\t],\n\t\"药品类型二\":\n\t[\n\t\t{\"descOnPanel\": \"电击器\", \"point\": 15, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"defibrillator\"]},\n\t\t{\"descOnPanel\": \"医疗包\", \"point\": 40, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"first_aid_kit\"]}\n\t],\n\t\"药品类型三\":\n\t[\n\t\t{\"descOnPanel\": \"满血\", \"point\": 100, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"health\"]},\n\t\t{\"descOnPanel\": \"复活\", \"point\": 120, \"broadcast\": false, \"func\": \"PRespawnPlayer\", \"args\": []}\n\t]\n}"
+            "data": [
+                "// 原配置示例",
+                "\"医疗菜单\":",
+                "\t[",
+                "\t\t{\"descOnPanel\": \"肾上腺素\", \"point\": 18, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"adrenaline\"]},",
+                "\t\t{\"descOnPanel\": \"电击器\", \"point\": 15, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"defibrillator\"]},",
+                "\t\t{\"descOnPanel\": \"医疗包\", \"point\": 40, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"first_aid_kit\"]},",
+                "\t\t{\"descOnPanel\": \"止疼药\", \"point\": 20, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"pain_pills\"]},",
+                "\t\t{\"descOnPanel\": \"满血\", \"point\": 100, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"health\"]},",
+                "\t\t{\"descOnPanel\": \"复活\", \"point\": 120, \"broadcast\": false, \"func\": \"PRespawnPlayer\", \"args\": []}",
+                "\t]"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "配置文件应该改为如下:"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "// 修改后配置示例",
+                "\"医疗菜单\":",
+                "{",
+                "\t\"药品类型一\":",
+                "\t[",
+                "\t\t{\"descOnPanel\": \"肾上腺素\", \"point\": 18, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"adrenaline\"]},",
+                "\t\t{\"descOnPanel\": \"止疼药\", \"point\": 20, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"pain_pills\"]}",
+                "\t],",
+                "\t\"药品类型二\":",
+                "\t[",
+                "\t\t{\"descOnPanel\": \"电击器\", \"point\": 15, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"defibrillator\"]},",
+                "\t\t{\"descOnPanel\": \"医疗包\", \"point\": 40, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"first_aid_kit\"]}",
+                "\t],",
+                "\t\"药品类型三\":",
+                "\t[",
+                "\t\t{\"descOnPanel\": \"满血\", \"point\": 100, \"broadcast\": false, \"func\": \"PGivePlayerItem\", \"args\": [\"health\"]},",
+                "\t\t{\"descOnPanel\": \"复活\", \"point\": 120, \"broadcast\": false, \"func\": \"PRespawnPlayer\", \"args\": []}",
+                "\t]",
+                "}"
+            ]
         },
         { "type": "header", "level": 3, "data": "使用内置预设函数添加商品条目" },
-        { "type": "text", "data": "首先第一个去查看本页面的表格：本插件预设的可使用函数。从中找到自己想要的功能，以召唤随机特感为例" },
-        { "type": "text", "data": "通过查表可知，需要使用的函数是PSummonInfected，其参数填写顺序是：客户端ID、特感ID、数量。\n\t1. 客户端ID是系统自动赋值的，在args参数列表中就无需指明\n\t2. 特感ID通过查表可知此处填写-1\n\t3. 数量是五只，则此处填写5\n最终在配置文件中，该商品条目如下：" },
+        {
+            "type": "text",
+            "data": [
+                "首先第一个去查看本页面的表格：本插件预设的可使用函数。从中找到自己想要的功能，以召唤随机特感为例"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "通过查表可知，需要使用的函数是PSummonInfected，其参数填写顺序是：客户端ID、特感ID、数量。",
+                "\t1. 客户端ID是系统自动赋值的，在args参数列表中就无需指明",
+                "\t2. 特感ID通过查表可知此处填写-1",
+                "\t3. 数量是五只，则此处填写5",
+                "最终在配置文件中，该商品条目如下："
+            ]
+        },
         {
             "type": "code",
-            "data": "{\"descOnPanel\": \"召唤五只随机特感\" , \"point\": 30, \"broadcast\": true, \"func\": \"PSummonInfected\", \"args\": [-1, 5]},"
+            "data": [
+                "{\"descOnPanel\": \"召唤五只随机特感\" , \"point\": 30, \"broadcast\": true, \"func\": \"PSummonInfected\", \"args\": [-1, 5]},"
+            ]
         },
-        { "type": "text", "data": "最后将上述条目放到商品分类中去即可" },
+        {
+            "type": "text",
+            "data": [
+                "最后将上述条目放到商品分类中去即可"
+            ]
+        },
         { "type": "header", "level": 3, "data": "使用外部其他插件添加商品条目（使用指令）" },
-        { "type": "text", "data": "比如有一个l4d2_play_as_tank的插件，使玩家可以变身为Tank，其指令为：!playastank <ClientID> <HealthPoint>，则条目可以直接先写为：" },
         {
-            "type": "code",
-            "data": "{\"descOnPanel\": \"变身Tank\" , \"point\": 200, \"broadcast\": true, \"cmd\": \"playastank\", \"args\": []},"
+            "type": "text",
+            "data": [
+                "比如有一个l4d2_play_as_tank的插件，使玩家可以变身为Tank，其指令为：!playastank <ClientID> <HealthPoint>，则条目可以直接先写为："
+            ]
         },
-        { "type": "text", "data": "现在需要来确定参数列表args中填写的值\n\t1. 第一个参数<ClientID>是系统自动赋值，所以在args中不需要体现\n\t2. 第二个参数<HealthPoint>血量，传递进去确定变身Tank后的血量，如1000\n将确定好的参数填写进入args列表，如下" },
         {
             "type": "code",
-            "data": "{\"descOnPanel\": \"变身Tank\" , \"point\": 200, \"broadcast\": true, \"cmd\": \"playastank\", \"args\": [1000]},"
+            "data": [
+                "{\"descOnPanel\": \"变身Tank\" , \"point\": 200, \"broadcast\": true, \"cmd\": \"playastank\", \"args\": []},"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "现在需要来确定参数列表args中填写的值",
+                "\t1. 第一个参数<ClientID>是系统自动赋值，所以在args中不需要体现",
+                "\t2. 第二个参数<HealthPoint>血量，传递进去确定变身Tank后的血量，如1000",
+                "将确定好的参数填写进入args列表，如下"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "{\"descOnPanel\": \"变身Tank\" , \"point\": 200, \"broadcast\": true, \"cmd\": \"playastank\", \"args\": [1000]},"
+            ]
         }
     ]
 }
-

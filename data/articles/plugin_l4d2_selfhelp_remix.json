@@ -3,32 +3,49 @@
     "title": "自救插件",
     "date": "2025-03-17",
     "author": "Pure_*",
-    "attachments":[
-        {"url": "/archieves/l4d2_selfhelp_redux.zip", "name":"倒地自救与互救-插件压缩包"}
+    "attachments": [
+        {
+            "url": "/archieves/l4d2_selfhelp_redux.zip",
+            "name": "倒地自救与互救-插件压缩包"
+        }
     ],
     "content": [
         {
             "type": "text",
-            "data": "此插件最初版本由Panxiaohai在2011年开发，原帖地址：<a href='https://forums.alliedmods.net/showthread.php?t=129444' target='_blank'>Panxiaohai [L4D & L4D2] Self Help</a>"
+            "data": [
+                "此插件最初版本由Panxiaohai在2011年开发，原帖地址：<a href='https://forums.alliedmods.net/showthread.php?t=129444' target='_blank'>Panxiaohai [L4D & L4D2] Self Help</a>"
+            ]
         },
         {
             "type": "text",
-            "data": "由于其版本过老，而且存在一些问题，如：\n\t1. 自救期间被Hunter扑中，自救失效\n\t2. 源代码中，自救采用的是计时器方式，响应缓慢\n\t3. 源代码中，自救后，计时器未删除，浪费服务器资源"
+            "data": [
+                "由于其版本过老，而且存在一些问题，如：",
+                "\t1. 自救期间被Hunter扑中，自救失效",
+                "\t2. 源代码中，自救采用的是计时器方式，响应缓慢",
+                "\t3. 源代码中，自救后，计时器未删除，浪费服务器资源"
+            ]
         },
         {
             "type": "text",
-            "data": "故此，重新编写了一个版本，修复了上述问题，同时丰富了可配置参数。"
+            "data": [
+                "故此，重新编写了一个版本，修复了上述问题，同时丰富了可配置参数。"
+            ]
         },
-        { "type":"header", "level": 3, "data": "使用方法" },
+        { "type": "header", "level": 3, "data": "使用方法" },
         {
             "type": "text",
-            "data": "\t1. 在游戏中倒地或者挂边，如果背包中有任何医疗物品，按住[下蹲键]就会出现自救的进度条\n\t2. 队友和自己都倒地了，如果队友与自己很近，则也可以按住[下蹲键]互救（没有医疗物品也可以）\n\t3. 在left4dead2/cfg/sourcemod目录下会生成配置文件，可自行调整配置"
+            "data": [
+                "\t1. 在游戏中倒地或者挂边，如果背包中有任何医疗物品，按住[下蹲键]就会出现自救的进度条",
+                "\t2. 队友和自己都倒地了，如果队友与自己很近，则也可以按住[下蹲键]互救（没有医疗物品也可以）",
+                "\t3. 在left4dead2/cfg/sourcemod目录下会生成配置文件，可自行调整配置"
+            ]
         },
-        { "type":"header", "level": 3, "data": "已知问题" },
+        { "type": "header", "level": 3, "data": "已知问题" },
         {
             "type": "text",
-            "data": "如果在服务器安装了ledge_release.smx插件，在挂边松手后，系统依旧判定玩家还在挂边。"
+            "data": [
+                "如果在服务器安装了ledge_release.smx插件，在挂边松手后，系统依旧判定玩家还在挂边。"
+            ]
         }
     ]
 }
-

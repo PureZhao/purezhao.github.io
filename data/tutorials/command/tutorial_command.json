@@ -1,0 +1,406 @@
+{
+    "title": "指令绑定与使用",
+    "date": "2026-06-25",
+    "author": "Pure_*",
+    "content": [
+        { "type": "header", "level": 2, "data": "前言" },
+        {
+            "type": "text",
+            "data": [
+                "这篇教程将带你学习 Sourcemod 的指令绑定与使用。求生之路2插件中，很多功能都是通过玩家或管理员输入指令来触发的。",
+                "比如你想让玩家在聊天框输入 !hello 时收到一条问候消息，就需要注册并处理这条指令。",
+                "比如你想让管理员输入 !godmode 1 30 时，让1号玩家无敌30秒，就需要注册管理员指令，并解析指令后面的参数。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "指令的基本概念" },
+        {
+            "type": "text",
+            "data": [
+                "1. 在求生之路2中，玩家通常在<b>聊天框</b>输入指令，格式为 <b>!指令名 [参数1] [参数2] ...</b>，例如 !hello、!buy、!godmode 1 30。",
+                "2. Sourcemod 会自动将聊天框中的 <b>!</b> 前缀转换为 <b>sm_</b> 前缀。也就是说，玩家输入的 !hello，在插件中实际对应的是 sm_hello 这条指令。",
+                "3. 服务器管理员也可以在<b>服务器控制台</b>或<b>游戏内控制台</b>（需开启作弊）直接输入 sm_指令名，效果与聊天框输入 !指令名 相同。",
+                "4. 指令按权限可分为两类："
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "类型",
+                    "注册函数",
+                    "说明"
+                ],
+                "rows": [
+                    ["普通指令", "RegConsoleCmd", "所有玩家均可使用，如 !hello、!buy"],
+                    ["管理员指令", "RegAdminCmd", "仅拥有对应权限的管理员可使用，如 !godmode、!kick"]
+                ]
+            }
+        },
+        { "type": "header", "level": 2, "data": "第一步：注册普通指令" },
+        {
+            "type": "text",
+            "data": [
+                "1. Sourcemod 提供了 <b>RegConsoleCmd</b> 函数来注册一条普通指令，并指定一个回调函数来处理该指令。",
+                "2. 这个函数的形式如下"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "RegConsoleCmd(\"sm_hello\", Command_Hello, \"向玩家发送问候消息\");"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 三个参数的含义如下"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "参数",
+                    "类型",
+                    "含义"
+                ],
+                "rows": [
+                    ["指令名", "string", "指令的完整名称，聊天框 !hello 对应 sm_hello"],
+                    ["回调函数", "function", "玩家输入指令后，系统自动调用的处理函数"],
+                    ["描述", "string", "指令的说明文字，在控制台输入 help 时可查看"]
+                ]
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "4. RegConsoleCmd 一般在 <b>OnPluginStart</b> 函数中调用，写法如下"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "#include <sourcemod>",
+                "",
+                "public void OnPluginStart()",
+                "{",
+                "    RegConsoleCmd(\"sm_hello\", Command_Hello, \"向玩家发送问候消息\");",
+                "}"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第二步：编写指令回调函数" },
+        {
+            "type": "text",
+            "data": [
+                "1. 指令回调函数由系统在玩家输入指令时自动调用，其标准形式如下"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "public Action Command_Hello(int client, int args)",
+                "{",
+                "    // 在这里处理指令逻辑",
+                "    return Plugin_Handled;",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "2. 回调函数有两个参数，含义如下"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "参数",
+                    "类型",
+                    "含义"
+                ],
+                "rows": [
+                    ["client", "int", "输入指令的玩家客户端ID。若为 0，表示指令来自服务器控制台"],
+                    ["args", "int", "指令后面跟的参数个数。例如 !hello 无参数时为 0，!godmode 1 30 时为 2"]
+                ]
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 回调函数的返回值用于告知系统是否已处理该指令，常用返回值如下"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "返回值",
+                    "含义"
+                ],
+                "rows": [
+                    ["Plugin_Handled", "指令已被插件处理，不再传递给游戏或其他插件"],
+                    ["Plugin_Continue", "插件未处理或仅做辅助处理，指令继续传递给其他插件或游戏"]
+                ]
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "4. 向玩家回复消息时，推荐使用 <b>ReplyToCommand</b>，它会根据指令来源（聊天框或控制台）自动选择正确的输出方式。完整示例如下"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "#include <sourcemod>",
+                "",
+                "public void OnPluginStart()",
+                "{",
+                "    RegConsoleCmd(\"sm_hello\", Command_Hello, \"向玩家发送问候消息\");",
+                "}",
+                "",
+                "public Action Command_Hello(int client, int args)",
+                "{",
+                "    if (client == 0)",
+                "    {",
+                "        PrintToServer(\"[Hello] 该指令只能由玩家在游戏内使用\");",
+                "        return Plugin_Handled;",
+                "    }",
+                "",
+                "    ReplyToCommand(client, \"[Hello] 你好，%N！\", client);",
+                "    return Plugin_Handled;",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "5. 编译插件并安装到服务器后，进入游戏，在聊天框输入 <b>!hello</b>，若收到问候消息，则说明指令注册成功。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第三步：获取指令参数" },
+        {
+            "type": "text",
+            "data": [
+                "1. 很多指令需要接收参数，例如 !echo hello world 需要将 hello 和 world 传给插件。",
+                "2. 回调函数的 <b>args</b> 参数表示参数个数，但若要读取每个参数的具体内容，需要使用 <b>GetCmdArg</b> 函数。",
+                "3. GetCmdArg 的形式如下：<b>GetCmdArg(索引, 缓冲区, 缓冲区大小)</b>。索引从 1 开始，1 表示第一个参数，2 表示第二个参数，以此类推。",
+                "4. 下面以 !echo [消息] 为例，将玩家输入的内容原样回复给所有人"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "public Action Command_Echo(int client, int args)",
+                "{",
+                "    if (client == 0 || args < 1)",
+                "    {",
+                "        ReplyToCommand(client, \"[用法] !echo <消息>\");",
+                "        return Plugin_Handled;",
+                "    }",
+                "",
+                "    char message[256];",
+                "    GetCmdArg(1, message, sizeof(message));",
+                "    PrintToChatAll(\"%N 说: %s\", client, message);",
+                "    return Plugin_Handled;",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "5. 若指令有多个参数，可依次用 GetCmdArg(1, ...)、GetCmdArg(2, ...) 读取。例如 !sethp 1 500 表示将1号玩家的血量设为500"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "public Action Command_SetHp(int client, int args)",
+                "{",
+                "    if (args < 2)",
+                "    {",
+                "        ReplyToCommand(client, \"[用法] !sethp <客户端ID> <血量>\");",
+                "        return Plugin_Handled;",
+                "    }",
+                "",
+                "    char arg1[16], arg2[16];",
+                "    GetCmdArg(1, arg1, sizeof(arg1));",
+                "    GetCmdArg(2, arg2, sizeof(arg2));",
+                "",
+                "    int target = StringToInt(arg1);",
+                "    int health = StringToInt(arg2);",
+                "",
+                "    if (target < 1 || target > MaxClients || !IsClientInGame(target))",
+                "    {",
+                "        ReplyToCommand(client, \"[错误] 无效的玩家ID\");",
+                "        return Plugin_Handled;",
+                "    }",
+                "",
+                "    SetEntityHealth(target, health);",
+                "    ReplyToCommand(client, \"[成功] 已将 %N 的血量设为 %d\", target, health);",
+                "    return Plugin_Handled;",
+                "}"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第四步：注册管理员指令" },
+        {
+            "type": "text",
+            "data": [
+                "1. 对于需要管理员权限才能使用的指令，应使用 <b>RegAdminCmd</b> 注册。系统会自动校验玩家是否拥有对应权限，无权限者无法执行。",
+                "2. RegAdminCmd 比 RegConsoleCmd 多一个权限参数，形式如下"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "RegAdminCmd(\"sm_kick\", Command_Kick, ADMFLAG_KICK, \"踢出指定玩家\");"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 常用权限标志如下（完整列表见 <a href=\"https://wiki.alliedmods.net/Adding_Admins_(SourceMod)\" target=\"_blank\">Sourcemod 管理员文档</a>）"
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "权限标志",
+                    "含义"
+                ],
+                "rows": [
+                    ["ADMFLAG_GENERIC", "通用管理权限，适合自定义管理功能"],
+                    ["ADMFLAG_KICK", "踢出玩家"],
+                    ["ADMFLAG_BAN", "封禁玩家"],
+                    ["ADMFLAG_SLAY", "处死玩家"],
+                    ["ADMFLAG_ROOT", "最高权限，可使用所有管理员指令"]
+                ]
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "4. 管理员指令的回调函数写法与普通指令相同。以下示例：管理员输入 !slay 2 可处死2号玩家"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "public void OnPluginStart()",
+                "{",
+                "    RegAdminCmd(\"sm_slay\", Command_Slay, ADMFLAG_SLAY, \"处死指定玩家\");",
+                "}",
+                "",
+                "public Action Command_Slay(int client, int args)",
+                "{",
+                "    if (args < 1)",
+                "    {",
+                "        ReplyToCommand(client, \"[用法] !slay <客户端ID>\");",
+                "        return Plugin_Handled;",
+                "    }",
+                "",
+                "    char arg[16];",
+                "    GetCmdArg(1, arg, sizeof(arg));",
+                "    int target = StringToInt(arg);",
+                "",
+                "    if (target < 1 || target > MaxClients || !IsClientInGame(target))",
+                "    {",
+                "        ReplyToCommand(client, \"[错误] 无效的玩家ID\");",
+                "        return Plugin_Handled;",
+                "    }",
+                "",
+                "    ForcePlayerSuicide(target);",
+                "    ReplyToCommand(client, \"[成功] 已处死 %N\", target);",
+                "    return Plugin_Handled;",
+                "}"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第五步：完整示例" },
+        {
+            "type": "text",
+            "data": [
+                "下面是一份整合了普通指令与管理员指令的完整示例代码，包含 !hello、!echo 和 !slay 三条指令。编译安装后可在游戏中测试。"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "#include <sourcemod>",
+                "",
+                "public void OnPluginStart()",
+                "{",
+                "    RegConsoleCmd(\"sm_hello\", Command_Hello, \"向玩家发送问候消息\");",
+                "    RegConsoleCmd(\"sm_echo\", Command_Echo, \"在聊天框广播一条消息\");",
+                "    RegAdminCmd(\"sm_slay\", Command_Slay, ADMFLAG_SLAY, \"处死指定玩家\");",
+                "}",
+                "",
+                "public Action Command_Hello(int client, int args)",
+                "{",
+                "    if (client == 0)",
+                "    {",
+                "        PrintToServer(\"[Hello] 该指令只能由玩家在游戏内使用\");",
+                "        return Plugin_Handled;",
+                "    }",
+                "",
+                "    ReplyToCommand(client, \"[Hello] 你好，%N！\", client);",
+                "    return Plugin_Handled;",
+                "}",
+                "",
+                "public Action Command_Echo(int client, int args)",
+                "{",
+                "    if (client == 0 || args < 1)",
+                "    {",
+                "        ReplyToCommand(client, \"[用法] !echo <消息>\");",
+                "        return Plugin_Handled;",
+                "    }",
+                "",
+                "    char message[256];",
+                "    GetCmdArg(1, message, sizeof(message));",
+                "    PrintToChatAll(\"%N 说: %s\", client, message);",
+                "    return Plugin_Handled;",
+                "}",
+                "",
+                "public Action Command_Slay(int client, int args)",
+                "{",
+                "    if (args < 1)",
+                "    {",
+                "        ReplyToCommand(client, \"[用法] !slay <客户端ID>\");",
+                "        return Plugin_Handled;",
+                "    }",
+                "",
+                "    char arg[16];",
+                "    GetCmdArg(1, arg, sizeof(arg));",
+                "    int target = StringToInt(arg);",
+                "",
+                "    if (target < 1 || target > MaxClients || !IsClientInGame(target))",
+                "    {",
+                "        ReplyToCommand(client, \"[错误] 无效的玩家ID\");",
+                "        return Plugin_Handled;",
+                "    }",
+                "",
+                "    ForcePlayerSuicide(target);",
+                "    ReplyToCommand(client, \"[成功] 已处死 %N\", target);",
+                "    return Plugin_Handled;",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "测试步骤：",
+                "\t1. 编译插件，将 .smx 文件放入服务器的 addons/sourcemod/plugins 目录，重启或换图加载插件",
+                "\t2. 任意玩家输入 !hello，应收到个人问候消息",
+                "\t3. 任意玩家输入 !echo 大家好，所有人聊天框应显示广播内容",
+                "\t4. 拥有 ADMFLAG_SLAY 权限的管理员输入 !slay 2，2号玩家应被处死（请在测试服上操作）"
+            ]
+        }
+    ],
+    "attachments": [
+        {
+            "url": "data/tutorials/command/attachments/command_test.sp",
+            "name": "command_test.sp"
+        }
+    ]
+}

@@ -1,0 +1,323 @@
+{
+    "title": "创建自定义 Handle（Methodmap）",
+    "date": "2026-06-26",
+    "author": "Pure_*",
+    "content": [
+        { "type": "header", "level": 2, "data": "前言" },
+        {
+            "type": "text",
+            "data": [
+                "上一篇教程介绍了 Handle 的基本用法。Sourcemod 内置的 Menu、ArrayList、StringMap 等类型，本质上都是带有方法的 Handle，它们通过 <b>Methodmap</b> 定义。",
+                "当你需要把一组数据和操作封装成「对象」时，也可以创建自定义 Methodmap，让代码更易读、更易维护。",
+                "本教程以项目中的 <b>l4d2_csol_weapon</b>（Vector3、BoundBox）、<b>l4d2_defib_tank</b>（Corpse）、<b>l4d2_attackable_manager</b>（AttackableManager）为例，讲解如何编写和使用自定义 Methodmap。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "Methodmap 是什么" },
+        {
+            "type": "text",
+            "data": [
+                "1. Methodmap 是 Sourcemod 的<b>面向对象语法扩展</b>：在现有 Handle 类型上声明构造函数、方法和属性，形成新的「类」。",
+                "2. 自定义 Methodmap 必须<b>继承</b>一个已有的 Handle 类型，常见基类如下："
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "基类",
+                    "适合封装",
+                    "项目中的示例"
+                ],
+                "rows": [
+                    ["ArrayList", "按索引存储的数值/对象序列", "Vector3、BoundBox、Corpse"],
+                    ["StringMap", "字符串键到值的映射", "AttackableManager"],
+                    ["Handle", "通用 Handle，较少直接继承", "—"]
+                ]
+            }
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 语法形式：<b>methodmap 类名 &lt; 基类</b>。类名即为新类型名，使用时与 Menu、ArrayList 一样可以用 new 创建。",
+                "4. Methodmap 与 <b>enum struct</b> 的区别："
+            ]
+        },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "特性",
+                    "Methodmap",
+                    "enum struct"
+                ],
+                "rows": [
+                    ["底层", "继承 Handle（ArrayList 等），需 delete", "栈/数组内存，无需 delete"],
+                    ["继承", "可继承 ArrayList、StringMap", "不可继承 Handle 类型"],
+                    ["适用", "复杂对象、需动态创建销毁", "玩家状态、固定字段结构体（如 PlayerGameInfo）"],
+                    ["项目示例", "Corpse、AttackableManager", "lottery_demo 的 PlayerGameInfo"]
+                ]
+            }
+        },
+        { "type": "header", "level": 2, "data": "第一步：基本结构" },
+        {
+            "type": "text",
+            "data": [
+                "1. 一个 Methodmap 包含：构造函数（public 类名）、普通方法（public void/int/bool ...）、属性（property）。",
+                "2. 构造函数内创建基类对象，用 <b>view_as&lt;类名&gt;(基类对象)</b> 转换后返回"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "methodmap PlayerStats < ArrayList",
+                "{",
+                "    public PlayerStats()",
+                "    {",
+                "        ArrayList data = new ArrayList();",
+                "        data.Resize(2);  // 预留 2 个槽位",
+                "        return view_as<PlayerStats>(data);",
+                "    }",
+                "",
+                "    public void AddScore(int amount)",
+                "    {",
+                "        this.Set(0, this.Get(0) + amount);",
+                "    }",
+                "}"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 使用方式与内置 Methodmap 相同"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "PlayerStats stats = new PlayerStats();",
+                "stats.AddScore(10);",
+                "delete stats;"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第二步：property 属性" },
+        {
+            "type": "text",
+            "data": [
+                "1. <b>property</b> 为 Methodmap 定义「字段式」访问，外部通过 stats.Score 读写，内部映射到 ArrayList 的 Get/Set。",
+                "2. l4d2_defib_tank 的 Corpse 类用 property 封装实体 ID、复活血量等字段"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "methodmap Corpse < ArrayList",
+                "{",
+                "    public Corpse()",
+                "    {",
+                "        ArrayList arr = new ArrayList();",
+                "        arr.Resize(4);",
+                "        return view_as<Corpse>(arr);",
+                "    }",
+                "",
+                "    property int Entity",
+                "    {",
+                "        public set(int value) { this.Set(0, value); }",
+                "        public get() { return this.Get(0); }",
+                "    }",
+                "",
+                "    property int ReviveHp",
+                "    {",
+                "        public set(int value) { this.Set(1, value); }",
+                "        public get()",
+                "        {",
+                "            int hp = this.Get(1);",
+                "            if (hp < 500) hp = 500;",
+                "            return hp;",
+                "        }",
+                "    }",
+                "}",
+                "",
+                "// 使用",
+                "Corpse body = new Corpse();",
+                "body.Entity = entIndex;",
+                "body.ReviveHp = 1000;"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. property 的 get/set 可以包含校验逻辑（如 ReviveHp 最低 500），这是比裸 ArrayList 更清晰的原因。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第三步：继承 ArrayList 封装数据" },
+        {
+            "type": "text",
+            "data": [
+                "1. l4d2_csol_weapon 用 ArrayList 存储 3 个 float 表示三维向量，对外暴露 Vector3 类型"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "methodmap Vector3 < ArrayList",
+                "{",
+                "    public Vector3(float x, float y, float z)",
+                "    {",
+                "        ArrayList arr = new ArrayList();",
+                "        arr.Push(x);",
+                "        arr.Push(y);",
+                "        arr.Push(z);",
+                "        return view_as<Vector3>(arr);",
+                "    }",
+                "",
+                "    public void ToArray(float vec[3])",
+                "    {",
+                "        vec[0] = this.Get(0);",
+                "        vec[1] = this.Get(1);",
+                "        vec[2] = this.Get(2);",
+                "    }",
+                "}",
+                "",
+                "Vector3 pos = new Vector3(100.0, 200.0, 50.0);",
+                "float out[3];",
+                "pos.ToArray(out);"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "2. BoundBox 同样继承 ArrayList，前 3 个元素存 mins，后 3 个存 maxs，并提供 IsPointIntersect 方法做点是否在包围盒内的判断。",
+                "3. 思路总结：把 ArrayList 当作「私有存储」，Methodmap 方法负责读写和业务逻辑，调用方无需关心内部索引含义。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第四步：继承 StringMap 封装映射" },
+        {
+            "type": "text",
+            "data": [
+                "1. 当数据以字符串键组织时，可继承 StringMap。l4d2_attackable_manager 的 AttackableManager 即为此模式。",
+                "2. 构造函数返回 view_as&lt;AttackableManager&gt;(new StringMap())，方法内用 ContainsKey、SetValue、Remove 操作"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "methodmap AttackableManager < StringMap",
+                "{",
+                "    public AttackableManager()",
+                "    {",
+                "        return view_as<AttackableManager>(new StringMap());",
+                "    }",
+                "",
+                "    public void Push(int entity, int atkType)",
+                "    {",
+                "        char num[8];",
+                "        IntToString(entity, num, 8);",
+                "        if (this.ContainsKey(num))",
+                "            return;",
+                "        this.SetValue(num, atkType);",
+                "    }",
+                "",
+                "    public void Erase(int entity)",
+                "    {",
+                "        char num[8];",
+                "        Format(num, 8, \"%d\", entity);",
+                "        if (!this.ContainsKey(num))",
+                "            return;",
+                "        this.Remove(num);",
+                "    }",
+                "}",
+                "",
+                "AttackableManager mgr = new AttackableManager();",
+                "mgr.Push(entity, ATKTYPE_COMMON);",
+                "mgr.Erase(entity);"
+            ]
+        },
+        {
+            "type": "text",
+            "data": [
+                "3. 相比直接使用 StringMap，Methodmap 把「键的格式（实体 ID 转字符串）」和「重复检查」封装在内部，调用处只需 mgr.Push(entity, type)。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第五步：this 与对象生命周期" },
+        {
+            "type": "text",
+            "data": [
+                "1. 在 Methodmap 方法内，<b>this</b> 指当前对象，可调用基类方法（如 this.Get、this.SetValue）或本类其他方法（如 this.AddScore）。",
+                "2. 自定义 Methodmap 对象仍是 Handle，创建用 new，销毁用 delete，规则与 Handle 教程一致。",
+                "3. 玩家相关对象推荐在 OnClientPutInServer 创建、OnClientDisconnect 销毁；全局单例在 OnPluginStart 创建、OnPluginEnd 销毁"
+            ]
+        },
+        {
+            "type": "code",
+            "data": [
+                "PlayerStats g_Stats[MAXPLAYERS + 1];",
+                "",
+                "public void OnClientPutInServer(int client)",
+                "{",
+                "    g_Stats[client] = new PlayerStats();",
+                "}",
+                "",
+                "public void OnClientDisconnect(int client)",
+                "{",
+                "    delete g_Stats[client];",
+                "    g_Stats[client] = null;",
+                "}"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "第六步：何时用 Methodmap，何时用 enum struct" },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "场景",
+                    "推荐",
+                    "原因"
+                ],
+                "rows": [
+                    ["每个玩家的固定状态（抽奖次数、计时器）", "enum struct", "嵌入 playerInfo[client] 数组，无需单独 delete"],
+                    ["三维坐标、包围盒、尸体数据等可复用对象", "Methodmap", "有构造函数和业务方法，语义清晰"],
+                    ["全局实体注册表、缓存映射", "Methodmap < StringMap", "动态增删，封装键值操作"],
+                    ["简单 int/float/bool 组合，无复杂方法", "enum struct", "更轻量，分文件教程中的 PlayerGameInfo 即为例"]
+                ]
+            }
+        },
+        { "type": "header", "level": 2, "data": "第七步：完整示例" },
+        {
+            "type": "text",
+            "data": [
+                "附件 methodmap_test.sp 包含两个自定义类：",
+                "\t• <b>PlayerStats &lt; ArrayList</b> — 分数与击杀数，含 AddScore、AddKill、Reset 方法",
+                "\t• <b>PlayerRegistry &lt; StringMap</b> — 玩家注册表，含 Register、IsRegistered、Count 方法",
+                "编译安装后可测试：",
+                "\t• <b>!stats</b> — 查看当前分数与击杀",
+                "\t• <b>!addscore</b> — 增加 50 分",
+                "\t• <b>!registry</b> — 查看是否已注册及注册总数",
+                "击杀感染者时会自动调用 AddKill() 增加击杀并加分。"
+            ]
+        },
+        { "type": "header", "level": 2, "data": "常见问题" },
+        {
+            "type": "table",
+            "data": {
+                "headers": [
+                    "现象",
+                    "可能原因",
+                    "解决方法"
+                ],
+                "rows": [
+                    ["编译报错 methodmap must inherit from...", "未指定基类或基类不是 Handle", "写 methodmap X < ArrayList 或 StringMap"],
+                    ["view_as 后方法找不到", "返回类型与 methodmap 名不一致", "确保 return view_as<YourType>(obj) 类型名正确"],
+                    ["property 无法赋值", "缺少 public set", "property 需同时定义 get 和 set（只读则仅 get）"],
+                    ["运行时段错误", "使用了已 delete 的对象", "delete 后置 null，使用前检查 != null"],
+                    ["Methodmap 与 enum struct 混用困惑", "职责重叠", "固定玩家状态用 struct，独立可复用对象用 methodmap"]
+                ]
+            }
+        }
+    ],
+    "attachments": [
+        {
+            "url": "data/tutorials/structure_methodmap/attachments/methodmap_test.sp",
+            "name": "methodmap_test.sp"
+        }
+    ]
+}

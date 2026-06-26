@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/images/icons/web-plugins.png">
+    <link rel="stylesheet" href="/css/nav.css">
+    <title>插件开发教程</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            padding-top: 70px;
+            background-color: #f5f5f5;
+        }
+
+        .blog-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .search-container {
+            margin-bottom: 2rem;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .tutorial-stages {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        .stage-title {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #4CAF50;
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .article-card {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .article-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .article-title {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .article-title a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .article-title a:hover {
+            color: #4CAF50;
+            text-decoration: underline;
+        }
+
+        .article-meta {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .article-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            background: #4CAF50;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .empty-hint {
+            color: #888;
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .blog-container {
+                padding: 1rem;
+            }
+
+            .articles-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .article-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <script src="/js/site.js"></script>
+    <nav class="navbar" id="site-nav"></nav>
+    <script src="/js/nav.js"></script>
+
+    <div class="blog-container">
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="搜索教程...">
+        </div>
+
+        <div class="tutorial-stages" id="articlesContainer"></div>
+    </div>
+    <script>
+        const container = document.getElementById("articlesContainer");
+        const searchInput = document.getElementById("searchInput");
+        let stagesData = [];
+        let tutorialsData = [];
+
+        function getTagColor(type) {
+            const colors = {
+                "萌新教程": "#4CAF50",
+                "数据结构": "#009688",
+                "初级": "#2196F3",
+                "中级": "#FF9800",
+                "高级": "#9C27B0"
+            };
+            return colors[type] || "#9E9E9E";
+        }
+
+        function getStageOrder() {
+            const order = [...stagesData];
+            tutorialsData.forEach((tutorial) => {
+                if (!order.includes(tutorial.type)) {
+                    order.push(tutorial.type);
+                }
+            });
+            return order;
+        }
+
+        function createArticleCard(article) {
+            const articleEl = document.createElement("div");
+            articleEl.className = "article-card";
+            articleEl.innerHTML = `
+                <h2 class="article-title">
+                    <a href="${sitePath('pages/sub/article.html')}?id=${article.id}&name=${article.name}" target="_blank">${article.title}</a>
+                </h2>
+                <div class="article-meta">
+                    <span>${article.date}</span> •
+                    <span>作者：${article.author}</span>
+                </div>
+                <div class="article-tags">
+                    ${article.tags.map((tag) => `
+                        <span class="tag" style="background: ${getTagColor(article.type)};">${tag}</span>
+                    `).join('')}
+                </div>
+            `;
+            return articleEl;
+        }
+
+        function renderArticles(tutorialsToRender) {
+            container.innerHTML = '';
+
+            const grouped = new Map();
+            getStageOrder().forEach((stage) => grouped.set(stage, []));
+
+            tutorialsToRender.forEach((tutorial) => {
+                if (!grouped.has(tutorial.type)) {
+                    grouped.set(tutorial.type, []);
+                }
+                grouped.get(tutorial.type).push(tutorial);
+            });
+
+            let hasResult = false;
+
+            getStageOrder().forEach((stage) => {
+                const tutorials = grouped.get(stage) || [];
+                if (tutorials.length === 0) {
+                    return;
+                }
+
+                hasResult = true;
+                const section = document.createElement('div');
+                section.className = 'stage-section';
+
+                const title = document.createElement('h2');
+                title.className = 'stage-title';
+                title.textContent = stage;
+                section.appendChild(title);
+
+                const grid = document.createElement('div');
+                grid.className = 'articles-grid';
+                tutorials.forEach((tutorial) => {
+                    grid.appendChild(createArticleCard(tutorial));
+                });
+
+                section.appendChild(grid);
+                container.appendChild(section);
+            });
+
+            if (!hasResult) {
+                container.innerHTML = '<div class="empty-hint">未找到匹配的教程</div>';
+            }
+        }
+
+        function initArticles(data) {
+            stagesData = data.stages || [];
+            tutorialsData = data.tutorials || [];
+            renderArticles(tutorialsData);
+        }
+
+        function searchArticles() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const filtered = searchTerm
+                ? tutorialsData.filter((tutorial) =>
+                    tutorial.title.toLowerCase().includes(searchTerm) ||
+                    tutorial.type.toLowerCase().includes(searchTerm) ||
+                    tutorial.tags.some((tag) => tag.toLowerCase().includes(searchTerm))
+                )
+                : tutorialsData;
+            renderArticles(filtered);
+        }
+
+        searchInput.addEventListener("input", searchArticles);
+
+        fetch(sitePath("data/tutorials.json"))
+            .then((response) => response.json())
+            .then((data) => {
+                initArticles(data);
+            });
+    </script>
+</body>
+
+</html>
